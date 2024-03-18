@@ -67,14 +67,22 @@ def main():
         437.0,
         fill="#313131",
         outline="")
-
-    canvas.create_rectangle(
-        81.0,
-        441.0,
-        112.0,
-        487.0,
-        fill="#FFFFFF",
-        outline="")
+    button_image_4=PhotoImage(file=relative_to_assets("Circled Play.png"))
+    
+    button_4=Button(
+        image=button_image_4,
+        borderwidth=0,
+        relief="sunken",
+        bg="#FF9900",
+        activebackground="#FF9900",
+        height=30,
+        width=46
+        )
+    button_4.place(
+        x=72.0,
+        y=446.0
+    )
+    
     image_image_1 = PhotoImage(file=relative_to_assets("Hub.png"))
     image_1=canvas.create_image(
         15.0,
@@ -89,31 +97,49 @@ def main():
         480.0,
         fill="#FFFFFF",
         outline="")
-
-    canvas.create_rectangle(
-        32.0,
-        446.0,
-        61.0,
-        479.0,
-        fill="#FFFFFF",
-        outline="")
-
-    canvas.create_rectangle(
-        139.0,
-        479.0,
-        153.0,
-        497.0,
-        fill="#FFFFFF",
-        outline="")
-
-    canvas.create_rectangle(
-        89.0,
-        479.0,
-        103.0,
-        497.0,
-        fill="#FFFFFF",
-        outline="")
-
+    button_image_3= PhotoImage(file=relative_to_assets("Skip to Start.png"))
+    button_3=Button(
+        image=button_image_3,
+        borderwidth=0,
+        relief="sunken",
+        bg="#FF9900",
+        activebackground="#FF9900",
+        height=35,
+        width=46)
+    button_3.place(
+        x=22.0,
+        y=443.0
+    )
+    
+    button_image_2= PhotoImage(file=relative_to_assets("Shuffle.png"))
+    button_2=Button(    
+        image= button_image_2,
+        borderwidth=0,
+        relief="sunken",
+        bg="#FF9900",
+        activebackground="#FF9900",
+        height=30,
+        width=40)
+    button_2.place(
+        x=125.0,
+        y=470.0
+    )
+    
+    button_image_5=PhotoImage(file=relative_to_assets("Repeat.png"))
+    
+    button_5=Button(
+        image= button_image_5,
+        borderwidth=0,
+        relief="sunken",
+        bg="#FF9900",
+        activebackground="#FF9900",
+        height=15,
+        width=40
+        )
+    button_5.place(
+        x=75.0,
+        y=477.0
+    )
     canvas.create_rectangle(
         238.0,
         477.0,
@@ -141,13 +167,12 @@ def main():
         relief="sunken",
         bg="#FF9900",
         activebackground="#FF9900",
-        height=40,
+        height=35,
         width=46
     )
     button_1.place(
-        x=120,
-        y=440,
-
+        x=123,
+        y=442
     )
     canvas.create_text(
         25.0,
