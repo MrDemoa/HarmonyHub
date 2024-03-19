@@ -89,14 +89,19 @@ def main():
         12.0,  
         image = image_image_1
         )
-
-    canvas.create_rectangle(
-        181.0,
-        447.0,
-        210.0,
-        480.0,
-        fill="#FFFFFF",
-        outline="")
+    button_image_6= PhotoImage(file=relative_to_assets("End.png"))
+    button_6=Button(
+        image=button_image_6,
+        borderwidth=0,
+        relief="sunken",
+        bg="#FF9900",
+        activebackground="#FF9900",
+        height=35,
+        width=46)
+    button_6.place(
+        x=178.0,
+        y=443.0,
+    )
     button_image_3= PhotoImage(file=relative_to_assets("Skip to Start.png"))
     button_3=Button(
         image=button_image_3,
@@ -140,21 +145,34 @@ def main():
         x=75.0,
         y=477.0
     )
-    canvas.create_rectangle(
-        238.0,
-        477.0,
-        252.0,
-        499.0,
-        fill="#FFFFFF",
-        outline="")
-
-    canvas.create_rectangle(
-        367.0,
-        481.0,
-        380.0,
-        494.0,
-        fill="#FFFFFF",
-        outline="")
+    
+    button_image_7= PhotoImage(file=relative_to_assets("Audio.png"))
+    button_7=Button(
+        image= button_image_7,
+        borderwidth=0,
+        relief="sunken",
+        bg="#FF9900",
+        activebackground="#FF9900",
+        height=30,
+        width=40)
+    button_7.place(
+        x=235.0,
+        y=470.0
+    )
+    button_image_8=PhotoImage(file=relative_to_assets("Adjust.png"))
+    button_8=Button(
+        image= button_image_8,
+        borderwidth=0,
+        relief="sunken",
+        bg="#FF9900",
+        activebackground="#FF9900",
+        height=30,
+        width=40
+        )
+    button_8.place(
+        x=367.0,
+        y=470.0,
+    )
     def test():
         print ("hello world")
 
@@ -198,14 +216,12 @@ def main():
         46.0,
         fill="#3F3F3F",
         outline="")
-
-    canvas.create_rectangle(
+    image_image_2=PhotoImage(file=relative_to_assets("Search.png"))
+    image_2=canvas.create_image(
         219.0,
-        414.0,
-        234.0,
-        432.0,
-        fill="#FFFFFF",
-        outline="")
+        420.0,
+        image=image_image_2
+        )
 
    
     window.resizable(False, False)
