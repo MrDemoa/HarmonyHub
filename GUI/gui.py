@@ -3,28 +3,36 @@
 # https://github.com/ParthJadhav/Tkinter-Designer
 
 
+import os
 from pathlib import Path
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage , Listbox,Scrollbar,Menubutton,Menu,filedialog
 
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\ACER\Desktop\File C\HarmonyHub\GUI\assets\frame0")
 
-
+def load_music():
+                folder_path = filedialog.askdirectory()
+                if folder_path:
+                    for file in os.listdir(folder_path):
+                        if file.endswith(".mp3"):  # or any other music file format
+                            Listbox_1.insert('end', file)
+                else:
+                    print("No folder selected.")   
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
-def main():
+def main():  
+    
     window = Tk()
     window.title("HarmonyHub")
 
     window.geometry("700x500")
     window.configure(bg = "#FFFFFF")
-
-
+ 
     canvas = Canvas(
         window,
         bg = "#FFFFFF",
@@ -34,7 +42,7 @@ def main():
         highlightthickness = 0,
         relief = "ridge"
     )
-
+    global Listbox_1
     canvas.place(x = 0, y = 0)
     canvas.create_rectangle(
         0.0,
@@ -67,6 +75,26 @@ def main():
         437.0,
         fill="#313131",
         outline="")
+    
+    Listbox_1 = Listbox(window, bg="#D9D9D9", fg="#000000", font=("Inter ExtraBold", 10))
+    Listbox_1.insert(1, "Song 1")
+    Listbox_1.place(
+        x=208.0,
+        y=47.0,
+        width=170.0,
+        height=350.0
+    )
+    
+    Scrollbar_1 = Scrollbar(window, orient="vertical")
+    Scrollbar_1.config(command=Listbox_1.yview)
+    Listbox_1.config(yscrollcommand=Scrollbar_1.set)
+    Scrollbar_1.place(
+        x=378.0,
+        y=47.0,
+        width=20.0,
+        height=350.0
+    )
+    
     button_image_4=PhotoImage(file=relative_to_assets("Circled Play.png"))
     
     button_4=Button(
@@ -173,14 +201,29 @@ def main():
         x=367.0,
         y=470.0,
     )
-    def test():
-        print ("hello world")
-
+    button_image_9=PhotoImage(file=relative_to_assets("Menu.png"))
+    button_9=Menubutton(
+        image= button_image_9,
+        borderwidth=0,
+        relief="sunken",
+        bg="#313131",
+        activebackground="#FF9900",
+        height=20,
+        width=40
+        )
+    button_9.place(
+        x=660.0,
+        y=410.0,
+    )
+    button_9.menu=Menu(button_9,tearoff = False)
+    button_9["menu"]=button_9.menu
+    button_9.menu.add_command(label="Select Folder")
+    
+    
     button_image_1=PhotoImage(file=relative_to_assets("Pause Button.png"))
 
     button_1=Button(
         image=button_image_1,
-        command=test,
         borderwidth=0,
         relief="sunken",
         bg="#FF9900",
@@ -222,9 +265,11 @@ def main():
         420.0,
         image=image_image_2
         )
-
-   
+    
     window.resizable(False, False)
     window.mainloop()
+
+    
 if __name__ == "__main__":
     main()
+   
