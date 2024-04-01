@@ -6,8 +6,10 @@ import sys
 sys.path.append(r"C:\Users\ACER\Desktop\File C\HarmonyHub\Function")
 from pathlib import Path
 from BLL import BusinessLogic
+from DAL import DataAccess
 from tkinter import Tk  # Import the Tk class
 from tkinter import Canvas, Entry, Text, Button, PhotoImage, Listbox, Scrollbar, Menubutton, Menu, filedialog
+import asyncio
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\ACER\Desktop\File C\HarmonyHub\GUI\assets\frame0")
@@ -21,7 +23,7 @@ class Presentation:
         self.window.title("HarmonyHub")
         self.window.geometry("700x500")
         self.window.configure(bg="#FFFFFF")
-        # self.data_access = DataAccess()
+        self.data_access = DataAccess()
         self.business_logic = BusinessLogic()
        
         self.canvas = Canvas(
@@ -67,9 +69,9 @@ class Presentation:
             fill="#313131",
             outline="")
         
-        Listbox_1 = Listbox(self.window, bg="#D9D9D9", fg="#000000", font=("Inter ExtraBold", 10))
-        Listbox_1.insert(1, "Song 1")
-        Listbox_1.place(
+        song_listbox = Listbox(self.window, bg="#D9D9D9", fg="#000000", font=("Inter ExtraBold", 10))
+        
+        song_listbox.place(
             x=208.0,
             y=47.0,
             width=170.0,
@@ -77,8 +79,8 @@ class Presentation:
         )
         
         Scrollbar_1 = Scrollbar(self.window, orient="vertical")
-        Scrollbar_1.config(command=Listbox_1.yview)
-        Listbox_1.config(yscrollcommand=Scrollbar_1.set)
+        Scrollbar_1.config(command=song_listbox.yview)
+        song_listbox.config(yscrollcommand=Scrollbar_1.set)
         Scrollbar_1.place(
             x=378.0,
             y=47.0,
