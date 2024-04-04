@@ -1,5 +1,6 @@
 import asyncio
 from shazamio import Shazam, Serialize
+
 class DataAccess:
     def __init__(self):
         self.shazamio = Shazam()

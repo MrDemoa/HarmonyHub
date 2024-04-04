@@ -1,0 +1,7 @@
+1. Trước tiên chúng ta sẽ tạo ra một máy chủ bằng cách mở một socket - Socket()
+2. Sau đó chúng ta sẽ liên kết nó với một host hoặc một máy và một port - Bind()
+3. Tiếp theo server sẽ bắt đầu lắng nghe trên port đó - Listen()
+4. Yêu cầu kết nối từ client được gửi tới server - Connect()
+5. Server sẽ accept yêu cầu từ client và sau đó kết nối được thiết lập - Accept()
+6. Bây giờ cả hai đều có thể gửi và nhận tin tại thời điểm đó - Read() / Write()
+7. Và cuối cùng khi hoàn thành chúng có thể đóng kết nối - Close()

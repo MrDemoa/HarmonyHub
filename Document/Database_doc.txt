@@ -1,0 +1,45 @@
+Entities and Attributes for Music Streaming App
+
+//Người dùng
+1. User: Stores information about registered users.
+UserID (Primary Key): It is a unique Identifier for each user.
+Username: Username of the user.
+Email: Email of the user.
+Password: Password of the user.
+
+//Nghệ sĩ
+2. Artist: Contains details about music artists.
+ArtistID (Primary Key): Unique Identifier for each artist.
+Name: Name of the artist.
+Genre: Genre of the artist.
+
+//Album của nghệ sĩ
+3. Album: Represents music albums.
+AlbumID (Primary Key): Unique Identifier for each album.
+Title: Title of the album.
+ArtistID (Foreign Key): Reference to the artist.
+Genre: Genre of the album.
+Release Date: Release date of the album.
+
+//thông tin bài hát
+4. Track: Stores details about individual songs.
+TrackID (Primary Key): Unique Identifier for each track.
+track
+Title: Title of the track.
+ArtistID (Foreign Key): Reference to the artist.
+AlbumID (Foreign Key): Reference to the album.
+Duration: Duration of the track.
+Release Date: Release date of the track.
+
+//danh sách phát của người dùng 
+5. Playlist: Represents a collection of tracks curated by a user.
+PlaylistID (Primary Key): Unique Identifier for each playlist.
+UserID (Foreign Key): Reference to the user.
+Title: Title of the playlist.
+Creation Date: Creation date of the playlist.
+
+//Các bài hát yêu thích 
+6. Like: Tracks the likes or favorites of users on tracks.
+LikeID (Primary Key): Unique Identifier for each like.
+UserID (Foreign Key): Reference to the user.
+TrackID (Foreign Key): Reference to the track.
