@@ -4,7 +4,7 @@ import socket
 import os
 import time
 from pygame import mixer
-
+from pydub import AudioSegment
 #
 mixer.init()
 
@@ -23,6 +23,8 @@ client = socket.socket()
 client.connect(("localhost", 6767)) #lắng nghe ở cổng 6767
 
 #Nhập vào tên file 
+# Xác định đường dẫn cho file audio trong thư mục của project
+#project_directory = os.path.dirname(os.path.abspath(__file__))
 project_directory = "E:\\Y3\\HK2-23_24\\MNM\\BT\\HarmonyHub\\SocketTest\\resource\\"
 filename = project_directory + input("Enter a filename ")
 
@@ -44,5 +46,13 @@ temp_file_path = os.path.join(project_directory, "temp_audio.mp3")
 with open(temp_file_path, 'wb') as temp_file:
     temp_file.write(data)
 
-play_audio(temp_file_path)
+# Chuyển mp3 sang wav
+def convert_mp3_to_wav(mp3_file, wav_file):
+    # Load file MP3
+    audio = AudioSegment.from_mp3(mp3_file)
+    # Chuyển đổi sang WAV và lưu lại
+    audio.export(wav_file, format="wav")
+
+wav_file = "output.wav"
+play_audio(temp_file_path, wav_file)
 time.sleep(300)

@@ -5,7 +5,7 @@ import os
 from pygame import mixer
 mixer.init()
 
-host = '192.168.221.183'
+host = '192.168.113.183'
 port = 6767
 
 # Mở socket ở sever 
@@ -13,6 +13,7 @@ sever = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 #kết nối sever tới host/port
 sever.bind((host, port))
+print("HOST IN SEVER: " + host)
 
 #sever bắt đầu lắng nghe trên port đó
 sever.listen(1)
