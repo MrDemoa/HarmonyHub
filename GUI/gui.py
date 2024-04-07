@@ -3,7 +3,8 @@
 # https://github.com/ParthJadhav/Tkinter-Designer
 
 import sys
-sys.path.append(r"C:\Users\ACER\Desktop\File C\HarmonyHub\Function")
+sys.path.append(r"C:\Users\ACER\Desktop\File C\HarmonyHub\BLL")
+sys.path.append(r"C:\Users\ACER\Desktop\File C\HarmonyHub\DAL")
 from pathlib import Path
 from BLL import BusinessLogic
 from DAL import DataAccess
