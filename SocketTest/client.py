@@ -16,19 +16,32 @@ def play_audio(data):
     mixer.music.play()
 
 
-#Tạo socket ở client
-client = socket.socket()
+# #Tạo socket ở client
+# client = socket.socket()
 
-#Tạo kết nối với sever
-client.connect(("localhost", 6767)) #lắng nghe ở cổng 6767
+# #Tạo kết nối với sever
+# client.connect(("192.168.3.115", 6767)) #lắng nghe ở cổng 6767
 
-#Nhập vào tên file 
-# Xác định đường dẫn cho file audio trong thư mục của project
-#project_directory = os.path.dirname(os.path.abspath(__file__))
-project_directory = "E:\\Y3\\HK2-23_24\\MNM\\BT\\HarmonyHub\\SocketTest\\resource\\"
-filename = project_directory + input("Enter a filename ")
+# Server address and port
+SERVER_IP = "192.168.3.115"  # Replace with the IP of the server PC on your LAN
+SERVER_PORT = 6767
 
-#Gửi tên file cho server
+# Connect to the server
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect((SERVER_IP, SERVER_PORT))
+
+
+# #Nhập vào tên file 
+# # Xác định đường dẫn cho file audio trong thư mục của project
+# #project_directory = os.path.dirname(os.path.abspath(__file__))
+# project_directory = "C:\\Users\\ACER\\Desktop\\File C\\HarmonyHub\\SocketTest\\resource\\"
+# filename = project_directory + input("Enter a filename ")
+
+# #Gửi tên file cho server
+# client.send(filename.encode())
+
+# Input filename from the user
+filename = input("Enter the filename: ")
 client.send(filename.encode())
 
 # Nhận dữ liệu từ server và lưu vào file audio
@@ -41,18 +54,22 @@ while True:
 
 client.close()
 
-# Tạo một file tạm thời để lưu dữ liệu âm thanh từ máy chủ
+# # Tạo một file tạm thời để lưu dữ liệu âm thanh từ máy chủ
+# temp_file_path = os.path.join(project_directory, "temp_audio.mp3")
+# with open(temp_file_path, 'wb') as temp_file:
+#     temp_file.write(data)
+
+# play_audio(temp_file_path)
+# time.sleep(300)
+
+# Write the received data to a temporary audio file
+project_directory = "C:\\Users\\ACER\\Desktop\\File C\\HarmonyHub\\SocketTest\\resource\\"
 temp_file_path = os.path.join(project_directory, "temp_audio.mp3")
 with open(temp_file_path, 'wb') as temp_file:
     temp_file.write(data)
 
-# Chuyển mp3 sang wav
-def convert_mp3_to_wav(mp3_file, wav_file):
-    # Load file MP3
-    audio = AudioSegment.from_mp3(mp3_file)
-    # Chuyển đổi sang WAV và lưu lại
-    audio.export(wav_file, format="wav")
+# Play the received audio
+play_audio(temp_file_path)
 
-wav_file = "output.wav"
-play_audio(temp_file_path, wav_file)
+# Wait for 5 minutes (300 seconds)
 time.sleep(300)

@@ -5,7 +5,7 @@ import os
 from pygame import mixer
 mixer.init()
 
-host = '192.168.113.183'
+host = '192.168.113.249'
 port = 6767
 
 # Mở socket ở sever 
@@ -39,10 +39,10 @@ def send_audio(filename):
         client.send("File not found".encode())
 
 #Nhận tên file do client gửi tới
-filename = client.recv(1024)
-print("FILENAME FROM SEVER: " + filename.decode())
+filename = client.recv(1024).decode()
+print("FILENAME FROM SEVER: " + filename)
 
-project_directory = "E:\\Y3\\HK2-23_24\\MNM\\BT\\HarmonyHub\\SocketTest\\resource\\"
+project_directory = "C:\\Users\\ACER\\Desktop\\File C\\HarmonyHub\\SocketTest\\resource\\"
 audio_path = os.path.join(project_directory, filename)
 
 # Send audio data to the client
