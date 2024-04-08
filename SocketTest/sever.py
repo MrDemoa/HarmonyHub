@@ -1,19 +1,41 @@
 import socket 
 import os
-
+from zeroconf import ServiceInfo, Zeroconf
 # Initialize Pygame mixer
 from pygame import mixer
 mixer.init()
 
-host = '192.168.3.115'
-port = 6767
+def get_wifi_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
 
+host_ip = get_wifi_ip()
+port = 6767
+info = ServiceInfo(
+    "_http._tcp.local.",
+    "My Service._http._tcp.local.",
+    addresses=[socket.inet_aton(host_ip)],  # Replace with server's IP
+    port=port,  # Replace with server's port
+    properties={'property_name': 'property_value'},
+    server="my_service.local.",
+)
+zeroconf = Zeroconf()
+print("Registration of a service...")
+zeroconf.register_service(info)
 # Mở socket ở sever 
 sever = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 #kết nối sever tới host/port
-sever.bind((host, port))
-print("HOST IN SEVER: " + host)
+sever.bind((host_ip, port))
+print("HOST IN SEVER: " + host_ip)
 
 #sever bắt đầu lắng nghe trên port đó
 sever.listen(1)
