@@ -46,7 +46,7 @@ class MyListener:
 
             client.close()
 
-# Write the received data to a temporary audio file
+            # Write the received data to a temporary audio file
             project_directory = "C:\\Users\\ACER\\Desktop\\File C\\HarmonyHub\\SocketTest\\resource\\"
             temp_file_path = os.path.join(project_directory, "temp_audio.mp3")
             with open(temp_file_path, 'wb') as temp_file:
@@ -57,7 +57,8 @@ class MyListener:
 
             # Wait for 5 minutes (300 seconds)
             time.sleep(300)
-
+    def update_service(self, zeroconf, type, name):
+        print("Service %s updated" % (name,))
 zeroconf = Zeroconf()
 listener = MyListener()
 browser = ServiceBrowser(zeroconf, "_http._tcp.local.", listener)
