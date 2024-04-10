@@ -4,10 +4,22 @@ import socket
 import os
 import time
 from pygame import mixer
-from pydub import AudioSegment
+from zeroconf import ZeroconfServiceTypes
+import threading
+
 #
 mixer.init()
+# Class to handle user input in a separate thread
+class InputThread(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.filename = None
 
+    def run(self):
+        self.filename = input("Enter the filename: ")
+
+    def get_filename(self):
+        return self.filename
 class MyListener:
     # Function to play audio
     def play_audio(self,data):
@@ -31,34 +43,54 @@ class MyListener:
             # Connect to the server
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             client.connect((SERVER_IP, SERVER_PORT))
+            # Initialize the InputThread instance
+            input_thread = InputThread()
+            input_thread.start()
+            # Wait for the InputThread to finish
+            input_thread.join()
+            # Get the filename from the user
+            filename = input_thread.get_filename()
+            
 
-            # Input filename from the user
-            filename = input("Enter the filename: ")
-            client.send(filename.encode())
+            if filename:
+                client.send(filename.encode())
+                # Rest of your code
 
-            # Nhận dữ liệu từ server và lưu vào file audio
-            data = b''
-            while True:
-                chunk = client.recv(1024)
-                if not chunk:
-                    break
-                data += chunk
+                # Nhận dữ liệu từ server và lưu vào file audio
+                data = b''
+                while True:
+                    chunk = client.recv(1024)
+                    if not chunk:
+                        break
+                    data += chunk
 
-            client.close()
+                client.close()
 
-            # Write the received data to a temporary audio file
-            project_directory = "C:\\Users\\ACER\\Desktop\\File C\\HarmonyHub\\SocketTest\\resource\\"
-            temp_file_path = os.path.join(project_directory, "temp_audio.mp3")
-            with open(temp_file_path, 'wb') as temp_file:
-                temp_file.write(data)
+                # Write the received data to a temporary audio file
+                project_directory = "C:\\Users\\ACER\\Desktop\\File C\\HarmonyHub\\SocketTest\\resource\\"
+                temp_file_path = os.path.join(project_directory, "temp_audio.mp3")
+                with open(temp_file_path, 'wb') as temp_file:
+                    temp_file.write(data)
 
-            # Play the received audio
-            self.play_audio(temp_file_path)
+                # Play the received audio
+                self.play_audio(temp_file_path)
 
-            # Wait for 5 minutes (300 seconds)
-            time.sleep(300)
+                # Wait for 5 minutes (300 seconds)
+                time.sleep(300)
+                
     def update_service(self, zeroconf, type, name):
         print("Service %s updated" % (name,))
+
+
+      
 zeroconf = Zeroconf()
 listener = MyListener()
 browser = ServiceBrowser(zeroconf, "_http._tcp.local.", listener)
+
+try:
+    while True:
+        time.sleep(1)
+except KeyboardInterrupt:
+    pass
+finally:
+    zeroconf.close()
