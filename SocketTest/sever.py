@@ -64,8 +64,10 @@ def send_audio(filename):
 filename = client.recv(1024).decode()
 print("FILENAME FROM SEVER: " + filename)
 
-project_directory = "C:\\Users\\Hoang Tuan\Documents\\GitHub\\HarmonyHub\\SocketTest\\resource\\SongList"
-audio_path = os.path.join(project_directory, filename)
+project_directory = os.path.abspath(os.path.dirname(__file__))
+current_directory = os.path.join(project_directory, "resource\\SongList")
+audio_path = os.path.join(current_directory, filename)
+
 
 # Send audio data to the client
 send_audio(audio_path)

@@ -67,8 +67,9 @@ class MyListener:
                 client.close()
 
                 # Write the received data to a temporary audio file
-                project_directory = "C:\\Users\\ACER\\Desktop\\File C\\HarmonyHub\\SocketTest\\resource\\"
-                temp_file_path = os.path.join(project_directory, "temp_audio.mp3")
+                project_directory = os.path.abspath(os.path.dirname(__file__))
+                current_directory = os.path.join(project_directory, "resource")               
+                temp_file_path = os.path.join(current_directory, "temp_audio.mp3")
                 with open(temp_file_path, 'wb') as temp_file:
                     temp_file.write(data)
 
