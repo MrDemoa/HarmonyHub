@@ -1,0 +1,5 @@
+user - done (ko có xóa)
+playlist - done
+track - (đầy đủ chức năng, albumID  được null)
+album - (xóa thì phải xét albumID trong track về null)
+artist - (ko có xóa)

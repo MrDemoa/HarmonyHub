@@ -1,5 +1,6 @@
 import socket 
 import os
+import threading
 from zeroconf import ServiceInfo, Zeroconf
 # Initialize Pygame mixer
 from pygame import mixer
@@ -21,33 +22,75 @@ def get_wifi_ip():
 
 host_ip = get_wifi_ip()
 port = 6767
-info = ServiceInfo(
-    "_http._tcp.local.",
-    "My Service._http._tcp.local.",
-    addresses=[socket.inet_aton(host_ip)],  # Replace with server's IP
-    port=port,  # Replace with server's port
-    properties={'property_name': 'property_value'},
-    server="my_service.local.",
-)
-zeroconf = Zeroconf()
-print("Registration of a service...")
-zeroconf.register_service(info)
-# Mở socket ở sever 
-sever = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# info = ServiceInfo(
+#     "_http._tcp.local.",
+#     "My Service._http._tcp.local.",
+#     addresses=[socket.inet_aton(host_ip)],  # Replace with server's IP
+#     port=port,  # Replace with server's port
+#     properties={'property_name': 'property_value'},
+#     server="my_service.local.",
+# )
+# zeroconf = Zeroconf()
+# print("Registration of a service...")
+# zeroconf.register_service(info)
 
+# # Mở socket ở sever 
+# server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# Create a UDP socket
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+# Broadcast the server's IP address and port
+message = f"{host_ip}:{port}".encode()
+server_socket.sendto(message, ('<broadcast>', 6767))
 #kết nối sever tới host/port
-sever.bind((host_ip, port))
+server_socket.bind((host_ip, port))
 print("HOST IN SEVER: " + host_ip)
 
-#sever bắt đầu lắng nghe trên port đó
-sever.listen(1)
-print("Server listening on port", port)
 
-#chấp nhận yêu cầu kết nối từ client tới sever
-client, address = sever.accept()
 
+# #chấp nhận yêu cầu kết nối từ client tới sever
+# client, address = sever.accept()
+
+#Lưu trữ danh sách các client và nicknames của họ
+clients = []
+nicknames = []
+
+def broadcast(message):
+    for client in clients:
+        client.send(message)
+        
+def handle(client):
+    while True:
+        try:
+            #Nhận dữ liệu từ client
+            message = client.recv(1024)
+            #Gửi dữ liệu đến tất cả các client
+            broadcast(message)
+        except:
+            #Nếu có lỗi, xóa và đóng kết nối với client
+            index = clients.index(client)
+            clients.remove(client)
+            client.close()
+            nickname = nicknames[index]
+            broadcast(f'{nickname} left the chat!'.encode('utf-8'))
+            nicknames.remove(nickname)
+            break
+def receive():
+    while True:
+        client, address = server_socket.accept()
+        print(f"Connected with {str(address)}")
+        client.send('NICK'.encode('utf-8'))
+        nickname = client.recv(1024).decode('utf-8')
+        nicknames.append(nickname)
+        print(f"Nickname of the client is {nickname}")
+        broadcast(f"{nickname} joined the chat!".encode('utf-8'))
+        client.send('Connected to the server!'.encode('utf-8'))
+        thread = threading.Thread(target=handle, args=(client,))
+        thread.start()
+        
+        
 # Function to send audio data
-def send_audio(filename):
+def send_audio(client,filename):
     try:
         # Mở file audio
         with open(filename, 'rb') as file:
@@ -61,7 +104,12 @@ def send_audio(filename):
     except FileNotFoundError:
         # If the file is not found, inform the client
         client.send("File not found".encode())
+        
+#sever bắt đầu lắng nghe trên port đó
+server_socket.listen(1)
+print("Server listening on port", port)
 
+<<<<<<< HEAD
 #Nhận tên file do client gửi tới
 try:
     filename = client.recv(1024).decode()
@@ -72,9 +120,24 @@ print("FILENAME FROM SEVER: " + filename)
 project_directory = os.path.abspath(os.path.dirname(__file__))
 current_directory = os.path.join(project_directory, "resource\\SongList")
 audio_path = os.path.join(current_directory, filename)
+=======
+# Start the receive function in a separate thread to handle client connections
+receive_thread = threading.Thread(target=receive)
+receive_thread.start()
+# while True:
+    
+#     #Nhận tên file do client gửi tới
+#     filename = client.recv(1024).decode()
+#     print("FILENAME FROM SEVER: " + filename)
 
-# Send audio data to the client
-send_audio(audio_path)
+#     project_directory = os.path.abspath(os.path.dirname(__file__))
+#     current_directory = os.path.join(project_directory, "resource\\SongList")
+#     audio_path = os.path.join(current_directory, filename)
+>>>>>>> origin/Server
 
-client.close()
+
+#     # Send audio data to the client
+#     send_audio(audio_path)
+
+#     client.close()
 
