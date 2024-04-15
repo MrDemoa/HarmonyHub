@@ -5,6 +5,8 @@ from zeroconf import ServiceInfo, Zeroconf
 from pygame import mixer
 mixer.init()
 
+
+
 def get_wifi_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -61,11 +63,15 @@ def send_audio(filename):
         client.send("File not found".encode())
 
 #Nhận tên file do client gửi tới
-filename = client.recv(1024).decode()
+try:
+    filename = client.recv(1024).decode()
+except ConnectionResetError:
+    print("Kết nối bị đóng bởi máy chủ.")
 print("FILENAME FROM SEVER: " + filename)
 
-project_directory = "C:\\Users\\Hoang Tuan\Documents\\GitHub\\HarmonyHub\\SocketTest\\resource\\SongList"
-audio_path = os.path.join(project_directory, filename)
+project_directory = os.path.abspath(os.path.dirname(__file__))
+current_directory = os.path.join(project_directory, "resource\\SongList")
+audio_path = os.path.join(current_directory, filename)
 
 # Send audio data to the client
 send_audio(audio_path)

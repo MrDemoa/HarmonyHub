@@ -35,7 +35,7 @@ class MyListener:
             # Input filename from the user
             filename = input("Enter the filename: ")
             client.send(filename.encode())
-
+            time.sleep(5)
             # Nhận dữ liệu từ server và lưu vào file audio
             data = b''
             while True:
@@ -47,8 +47,9 @@ class MyListener:
             client.close()
 
             # Write the received data to a temporary audio file
-            project_directory = "C:\\Users\\ACER\\Desktop\\File C\\HarmonyHub\\SocketTest\\resource\\"
-            temp_file_path = os.path.join(project_directory, "temp_audio.mp3")
+            project_directory = os.path.abspath(os.path.dirname(__file__))
+            current_directory = os.path.join(project_directory, "SocketTest\\resource")
+            temp_file_path = os.path.join(current_directory, "temp_audio.mp3")
             with open(temp_file_path, 'wb') as temp_file:
                 temp_file.write(data)
 
@@ -59,6 +60,8 @@ class MyListener:
             time.sleep(300)
     def update_service(self, zeroconf, type, name):
         print("Service %s updated" % (name,))
+
 zeroconf = Zeroconf()
 listener = MyListener()
 browser = ServiceBrowser(zeroconf, "_http._tcp.local.", listener)
+time.sleep(5)
