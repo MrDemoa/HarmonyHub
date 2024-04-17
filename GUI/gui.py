@@ -4,15 +4,20 @@
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from pathlib import Path
 from DAL.PlayListDAL import PlayListDAL
+import SocketTest.client 
 from tkinter import Tk  # Import the Tk class
 from tkinter import Canvas, Entry, Text, Button, PhotoImage, Listbox, Scrollbar, Menubutton, Menu, filedialog
-import asyncio
+import socket
+import json
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\ACER\Desktop\File C\HarmonyHub\GUI\assets\frame0")
 
+
+        
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
@@ -76,7 +81,8 @@ class Presentation:
             width=170.0,
             height=350.0
         )
-        
+        song_listbox.insert(0, "Song 1")
+        song_listbox.insert(1, "Song 2")
         Scrollbar_1 = Scrollbar(self.window, orient="vertical")
         Scrollbar_1.config(command=song_listbox.yview)
         song_listbox.config(yscrollcommand=Scrollbar_1.set)
@@ -91,7 +97,7 @@ class Presentation:
         
         self.button_4=Button(
             image=self.button_image_4,
-            command=lambda: self.play_list.ping(),
+            command=lambda: self.play_selected_track(),
             borderwidth=0,
             relief="sunken",
             bg="#FF9900",
@@ -258,6 +264,7 @@ class Presentation:
             420.0,
             image=self.image_image_2
             )
+        
     def run(self):
         self.window.resizable(False, False)
         self.window.mainloop()

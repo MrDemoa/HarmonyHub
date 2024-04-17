@@ -1,11 +1,16 @@
 import socket 
 import os
 import threading
-
+import mysql.connector
 # Initialize Pygame mixer
 from pygame import mixer
 mixer.init()
-
+connection = mysql.connector.connect(
+                host='localhost',
+                database='musicdb',
+                user='root',
+                password=''
+            )
 def get_wifi_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -18,7 +23,7 @@ def get_wifi_ip():
         s.close()
     return IP
 
-host_ip = get_wifi_ip()
+host_ip = "localhost"
 port = 6767
 # info = ServiceInfo(
 #     "_http._tcp.local.",
@@ -52,6 +57,21 @@ print("HOST IN SEVER: " + host_ip)
 #Lưu trữ danh sách các client và nicknames của họ
 clients = []
 nicknames = []
+def get_audio_file_path(track_name):
+    # Directory where audio files are stored
+    project_directory = os.getcwd()
+    current_directory = os.path.join(project_directory, "SocketTest\\resource\\SongList")
+    audio_directory = os.path.join(current_directory, filename)
+    
+    # Iterate through files in the audio directory
+    for filename in os.listdir(audio_directory):
+        # Check if the filename matches the track name
+        if filename.startswith(track_name) and filename.endswith(".mp3"):
+            # If found, return the full file path
+            return os.path.join(audio_directory, filename)
+    
+    # If no matching file found, return None
+    return None
 def disconnect(client):
     if client in clients:
         clients.remove(client)
@@ -131,17 +151,25 @@ def receive():
         filename = client.recv(1024).decode()
         print("FILENAME FROM SEVER: " + filename)
 
-        project_directory = os.getcwd()
-        current_directory = os.path.join(project_directory, "SocketTest\\resource\\SongList")
-        audio_path = os.path.join(current_directory, filename)
+        # project_directory = os.getcwd()
+        # current_directory = os.path.join(project_directory, "SocketTest\\resource\\SongList")
+        # audio_path = os.path.join(current_directory, filename)
+        # print("AUDIO PATH: " + audio_path)
+
+        # # Send audio data to the client
+        # send_audio(client,audio_path)
+        # print("Audio data sent to the client")
+        # thread=threading.Thread(target=handle,args=(client,))
+        # thread.start()
+        audio_path = get_audio_file_path(filename)
         print("AUDIO PATH: " + audio_path)
 
-        # Send audio data to the client
-        send_audio(client,audio_path)
-        print("Audio data sent to the client")
-        thread=threading.Thread(target=handle,args=(client,))
-        thread.start()
-        
+        if audio_path:
+            send_audio(client, audio_path)
+            print("Audio data sent to the client")
+        else:
+            print("Track not found")
+            client.send("Track not found".encode())
        
 #sever bắt đầu lắng nghe trên port đó
 server_socket.listen(5)

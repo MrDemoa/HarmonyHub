@@ -1,7 +1,7 @@
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+print(sys.path)
 
 from DAL.AlbumDAL import AlbumDAL
 
@@ -15,5 +15,5 @@ class AlbumBLL:
     def delete(id):
         AlbumDAL.delete(id)
 
-    def update(Album_dto):
+    def update(album_dto):
         AlbumDAL.update(album_dto)
