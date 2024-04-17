@@ -7,7 +7,7 @@ from DAL.ConnectDB import ConnectSQL
 from DTO.PlayListDTO import PlayListDTO
 
 class PlayListDAL:
-
+    
     con = ConnectSQL.connect_mysql()
 
     def getAllData():
@@ -45,3 +45,6 @@ class PlayListDAL:
         cursor.execute("update playlist set userID = %s, title = %s, creationdate = %s where playlistID = %s", (playlist_dto.userID, playlist_dto.title, playlist_dto.creationdate, playlist_dto.playlistID))
         con.commit
         cursor.close()
+    
+    def ping(self):
+        print("pong")
