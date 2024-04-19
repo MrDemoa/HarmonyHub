@@ -16,9 +16,23 @@ class ClientListener:
         self.host_ip = "localhost"
         self.port = 6767
         
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_socket.connect((self.host_ip, self.port))  
-
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.client_socket.connect((self.host_ip, self.port))  
+            response = self.client_socket.recv(1024).decode()
+            print("Received response from server:", response)
+            # make a handshake with the server
+            self.client_socket.send("ACK".encode())
+            # Send a nickname to the server
+            self.client_socket.send("MrDemo".encode())
+        except socket.timeout as e:
+            print("A timeout error occurred while trying to connect to the server:", str(e))
+        except OSError as e:
+            print("An error occurred while trying to receive data:", str(e))
+            return
+        except Exception as e:
+            print("An error occurred while trying to connect to the server:", str(e))
+            return    
     
     
         # response = self.client_socket.recv(1024).decode()
@@ -111,6 +125,7 @@ class ClientListener:
 
     # Function to play audio
     def play_audio(self,data):
+        try:
             print("ĐANG GỌI HÀM PLAY AUDIO")
             mixer.music.load(data)
             mixer.music.set_volume(0.7) 

@@ -211,9 +211,6 @@ class Server:
             # Chuyển đổi records thành danh sách dictionaries
             records_json = []
             for record in data_track:
-                if not record:
-                    break
-                else:
                     record_dict = {
                         "column1": record[0],  # Thay "column1", "column2",... bằng tên cột thực tế từ bảng của bạn
                         "column2": record[1],
