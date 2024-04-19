@@ -29,7 +29,7 @@ class Presentation:
         self.window.geometry("700x500")
         self.window.configure(bg="#FFFFFF")
         self.play_list = PlayListDAL()
-        self.client = ClientListener()
+        #self.client = ClientListener()
        
         self.canvas = Canvas(
                 self.window,
@@ -267,10 +267,10 @@ class Presentation:
             )
         
     def run(self):
-        receive_thread = threading.Thread(target=self.client.receive)
-        receive_thread.start()
         self.window.resizable(False, False)
         self.window.mainloop()
+        # receive_thread = threading.Thread(target=self.client.receive)
+        # receive_thread.start()
     
 if __name__ == "__main__":
     app = Presentation()

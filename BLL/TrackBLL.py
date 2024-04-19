@@ -6,8 +6,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from DAL.TrackDAL import TrackDAL
 
 class TrackBLL:
-    def getAllData():
-        TrackDAL.getAllData()
+    def getAllData(self):
+        return TrackDAL.getAllData(self)
 
     def insert(track_dto):
         TrackDAL.insert(track_dto)
