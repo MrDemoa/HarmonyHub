@@ -3,18 +3,19 @@
 # https://github.com/ParthJadhav/Tkinter-Designer
 import os
 import sys
+import threading
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pathlib import Path
 from DAL.PlayListDAL import PlayListDAL
-import SocketTest.client 
+from SocketTest.client import ClientListener 
 from tkinter import Tk  # Import the Tk class
 from tkinter import Canvas, Entry, Text, Button, PhotoImage, Listbox, Scrollbar, Menubutton, Menu, filedialog
 import socket
 import json
 
-OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\ACER\Desktop\File C\HarmonyHub\GUI\assets\frame0")
+OUTPUT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ASSETS_PATH = os.path.join(OUTPUT_PATH, "GUI\\assets\\frame0")
 
 
         
@@ -28,7 +29,7 @@ class Presentation:
         self.window.geometry("700x500")
         self.window.configure(bg="#FFFFFF")
         self.play_list = PlayListDAL()
-        
+        self.client = ClientListener()
        
         self.canvas = Canvas(
                 self.window,
@@ -266,6 +267,8 @@ class Presentation:
             )
         
     def run(self):
+        receive_thread = threading.Thread(target=self.client.receive)
+        receive_thread.start()
         self.window.resizable(False, False)
         self.window.mainloop()
     
