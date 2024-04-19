@@ -7,7 +7,8 @@ from pygame import mixer
 mixer.init()
 class Server:
     def __init__(self):
-        self.host_ip = self.get_wifi_ip()
+        #self.host_ip = self.get_wifi_ip()
+        self.host_ip = "localhost"
         self.port = 6767
  
         # Mở socket ở sever 

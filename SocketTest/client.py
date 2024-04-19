@@ -11,7 +11,7 @@ mixer.init()
 class ClientListener:
     
     def __init__(self):
-        self.host_ip = "192.168.3.115"
+        self.host_ip = "localhost"
         self.port = 6767
         
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
