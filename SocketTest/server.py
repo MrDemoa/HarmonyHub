@@ -32,14 +32,14 @@ class Server:
         # Directory where audio files are stored
         project_directory = os.getcwd()
         current_directory = os.path.join(project_directory, "SocketTest\\resource\\SongList")
-        audio_directory = os.path.join(current_directory, filename)
+        
         
         # Iterate through files in the audio directory
-        for filename in os.listdir(audio_directory):
+        for filename in os.listdir(current_directory):
             # Check if the filename matches the track name
             if filename.startswith(track_name) and filename.endswith(".mp3"):
                 # If found, return the full file path
-                return os.path.join(audio_directory, filename)
+                return os.path.join(current_directory, filename)
         
         # If no matching file found, return None
         return None
