@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from pathlib import Path
 from DAL.PlayListDAL import PlayListDAL
 from SocketTest.client import ClientListener 
-from tkinter import Frame, Label, Tk  # Import the Tk class
+from tkinter import Frame, Label, Tk, ttk  # Import the Tk class
 from tkinter import Canvas, Entry, Text, Button, PhotoImage, Listbox, Scrollbar, Menubutton, Menu, filedialog
 from PIL import Image, ImageTk
 import socket
@@ -30,11 +30,7 @@ class Presentation:
         self.window.geometry("700x500")
         self.window.configure(bg="#FFFFFF")
         self.play_list = PlayListDAL()
-<<<<<<< HEAD
-        #self.client = ClientListener()
-=======
         self.window.after(1000, self.start_client)
->>>>>>> origin/Server
        
         self.canvas = Canvas(
                 self.window,
@@ -78,8 +74,19 @@ class Presentation:
             437.0,
             fill="#313131",
             outline="")
+        
+        # Create a new style
+        style = ttk.Style()
+        style.configure("TabPanel.TNotebook", background="#404040")
+        style.configure("TNotebook.Tab",padding =[10,10] )
+        #Pannel
+        Pannel = ttk.Notebook(self.window,style="TabPanel.TNotebook")
+        
+        #Playlist frame
+        frame_playlist = Frame(Pannel,bg="#787676",relief="flat")
+        frame_playlist.place(x=208.0, y=2.0, width=472.0, height=405.0)
         # List of songs 
-        song_listbox = Listbox(self.window, 
+        song_listbox = Listbox(frame_playlist, 
                                bg="#787676", 
                                fg="#FFFFFF", 
                                font=("Helvetica", 14), 
@@ -88,15 +95,29 @@ class Presentation:
                                relief="flat",
                                highlightthickness=0)
         
-        song_listbox.place(
-            x=208.0,
-            y=47.0,
-            width=472.0,
-            height=360.0,
-        
-        )
+        song_listbox.pack(fill="both", expand=True)
         song_listbox.insert(0, "Song 1")
         song_listbox.insert(1, "Song 2")
+        #Album frame
+        frame_album = Frame(Pannel,bg="#787676",relief="flat")
+        frame_album.place(x=208.0, y=2.0, width=472.0, height=405.0)
+        #List of albums
+        album_listbox = Listbox(frame_album, 
+                                bg="#787676", 
+                                fg="#FFFFFF", 
+                                font=("Helvetica", 14), 
+                                selectbackground="#FF9900", 
+                                selectforeground="#FFFFFF",
+                                relief="flat",
+                                highlightthickness=0)
+        album_listbox.pack(fill="both", expand=True)
+        album_listbox.insert(0, "Album 1")
+        #Add frame to pannel
+        Pannel.add(frame_playlist, text="Playlist")
+        Pannel.add(frame_album, text="Album")
+        
+        Pannel.place(x=208.0, y=2.0, width=472.0, height=405.0)
+        # Scrollbar
         Scrollbar_1 = Scrollbar(self.window, orient="vertical")
         Scrollbar_1.config(command=song_listbox.yview)
         song_listbox.config(yscrollcommand=Scrollbar_1.set)
@@ -284,21 +305,13 @@ class Presentation:
         # Search icon
         self.image_image_2=PhotoImage(file=relative_to_assets("Search.png"))
         self.image_2=self.canvas.create_image(
-            219.0,
-            420.0,
+            222.0,
+            422.0,
             image=self.image_image_2
             )
-        
+        Search_field = Entry(self.window,bd=0, bg="#E8E8E8", font=("Helvetica", 12))
+        Search_field.place(x=244, y=413, width=200, height=18)
     def run(self):
-<<<<<<< HEAD
-        self.window.resizable(False, False)
-        self.window.mainloop()
-        # receive_thread = threading.Thread(target=self.client.receive)
-        # receive_thread.start()
-    
-=======
-        # receive_thread = threading.Thread(target=self.client.receive)
-        # receive_thread.start()
         self.window.resizable(False, False)
         self.window.mainloop()
     def run_client(self):
@@ -306,7 +319,6 @@ class Presentation:
     def start_client(self):
         self.client_thread = threading.Thread(target=self.run_client)
         self.client_thread.start()    
->>>>>>> origin/Server
 if __name__ == "__main__":
     app = Presentation()
     app.run()

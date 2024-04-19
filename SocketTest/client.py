@@ -125,7 +125,6 @@ class ClientListener:
 
     # Function to play audio
     def play_audio(self,data):
-        try:
             print("ĐANG GỌI HÀM PLAY AUDIO")
             mixer.music.load(data)
             mixer.music.set_volume(0.7) 
