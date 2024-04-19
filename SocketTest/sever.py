@@ -109,18 +109,7 @@ def send_audio(client,filename):
 server_socket.listen(1)
 print("Server listening on port", port)
 
-<<<<<<< HEAD
-#Nhận tên file do client gửi tới
-try:
-    filename = client.recv(1024).decode()
-except ConnectionResetError:
-    print("Kết nối bị đóng bởi máy chủ.")
-print("FILENAME FROM SEVER: " + filename)
 
-project_directory = os.path.abspath(os.path.dirname(__file__))
-current_directory = os.path.join(project_directory, "resource\\SongList")
-audio_path = os.path.join(current_directory, filename)
-=======
 # Start the receive function in a separate thread to handle client connections
 receive_thread = threading.Thread(target=receive)
 receive_thread.start()
@@ -133,7 +122,7 @@ receive_thread.start()
 #     project_directory = os.path.abspath(os.path.dirname(__file__))
 #     current_directory = os.path.join(project_directory, "resource\\SongList")
 #     audio_path = os.path.join(current_directory, filename)
->>>>>>> origin/Server
+
 
 
 #     # Send audio data to the client

@@ -52,19 +52,6 @@ mixer.init()
 #             filename = input_thread.get_filename()
             
 
-<<<<<<< HEAD
-            # Input filename from the user
-            filename = input("Enter the filename: ")
-            client.send(filename.encode())
-            time.sleep(5)
-            # Nhận dữ liệu từ server và lưu vào file audio
-            data = b''
-            while True:
-                chunk = client.recv(1024)
-                if not chunk:
-                    break
-                data += chunk
-=======
 #             if filename:
 #                 client.send(filename.encode())
 #                 # Rest of your code
@@ -76,40 +63,21 @@ mixer.init()
 #                     if not chunk:
 #                         break
 #                     data += chunk
->>>>>>> origin/Server
+
 
 #                 client.close()
 
-<<<<<<< HEAD
-            # Write the received data to a temporary audio file
-            project_directory = os.path.abspath(os.path.dirname(__file__))
-            current_directory = os.path.join(project_directory, "SocketTest\\resource")
-            temp_file_path = os.path.join(current_directory, "temp_audio.mp3")
-            with open(temp_file_path, 'wb') as temp_file:
-                temp_file.write(data)
-=======
 #                 # Write the received data to a temporary audio file
 #                 project_directory = os.path.abspath(os.path.dirname(__file__))
 #                 current_directory = os.path.join(project_directory, "resource")               
 #                 temp_file_path = os.path.join(current_directory, "temp_audio.mp3")
 #                 with open(temp_file_path, 'wb') as temp_file:
 #                     temp_file.write(data)
->>>>>>> origin/Server
 
 #                 # Play the received audio
 #                 self.play_audio(temp_file_path)
 
-<<<<<<< HEAD
-            # Wait for 5 minutes (300 seconds)
-            time.sleep(300)
-    def update_service(self, zeroconf, type, name):
-        print("Service %s updated" % (name,))
 
-zeroconf = Zeroconf()
-listener = MyListener()
-browser = ServiceBrowser(zeroconf, "_http._tcp.local.", listener)
-time.sleep(5)
-=======
 #                 # Wait for 5 minutes (300 seconds)
 #                 time.sleep(300)
                 
@@ -132,12 +100,12 @@ time.sleep(5)
 
 # Create a UDP socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-client_socket.bind(("", 6767))
+client_socket.bind(("192.168.7.249", 6767))
 
-# Listen for broadcast messages
-data, addr = client_socket.recvfrom(1024)
+# # Listen for broadcast messages
+# data, addr = client_socket.recvfrom(1024)
 
-# Extract server's IP address and port from the broadcast message
-server_ip, server_port = data.decode().split(':')
+# # Extract server's IP address and port from the broadcast message
+# server_ip, server_port = data.decode().split(':')
 client_socket.connect((server_ip, int(server_port)))
->>>>>>> origin/Server
+
