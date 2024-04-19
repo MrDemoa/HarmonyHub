@@ -78,8 +78,9 @@ class ClientListener:
                 self.client_socket.close()
                 break            
     # Function to play audio
-    def play_audio(data):
+    def play_audio(self,data):
             print("ĐANG GỌI HÀM PLAY AUDIO")
             mixer.music.load(data)
             mixer.music.set_volume(0.7) 
             mixer.music.play()
+client = ClientListener()

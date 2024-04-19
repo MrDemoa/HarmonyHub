@@ -7,7 +7,7 @@ from pygame import mixer
 mixer.init()
 class Server:
     def __init__(self):
-        self.host_ip = "localhost"
+        self.host_ip = self.get_wifi_ip()
         self.port = 6767
  
         # Mở socket ở sever 
@@ -27,7 +27,7 @@ class Server:
         # Start the receive function in a separate thread to handle client connections
         self.receive_thread = threading.Thread(target=self.receive)
         self.receive_thread.start()
-    def get_audio_file_path(track_name):
+    def get_audio_file_path(self,track_name):
         # Directory where audio files are stored
         project_directory = os.getcwd()
         current_directory = os.path.join(project_directory, "SocketTest\\resource\\SongList")
@@ -53,7 +53,7 @@ class Server:
             return True
         return False
     # Function to send audio data
-    def send_audio(client,filename):
+    def send_audio(self,client,filename):
         try:
             # Mở file audio
             with open(filename, 'rb') as file:
@@ -140,7 +140,7 @@ class Server:
             else:
                 print("Track not found")
                 client.send("Track not found".encode())
-    def get_wifi_ip():
+    def get_wifi_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             # doesn't even have to be reachable
@@ -152,7 +152,7 @@ class Server:
             s.close()
         return IP    
     
-
+server = Server()
     
 
     
