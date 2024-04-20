@@ -3,16 +3,23 @@
 # https://github.com/ParthJadhav/Tkinter-Designer
 import os
 import sys
+import threading
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from pathlib import Path
 from DAL.PlayListDAL import PlayListDAL
-from tkinter import Tk  # Import the Tk class
+from SocketTest.client import ClientListener 
+from tkinter import Frame, Label, Tk, ttk  # Import the Tk class
 from tkinter import Canvas, Entry, Text, Button, PhotoImage, Listbox, Scrollbar, Menubutton, Menu, filedialog
-import asyncio
+from PIL import Image, ImageTk
+import socket
+import json
 
-OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\ACER\Desktop\File C\HarmonyHub\GUI\assets\frame0")
+OUTPUT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ASSETS_PATH = os.path.join(OUTPUT_PATH, "GUI\\assets\\frame0")
 
+
+        
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
@@ -23,7 +30,7 @@ class Presentation:
         self.window.geometry("700x500")
         self.window.configure(bg="#FFFFFF")
         self.play_list = PlayListDAL()
-        
+        self.window.after(1000, self.start_client)
        
         self.canvas = Canvas(
                 self.window,
@@ -68,30 +75,64 @@ class Presentation:
             fill="#313131",
             outline="")
         
-        song_listbox = Listbox(self.window, bg="#D9D9D9", fg="#000000", font=("Inter ExtraBold", 10))
+        # Create a new style
+        style = ttk.Style()
+        style.configure("TabPanel.TNotebook", background="#404040")
+        style.configure("TNotebook.Tab",padding =[10,10] )
+        #Pannel
+        Pannel = ttk.Notebook(self.window,style="TabPanel.TNotebook")
         
-        song_listbox.place(
-            x=208.0,
-            y=47.0,
-            width=170.0,
-            height=350.0
-        )
+        #Playlist frame
+        frame_playlist = Frame(Pannel,bg="#787676",relief="flat")
+        frame_playlist.place(x=208.0, y=2.0, width=472.0, height=405.0)
+        # List of songs 
+        song_listbox = Listbox(frame_playlist, 
+                               bg="#787676", 
+                               fg="#FFFFFF", 
+                               font=("Helvetica", 14), 
+                               selectbackground="#FF9900", 
+                               selectforeground="#FFFFFF",
+                               relief="flat",
+                               highlightthickness=0)
         
+        song_listbox.pack(fill="both", expand=True)
+        song_listbox.insert(0, "Song 1")
+        song_listbox.insert(1, "Song 2")
+        #Album frame
+        frame_album = Frame(Pannel,bg="#787676",relief="flat")
+        frame_album.place(x=208.0, y=2.0, width=472.0, height=405.0)
+        #List of albums
+        album_listbox = Listbox(frame_album, 
+                                bg="#787676", 
+                                fg="#FFFFFF", 
+                                font=("Helvetica", 14), 
+                                selectbackground="#FF9900", 
+                                selectforeground="#FFFFFF",
+                                relief="flat",
+                                highlightthickness=0)
+        album_listbox.pack(fill="both", expand=True)
+        album_listbox.insert(0, "Album 1")
+        #Add frame to pannel
+        Pannel.add(frame_playlist, text="Playlist")
+        Pannel.add(frame_album, text="Album")
+        
+        Pannel.place(x=208.0, y=2.0, width=472.0, height=405.0)
+        # Scrollbar
         Scrollbar_1 = Scrollbar(self.window, orient="vertical")
         Scrollbar_1.config(command=song_listbox.yview)
         song_listbox.config(yscrollcommand=Scrollbar_1.set)
         Scrollbar_1.place(
-            x=378.0,
+            x=680.0,
             y=47.0,
             width=20.0,
-            height=350.0
+            height=360.0
         )
-        
+        # Play button
         self.button_image_4=PhotoImage(file=relative_to_assets("Circled Play.png"))
         
         self.button_4=Button(
             image=self.button_image_4,
-            command=lambda: self.play_list.ping(),
+            # command=self.play_list.play_song,
             borderwidth=0,
             relief="sunken",
             bg="#FF9900",
@@ -104,12 +145,14 @@ class Presentation:
             y=446.0
         )
         
+        # Logo
         self.image_image_1 = PhotoImage(file=relative_to_assets("Hub.png"))
         self.image_1=self.canvas.create_image(
             15.0,
             12.0,  
             image = self.image_image_1
             )
+        # Stop button
         self.button_image_6= PhotoImage(file=relative_to_assets("End.png"))
         self.button_6=Button(
             image=self.button_image_6,
@@ -123,6 +166,7 @@ class Presentation:
             x=178.0,
             y=443.0,
         )
+        # skip to start button
         self.button_image_3= PhotoImage(file=relative_to_assets("Skip to Start.png"))
         self.button_3=Button(
             image=self.button_image_3,
@@ -136,7 +180,7 @@ class Presentation:
             x=22.0,
             y=443.0
         )
-        
+        # Shuffle button
         self.button_image_2= PhotoImage(file=relative_to_assets("Shuffle.png"))
         self.button_2=Button(    
             image= self.button_image_2,
@@ -151,6 +195,7 @@ class Presentation:
             y=470.0
         )
         
+        # Repeat button
         self.button_image_5=PhotoImage(file=relative_to_assets("Repeat.png"))
         
         self.button_5=Button(
@@ -166,7 +211,7 @@ class Presentation:
             x=75.0,
             y=477.0
         )
-        
+        # Audio icon
         self.button_image_7= PhotoImage(file=relative_to_assets("Audio.png"))
         self.button_7=Button(
             image= self.button_image_7,
@@ -180,6 +225,7 @@ class Presentation:
             x=235.0,
             y=470.0
         )
+        # Adjust button
         self.button_image_8=PhotoImage(file=relative_to_assets("Adjust.png"))
         self.button_8=Button(
             image= self.button_image_8,
@@ -194,6 +240,7 @@ class Presentation:
             x=367.0,
             y=470.0,
         )
+        # Menu button
         self.button_image_9=PhotoImage(file=relative_to_assets("Menu.png"))
         self.button_9=Menubutton(
             image= self.button_image_9,
@@ -212,7 +259,7 @@ class Presentation:
         self.button_9["menu"]=self.button_9.menu
         self.button_9.menu.add_command(label="Select Folder")
         
-        
+        # Pause button
         self.button_image_1=PhotoImage(file=relative_to_assets("Pause Button.png"))
 
         self.button_1=Button(
@@ -228,6 +275,8 @@ class Presentation:
             x=123,
             y=442
         )
+        
+        # Lego name
         self.canvas.create_text(
             25.0,
             5.0,
@@ -236,15 +285,15 @@ class Presentation:
             fill="#FFFFFF",
             font=("Inter ExtraBold", 12 * -1)
         )
-
-        self.canvas.create_rectangle(
-            19.0,
-            46.0,
-            190.0,
-            219.0,
-            fill="#D9D9D9",
-            outline="")
-
+        # Art holder
+        frame = Frame(self.window)
+        frame.place(x=19, y=46, width=170, height=190)  
+        image_3=Image.open(relative_to_assets("MusicHub.png"))
+        image_3=image_3.resize((170, 190))
+        self.image_image_3=ImageTk.PhotoImage(image_3)
+        label = Label (frame, image=self.image_image_3)
+        label.pack()
+        
         self.canvas.create_rectangle(
             208.0,
             0.0,
@@ -252,16 +301,24 @@ class Presentation:
             46.0,
             fill="#3F3F3F",
             outline="")
+        
+        # Search icon
         self.image_image_2=PhotoImage(file=relative_to_assets("Search.png"))
         self.image_2=self.canvas.create_image(
-            219.0,
-            420.0,
+            222.0,
+            422.0,
             image=self.image_image_2
             )
+        Search_field = Entry(self.window,bd=0, bg="#E8E8E8", font=("Helvetica", 12))
+        Search_field.place(x=244, y=413, width=200, height=18)
     def run(self):
         self.window.resizable(False, False)
         self.window.mainloop()
-    
+    def run_client(self):
+        self.client = ClientListener()
+    def start_client(self):
+        self.client_thread = threading.Thread(target=self.run_client)
+        self.client_thread.start()    
 if __name__ == "__main__":
     app = Presentation()
     app.run()

@@ -10,9 +10,9 @@ class TrackDAL():
 
     con = ConnectSQL.connect_mysql()
 
-    def getAllData():
+    def getAllData(self):
         global con
-        cursor = con.cursor()
+        cursor = TrackDAL.con.cursor()
         cursor.execute("select * from track")
         records = cursor.fetchall()
         cursor.close()
@@ -46,3 +46,6 @@ class TrackDAL():
         cursor.execute("update track set title = %s, artistID = %s, albumID = %s, duration = %s, realeasedate = %s where trackID = %s", ( track_dto.title, track_dto.artistID, track_dto.albumID, track_dto.duration, track_dto.realeasedate, track_dto.trackID))
         con.commit
         cursor.close()
+
+trackdal = TrackDAL()
+trackdal.getAllData()
