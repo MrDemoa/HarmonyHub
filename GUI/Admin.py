@@ -5,22 +5,27 @@
 
 from pathlib import Path
 import os
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, ttk
+from tkinter import Frame, Label, Tk, Canvas, Entry, Text, Button, PhotoImage, Toplevel, messagebox, simpledialog, ttk
 import sys
 import threading
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from DAL.AlbumDAL import AlbumDAL
+from BLL.AlbumBLL import AlbumBLL
+from DTO.AlbumDTO import AlbumDTO
 OUTPUT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ASSETS_PATH = os.path.join(OUTPUT_PATH, "GUI\\assets\\frame2")
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
+
 class Admin:
     def __init__(self):
         self.window = Tk()
         self.window.title("Admin Panel")
         self.window.geometry("1000x700")
         self.window.configure(bg = "#FFFFFF")
-
+        self.album = AlbumDAL()
+        
 
         self.canvas = Canvas(
             self.window,
@@ -98,6 +103,7 @@ class Admin:
             font=("Inter", 24 * -1,"bold"),
             tags="album_text"
         )
+        self.canvas.tag_bind("album_text", "<Button-1>", lambda x: self.show_frame(AlbumFrame))
         #Users
         self.canvas.create_text(
             72.0,
@@ -108,6 +114,7 @@ class Admin:
             font=("Inter", 24 * -1,"bold"),
             tag="user_text"
         )
+        self.canvas.tag_bind("user_text", "<Button-1>", lambda x: self.show_frame(UserFrame))
         #Tracks
         self.canvas.create_text(
             70.0,
@@ -118,6 +125,7 @@ class Admin:
             font=("Inter", 24 * -1,"bold"),
             tag="track_text"
         )
+        self.canvas.tag_bind("track_text", "<Button-1>", lambda x: self.show_frame(TrackFrame))
         #Artists
         self.canvas.create_text(
             70.0,
@@ -128,6 +136,7 @@ class Admin:
             font=("Inter", 24 * -1,"bold"),
             tag="artist_text"
         )
+        self.canvas.tag_bind("artist_text", "<Button-1>", lambda x: self.show_frame(ArtistFrame))
         #Shut Down button
         self.shut_down_icon = PhotoImage(file=relative_to_assets("Shutdown.png"))
         self.shut_down_button=Button(   
@@ -170,23 +179,7 @@ class Admin:
             fill="#000000",
             font=("Inter ExtraBold", 20 * -1,"bold")
         )
-        #Add Album button
-        self.add_album_button = Button(
-            background="#4394AE",
-            text="Add Albums",
-            font=("Inter Medium", 20 * -1,"bold"),
-            fg="#FFFFFF",
-            relief="flat",
-            activebackground="#4394AE",
-            activeforeground="#FFFFFF",
-        )
-
-        self.add_album_button.place(
-            x=780.0,
-            y=70.0,
-            width=174.0,
-            height=43.0,
-            )
+        
         #Decorative 
         self.canvas.create_rectangle(
             40.0,
@@ -201,6 +194,80 @@ class Admin:
             485.0,
             image=self.medal_icon
             )
+        self.big_frame = Frame(self.window,background="#FFFFFF")
+        self.big_frame.place(x=285.0, y=70.0, width=665.0, height=520.0)
+        # Create the smaller frames and add them to the big frame
+        self.frames = {}
+        for F in (AlbumFrame, TrackFrame, ArtistFrame, UserFrame):
+            frame = F(self.big_frame, self)
+            frame.configure(background='#FFFFFF')
+            self.frames[F] = frame
+            frame.place(x=0, y=0, width=665.0, height=520.0,)
+
+        # Show the first frame
+        self.show_frame(AlbumFrame)
+    def show_frame(self, cont):
+        frame = self.frames[cont]
+        frame.tkraise()
+        
+    def show_dialog(self):
+        dialog = Toplevel(self.window)
+        dialog.title("Input")
+
+        labels = ["ALbum ID", "Title", "Artist ID", "Genre", "Release Date"]
+        entries = []
+
+        for i, label in enumerate(labels):
+            Label(dialog, text=label).grid(row=i, column=0)
+            entry = Entry(dialog)
+            entry.grid(row=i, column=1)
+            entries.append(entry)
+
+        Button(dialog, text="Submit", command=lambda: self.process_entries(entries)).grid(row=len(labels), column=0, columnspan=2)
+
+    def process_entries(self, entries,dialog):
+        try:
+            album_dto = AlbumDTO(
+                albumID=entries[0].get(),
+                title=entries[1].get(),
+                artistID=entries[2].get(),
+                genre=entries[3].get(),
+                releasedate=entries[4].get()
+            )
+            AlbumBLL.insert(album_dto)
+            messagebox.showinfo("Success", "Album inserted successfully")
+            dialog.destroy()
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+    def run(self):
+        self.window.resizable(False, False)
+        self.window.mainloop()
+
+class AlbumFrame(Frame):
+    def __init__(self, parent, big_frame):
+        super().__init__(parent)
+        self.pack(fill='both', expand=True)
+        #Add Album button
+        self.add_album_button = Button(
+            self,
+            background="#4394AE",
+            text="Add Albums",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            command=lambda: big_frame.show_dialog()
+
+        )
+
+        self.add_album_button.place(
+            x=480.0,
+            y=0.0,
+            width=174.0,
+            height=43.0,
+            )
+        
         #Table
         self.album_id =[1,2,3,4,5]
         self.title = ["Album 1","Album 2","Album 3","Album 4","Album 5"]
@@ -208,7 +275,7 @@ class Admin:
         self.genre = ["Pop","Rock","Jazz","Blues","Country"]
         self.release_date = ["2021-01-01","2021-01-02","2021-01-03","2021-01-04","2021-01-05"]
 
-        self.album_table = ttk.Treeview(self.window, columns=("Album ID","Title", "Artist ID", "Genre", "Release Date","Action"), show='headings')
+        self.album_table = ttk.Treeview(self, columns=("Album ID","Title", "Artist ID", "Genre", "Release Date","Action"), show='headings')
         self.album_table.heading("Album ID", text="Album ID")
         self.album_table.heading("Title", text="Title")
         self.album_table.heading("Artist ID", text="Artist ID")
@@ -228,17 +295,172 @@ class Admin:
         self.album_table.insert("", "end", values=(self.album_id[2], self.title[2], self.artist_id[2], self.genre[2], self.release_date[2],"Edit"))
         self.album_table.insert("", "end", values=(self.album_id[3], self.title[3], self.artist_id[3], self.genre[3], self.release_date[3],"Edit"))
         self.album_table.insert("", "end", values=(self.album_id[4], self.title[4], self.artist_id[4], self.genre[4], self.release_date[4],"Edit"))
-            
+        
         self.album_table.place(
-            x=285.0,
-            y=140.0,
+            x=0,
+            y=70,
+            width=665.0,
+            height=480.0
+            )    
+class TrackFrame(Frame):
+    def __init__(self, parent, big_frame):
+        super().__init__(parent)
+        self.pack(fill='both', expand=True)
+        #Add Tracks button
+        self.add_track_button = Button(
+            self,
+            background="#4394AE",
+            text="Add Tracks",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            command=lambda: print("Add Tracks clicked")
+        )
+
+        self.add_track_button.place(
+            x=480,
+            y=0,
+            width=174.0,
+            height=43.0,
+            )
+        #Table
+        self.track_id = [1,2,3,4,5]
+        self.title = ["Track 1","Track 2","Track 3","Track 4","Track 5"]
+        self.album_id = [1,2,3,4,5]
+        self.genre = ["Pop","Rock","Jazz","Blues","Country"]
+        self.duration = ["3:00","4:00","5:00","6:00","7:00"]
+
+        self.track_table = ttk.Treeview(self, columns=("Track ID","Title", "Album ID", "Genre", "Duration","Action"), show='headings')
+        self.track_table.heading("Track ID", text="Track ID")
+        self.track_table.heading("Title", text="Title")
+        self.track_table.heading("Album ID", text="Album ID")
+        self.track_table.heading("Genre", text="Genre")
+        self.track_table.heading("Duration", text="Duration")
+        self.track_table.heading("Action", text="Action")
+
+        self.track_table.column("Track ID", width=100, anchor='center')
+        self.track_table.column("Title", width=100, anchor='center')
+        self.track_table.column("Album ID", width=100, anchor='center')
+        self.track_table.column("Genre", width=100, anchor='center')
+        self.track_table.column("Duration", width=100, anchor='center')
+        self.track_table.column("Action", width=100, anchor='center')
+
+        self.track_table.insert("", "end", values=(self.track_id[0], self.title[0], self.album_id[0], self.genre[0], self.duration[0],"Edit"))
+        self.track_table.insert("", "end", values=(self.track_id[1], self.title[1], self.album_id[1], self.genre[1], self.duration[1],"Edit"))
+        self.track_table.insert("", "end", values=(self.track_id[2], self.title[2], self.album_id[2], self.genre[2], self.duration[2],"Edit"))
+        self.track_table.insert("", "end", values=(self.track_id[3], self.title[3], self.album_id[3], self.genre[3], self.duration[3],"Edit"))
+        self.track_table.insert("", "end", values=(self.track_id[4], self.title[4], self.album_id[4], self.genre[4], self.duration[4],"Edit"))
+
+        self.track_table.place(
+            x=0,
+            y=70,
             width=665.0,
             height=480.0
             )
-    def run(self):
-        self.window.resizable(False, False)
-        self.window.mainloop()
+class ArtistFrame(Frame):
+    def __init__(self, parent, big_frame):
+        super().__init__(parent)
+        self.pack(fill='both', expand=True)
+        self.add_artist_button = Button(
+            self,
+            background="#4394AE",
+            text="Add Artists",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+        )
+        self.add_artist_button.place(
+            x=480.0,
+            y=0.0,
+            width=174.0,
+            height=43.0,
+            )
+        #Table
+        self.artist_id = [1,2,3,4,5]
+        self.name = ["Artist 1","Artist 2","Artist 3","Artist 4","Artist 5"]
+        self.genre = ["Pop","Rock","Jazz","Blues","Country"]
+        self.albums = [5,5,5,5,5]
+
+        self.artist_table = ttk.Treeview(self, columns=("Artist ID","Name", "Genre", "Albums","Action"), show='headings')
+        self.artist_table.heading("Artist ID", text="Artist ID")
+        self.artist_table.heading("Name", text="Name")
+        self.artist_table.heading("Genre", text="Genre")
+        self.artist_table.heading("Albums", text="Albums")
+        self.artist_table.heading("Action", text="Action")
+
+        self.artist_table.column("Artist ID", width=100, anchor='center')
+        self.artist_table.column("Name", width=100, anchor='center')
+        self.artist_table.column("Genre", width=100, anchor='center')
+        self.artist_table.column("Albums", width=100, anchor='center')
+        self.artist_table.column("Action", width=100, anchor='center')
+
+        self.artist_table.insert("", "end", values=(self.artist_id[0], self.name[0], self.genre[0], self.albums[0],"Edit"))
+        self.artist_table.insert("", "end", values=(self.artist_id[1], self.name[1], self.genre[1], self.albums[1],"Edit"))
+        self.artist_table.insert("", "end", values=(self.artist_id[2], self.name[2], self.genre[2], self.albums[2],"Edit"))
+        self.artist_table.insert("", "end", values=(self.artist_id[3], self.name[3], self.genre[3], self.albums[3],"Edit"))
+        self.artist_table.insert("", "end", values=(self.artist_id[4], self.name[4], self.genre[4], self.albums[4],"Edit"))
+
+        self.artist_table.place(
+            x=0,
+            y=70,
+            width=665.0,
+            height=480.0
+            )
+class UserFrame(Frame):
+    def __init__(self, parent, big_frame):
+        super().__init__(parent)
+        self.pack(fill='both', expand=True)
+        self.add_user_button = Button(
+            self,
+            background="#4394AE",
+            text="Add Users",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+        )
+        self.add_user_button.place(
+            x=480.0,
+            y=0.0,
+            width=174.0,
+            height=43.0,
+            )
+        #Table
+        self.user_id = [1,2,3,4,5]
+        self.username = ["User 1","User 2","User 3","User 4","User 5"]
+        self.email = ["abc@gmail.com","asd@gmail.com","asd@gmail.com","asd@gmail.com","asd@gmail.com" ]
+        self.role = ["Admin","User","User","User","User"]
         
+        self.user_table = ttk.Treeview(self, columns=("User ID","Username", "Email", "Role","Action"), show='headings')
+        self.user_table.heading("User ID", text="User ID")
+        self.user_table.heading("Username", text="Username")
+        self.user_table.heading("Email", text="Email")
+        self.user_table.heading("Role", text="Role")
+        self.user_table.heading("Action", text="Action")
+        
+        self.user_table.column("User ID", width=100, anchor='center')
+        self.user_table.column("Username", width=100, anchor='center')
+        self.user_table.column("Email", width=100, anchor='center')
+        self.user_table.column("Role", width=100, anchor='center')
+        self.user_table.column("Action", width=100, anchor='center')
+        
+        self.user_table.insert("", "end", values=(self.user_id[0], self.username[0], self.email[0], self.role[0],"Edit"))
+        self.user_table.insert("", "end", values=(self.user_id[1], self.username[1], self.email[1], self.role[1],"Edit"))
+        self.user_table.insert("", "end", values=(self.user_id[2], self.username[2], self.email[2], self.role[2],"Edit"))
+        self.user_table.insert("", "end", values=(self.user_id[3], self.username[3], self.email[3], self.role[3],"Edit"))
+        self.user_table.insert("", "end", values=(self.user_id[4], self.username[4], self.email[4], self.role[4],"Edit"))
+
+        self.user_table.place(
+            x=0,
+            y=70,
+            width=665.0,
+            height=480.0
+            )
 if __name__ == "__main__":
     admin = Admin()
     admin.run()
