@@ -116,12 +116,20 @@ class Login:
                                                 328.0,
                                                 fill="#F3F2F2",
                                                 outline="")
-        self.user_input = Entry( width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1), fg="#000000")
+        self.user_input = Entry( width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1), fg="#AAAAAA")
         self.user_input.place(x=110.0, y=230.0, height=15.0)
-
-        self.password_input = Entry( width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1), fg="#000000", show="*")
+        self.user_input.bind("<FocusIn>", self.clear_hint)
+        self.user_input.bind("<FocusOut>", self.restore_hint)
+        self.user_input.bind("<Return>", lambda event: self.password_input.focus())
+        self.user_input.insert(0, "Enter Username")
+        
+        self.password_input = Entry( width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1), fg="#AAAAAA",show="*")
         self.password_input.place(x=110.0, y=295.0, height=15.0)
-
+        self.password_input.bind("<FocusIn>", self.clear_hint)
+        self.password_input.bind("<FocusOut>", self.restore_hint)
+        self.password_input.bind("<Return>", lambda event: self.button_1.invoke())
+        self.password_input.insert(0, "Enter Password")
+        
         #Password and User icon
         self.password_image = PhotoImage(file=relative_to_assets("Password.png"))
         self.password_image_1=self.canvas.create_image(
@@ -179,6 +187,20 @@ class Login:
             fill="#FFFFFF",
             font=("Inter Medium", 16 * -1)
         )
+    def clear_hint(self,event):
+        current = event.widget.get()
+        if current == "Enter Username" or current == "Enter Password":
+            event.widget.delete(0, END)
+            event.widget.config(fg="#000000")  
+
+    def restore_hint(self,event):
+        current = event.widget.get()
+        if current == "":
+            if event.widget == self.user_input:
+                event.widget.insert(0, "Enter Username")
+            elif event.widget == self.password_input:
+                event.widget.insert(0, "Enter Password")
+            event.widget.config(fg="#AAAAAA")  
     def run(self):
         self.window.resizable(False, False)
         self.window.mainloop()
