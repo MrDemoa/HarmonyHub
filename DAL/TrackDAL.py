@@ -22,7 +22,7 @@ class TrackDAL():
         global con
         con = ConnectSQL.connect_mysql()
         cursor = con.cursor()
-        cursor.execute("insert into track values(%s, %s, %s, %s, %s, %s)", (track_dto.trackID, track_dto.title, track_dto.artistID, track_dto.albumID, track_dto.duration, track_dto.realeasedate))
+        cursor.execute("insert into track values(%s, %s, %s, %s, %s, %s)", (track_dto.trackID, track_dto.title, track_dto.artistID, track_dto.albumID, track_dto.duration, track_dto.releasedate))
         con.commit()
         cursor.close()
 

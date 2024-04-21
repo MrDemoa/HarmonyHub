@@ -10,9 +10,9 @@ class UserDAL():
 
     con = ConnectSQL.connect_mysql()
 
-    def getAllData():
+    def getAllData(self):
         global con
-        cursor = con.cursor()
+        cursor = UserDAL.con.cursor()
         cursor.execute("select * from user")
         records = cursor.fetchall()
         cursor.close()

@@ -191,15 +191,7 @@ class Admin:
             x=760.0,
             y=635.0,
         )
-        # self.canvas.create_text(
-        #     778.0,
-        #     639.0,
-        #     anchor="nw",
-        #     text="Server Offline",
-        #     fill="#000000",
-        #     font=("Inter ExtraBold", 20 * -1,"bold")
-        # )
-        
+
         #Decorative 
         self.canvas.create_rectangle(
             40.0,
@@ -226,6 +218,7 @@ class Admin:
 
         # Show the first frame
         self.show_frame(AlbumFrame)
+    
     def change_text(self):
         if self.label["text"] == "Server Offline":
             self.label["text"] = "Server Online"
@@ -250,7 +243,7 @@ class Admin:
             entry.grid(row=i, column=1)
             entries.append(entry)
 
-        Button(dialog, text="Submit", command=lambda: self.process_entries_album(entries)).grid(row=len(labels), column=0, columnspan=2)
+        Button(dialog, text="Submit", command=lambda: self.process_entries_album(entries,dialog)).grid(row=len(labels), column=0, columnspan=2)
 
     def process_entries_album(self, entries,dialog):
         try:
@@ -264,13 +257,14 @@ class Admin:
             AlbumBLL.insert(album_dto)
             messagebox.showinfo("Success", "Album inserted successfully")
             dialog.destroy()
+            
         except Exception as e:
             messagebox.showerror("Error", str(e))
     def show_dialog_track(self):
         dialog = Toplevel(self.window)
         dialog.title("Input")
 
-        labels = ["Track ID", "Title", "Album ID", "Genre", "Duration","Release Date"]
+        labels = ["Track ID", "Title","Artist ID", "Album ID", "Duration","Release Date"]
         entries = []
 
         for i, label in enumerate(labels):
@@ -279,20 +273,21 @@ class Admin:
             entry.grid(row=i, column=1)
             entries.append(entry)
 
-        Button(dialog, text="Submit", command=lambda: self.process_entries_track(entries)).grid(row=len(labels), column=0, columnspan=2)
+        Button(dialog, text="Submit", command=lambda: self.process_entries_track(entries,dialog)).grid(row=len(labels), column=0, columnspan=2)
     def process_entries_track(self, entries,dialog):
         try:
             track_dto = TrackDTO(
                 trackID=entries[0].get(),
                 title=entries[1].get(),
-                albumID=entries[2].get(),
-                genre=entries[3].get(),
+                artistID=entries[2].get(),
+                albumID=entries[3].get(),
                 duration=entries[4].get(),
                 releasedate=entries[5].get()
             )
             TrackBLL.insert(track_dto)
             messagebox.showinfo("Success", "Track inserted successfully")
             dialog.destroy()
+            
         except Exception as e:
             messagebox.showerror("Error", str(e))
     def show_dialog_artist(self):
@@ -308,7 +303,7 @@ class Admin:
             entry.grid(row=i, column=1)
             entries.append(entry)
 
-        Button(dialog, text="Submit", command=lambda: self.process_entries_artist(entries)).grid(row=len(labels), column=0, columnspan=2)
+        Button(dialog, text="Submit", command=lambda: self.process_entries_artist(entries,dialog)).grid(row=len(labels), column=0, columnspan=2)
     def process_entries_artist(self, entries,dialog):
         try:
             artist_dto = ArtistDTO(
@@ -319,13 +314,14 @@ class Admin:
             ArtistBLL.insert(artist_dto)
             messagebox.showinfo("Success", "Artist inserted successfully")
             dialog.destroy()
+            
         except Exception as e:
             messagebox.showerror("Error", str(e))
     def show_dialog_user(self):
         dialog = Toplevel(self.window)
         dialog.title("Input")
 
-        labels = ["User ID", "Username", "Email", "Role"]
+        labels = ["User ID", "Username", "Email", "Password"]
         entries = []
 
         for i, label in enumerate(labels):
@@ -334,18 +330,19 @@ class Admin:
             entry.grid(row=i, column=1)
             entries.append(entry)
 
-        Button(dialog, text="Submit", command=lambda: self.process_entries_user(entries)).grid(row=len(labels), column=0, columnspan=2)
+        Button(dialog, text="Submit", command=lambda: self.process_entries_user(entries,dialog)).grid(row=len(labels), column=0, columnspan=2)
     def process_entries_user(self, entries,dialog):
         try:
             user_dto = UserDTO(
                 userID=entries[0].get(),
                 username=entries[1].get(),
                 email=entries[2].get(),
-                role=entries[3].get()
+                password=entries[3].get()
             )
             UserBLL.insert(user_dto)
             messagebox.showinfo("Success", "User inserted successfully")
             dialog.destroy()
+            
         except Exception as e:
             messagebox.showerror("Error", str(e))
     def run(self):
@@ -376,7 +373,23 @@ class AlbumFrame(Frame):
             width=174.0,
             height=43.0,
             )
-        
+        self.refrest_button = Button(
+            self,
+            background="#4394AE",
+            text="Refresh",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            command=lambda: AlbumFrame.refresh_table(self)
+        )
+        self.refrest_button.place(
+            x=290.0,
+            y=0.0,
+            width=174.0,
+            height=43.0,
+            )
         #Table
         self.album_table = ttk.Treeview(self, columns=("Album ID","Title", "Artist ID", "Genre", "Release Date","Action"), show='headings')
         self.album_table.heading("Album ID", text="Album ID")
@@ -401,22 +414,38 @@ class AlbumFrame(Frame):
             )
         self.insert_into_table_album() 
     def insert_into_table_album(self):
+        # # Create a cursor
+        # cursor = self.con.cursor()
+
+        # # Execute a query to fetch all rows from the album table
+        # cursor.execute("SELECT * FROM album")
+
+        # # Fetch all rows
+        # rows = cursor.fetchall()
+        rows = AlbumBLL.getAllData(self)
+        # Insert each row into the table
+        for row in rows:
+            self.album_table.insert('', 'end', values=row)
+
+        # # Close the cursor
+        # cursor.close() 
+    def refresh_table(self):
+        # Delete all rows from the table
+        for i in self.album_table.get_children():
+            self.album_table.delete(i)
         # Create a cursor
         cursor = self.con.cursor()
 
         # Execute a query to fetch all rows from the album table
         cursor.execute("SELECT * FROM album")
-
+       
         # Fetch all rows
         rows = cursor.fetchall()
-
-        # Insert each row into the table
+        
+        # Insert the updated data into the table
         for row in rows:
             self.album_table.insert('', 'end', values=row)
-
-        # Close the cursor
-        cursor.close() 
-      
+        cursor.close()
 class TrackFrame(Frame):
     def __init__(self, parent, big_frame,con):
         super().__init__(parent)
@@ -441,21 +470,38 @@ class TrackFrame(Frame):
             width=174.0,
             height=43.0,
             )
+        self.refrest_button = Button(
+            self,
+            background="#4394AE",
+            text="Refresh",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            command=lambda: TrackFrame.refresh_table(self)
+        )
+        self.refrest_button.place(
+            x=290.0,
+            y=0.0,
+            width=174.0,
+            height=43.0,
+            )
         #Table
 
-        self.track_table = ttk.Treeview(self, columns=("Track ID","Title", "Album ID", "Genre", "Duration","Release Date","Action"), show='headings')
+        self.track_table = ttk.Treeview(self, columns=("Track ID","Title","Artist ID" ,"Album ID", "Duration","Release Date","Action"), show='headings')
         self.track_table.heading("Track ID", text="Track ID")
         self.track_table.heading("Title", text="Title")
+        self.track_table.heading("Artist ID", text="Artist ID")
         self.track_table.heading("Album ID", text="Album ID")
-        self.track_table.heading("Genre", text="Genre")
         self.track_table.heading("Duration", text="Duration")
         self.track_table.heading("Release Date", text="Release Date")
         self.track_table.heading("Action", text="Action")
 
         self.track_table.column("Track ID", width=75, anchor='center')
         self.track_table.column("Title", width=100, anchor='center')
+        self.track_table.column("Artist ID", width=100, anchor='center')
         self.track_table.column("Album ID", width=100, anchor='center')
-        self.track_table.column("Genre", width=100, anchor='center')
         self.track_table.column("Duration", width=100, anchor='center')
         self.track_table.column("Release Date", width=100, anchor='center')
         self.track_table.column("Action", width=90, anchor='center')
@@ -468,21 +514,39 @@ class TrackFrame(Frame):
             )
         self.insert_into_table_track()
     def insert_into_table_track(self):
-            # Create a cursor
-            cursor = self.con.cursor()
+            # # Create a cursor
+            # cursor = self.con.cursor()
 
-            # Execute a query to fetch all rows from the album table
-            cursor.execute("SELECT * FROM track")
+            # # Execute a query to fetch all rows from the album table
+            # cursor.execute("SELECT * FROM track")
 
-            # Fetch all rows
-            rows = cursor.fetchall()
-
+            # # Fetch all rows
+            # rows = cursor.fetchall()
+            
+            rows = TrackBLL.getAllData(self)
             # Insert each row into the table
             for row in rows:
                 self.track_table.insert('', 'end', values=row)
 
-            # Close the cursor
-            cursor.close()
+            # # Close the cursor
+            # cursor.close()
+    def refresh_table(self):
+        # Delete all rows from the table
+        for i in self.track_table.get_children():
+            self.track_table.delete(i)
+        # Create a cursor
+        cursor = self.con.cursor()
+
+        # Execute a query to fetch all rows from the album table
+        cursor.execute("SELECT * FROM track")
+       
+        # Fetch all rows
+        rows = cursor.fetchall()
+        
+        # Insert the updated data into the table
+        for row in rows:
+            self.track_table.insert('', 'end', values=row)
+        cursor.close()
 class ArtistFrame(Frame):
     def __init__(self, parent, big_frame,con):
         super().__init__(parent)
@@ -501,6 +565,23 @@ class ArtistFrame(Frame):
         )
         self.add_artist_button.place(
             x=480.0,
+            y=0.0,
+            width=174.0,
+            height=43.0,
+            )
+        self.refrest_button = Button(
+            self,
+            background="#4394AE",
+            text="Refresh",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            command=lambda: ArtistFrame.refresh_table(self)
+        )
+        self.refrest_button.place(
+            x=290.0,
             y=0.0,
             width=174.0,
             height=43.0,
@@ -525,21 +606,39 @@ class ArtistFrame(Frame):
             )
         self.insert_into_table_artist()
     def insert_into_table_artist(self):
-        # Create a cursor
-        cursor = self.con.cursor()
+        # # Create a cursor
+        # cursor = self.con.cursor()
 
-        # Execute a query to fetch all rows from the album table
-        cursor.execute("SELECT * FROM artist")
+        # # Execute a query to fetch all rows from the album table
+        # cursor.execute("SELECT * FROM artist")
 
-        # Fetch all rows
-        rows = cursor.fetchall()
-
+        # # Fetch all rows
+        # rows = cursor.fetchall()
+        rows = ArtistBLL.getAllData(self)
         # Insert each row into the table
         for row in rows:
             self.artist_table.insert('', 'end', values=row)
 
-        # Close the cursor
+        # # Close the cursor
+        # cursor.close()
+    def refresh_table(self):
+        # Delete all rows from the table
+        for i in self.artist_table.get_children():
+            self.artist_table.delete(i)
+        # Create a cursor
+        cursor = self.con.cursor()
+
+        # Execute a query to fetch all rows from the album table
+        cursor.execute("SELECT * FROM user")
+       
+        # Fetch all rows
+        rows = cursor.fetchall()
+        
+        # Insert the updated data into the table
+        for row in rows:
+            self.artist_table.insert('', 'end', values=row)
         cursor.close()
+        
 class UserFrame(Frame):
     def __init__(self, parent, big_frame,con):
         super().__init__(parent)
@@ -562,18 +661,35 @@ class UserFrame(Frame):
             width=174.0,
             height=43.0,
             )
+        self.refrest_button = Button(
+            self,
+            background="#4394AE",
+            text="Refresh",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            command=lambda: UserFrame.refresh_table(self)
+        )
+        self.refrest_button.place(
+            x=290.0,
+            y=0.0,
+            width=174.0,
+            height=43.0,
+            )
         #Table     
-        self.user_table = ttk.Treeview(self, columns=("User ID","Username", "Email", "Role","Action"), show='headings')
+        self.user_table = ttk.Treeview(self, columns=("User ID","Username", "Email", "Password","Action"), show='headings')
         self.user_table.heading("User ID", text="User ID")
         self.user_table.heading("Username", text="Username")
         self.user_table.heading("Email", text="Email")
-        self.user_table.heading("Role", text="Role")
+        self.user_table.heading("Password", text="Password")
         self.user_table.heading("Action", text="Action")
         
         self.user_table.column("User ID", width=100, anchor='center')
         self.user_table.column("Username", width=100, anchor='center')
         self.user_table.column("Email", width=100, anchor='center')
-        self.user_table.column("Role", width=100, anchor='center')
+        self.user_table.column("Password", width=100, anchor='center')
         self.user_table.column("Action", width=100, anchor='center')
         
         self.user_table.place(
@@ -584,20 +700,28 @@ class UserFrame(Frame):
             )
         self.insert_into_table_user()
     def insert_into_table_user(self):
+       
+        rows = UserBLL.getAllData(self)
+        # Insert each row into the table
+        for row in rows:
+            self.user_table.insert('', 'end', values=row)
+
+    def refresh_table(self):
+        # Delete all rows from the table
+        for i in self.user_table.get_children():
+            self.user_table.delete(i)
         # Create a cursor
         cursor = self.con.cursor()
 
         # Execute a query to fetch all rows from the album table
         cursor.execute("SELECT * FROM user")
-
+       
         # Fetch all rows
         rows = cursor.fetchall()
-
-        # Insert each row into the table
+        
+        # Insert the updated data into the table
         for row in rows:
             self.user_table.insert('', 'end', values=row)
-
-        # Close the cursor
         cursor.close()
 if __name__ == "__main__":
     admin = Admin()

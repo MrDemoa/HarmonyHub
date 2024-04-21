@@ -6,8 +6,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from DAL.ArtistDAL import ArtistDAL
 
 class ArtistBLL:
-    def getAllData():
-        ArtistDAL.getAllData()
+    def getAllData(self):
+        return ArtistDAL.getAllData(self)
 
     def insert(artist_dto):
         ArtistDAL.insert(artist_dto)

@@ -10,9 +10,9 @@ class AlbumDAL:
 
     con = ConnectSQL.connect_mysql()
 
-    def getAllData():
+    def getAllData(self):
         global con
-        cursor = con.cursor()
+        cursor = AlbumDAL.con.cursor()
         cursor.execute("select * from album")
         records = cursor.fetchall()
         cursor.close()

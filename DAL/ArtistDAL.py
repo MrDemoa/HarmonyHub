@@ -9,9 +9,9 @@ class ArtistDAL:
 
     con = ConnectSQL.connect_mysql()
 
-    def getAllData():
+    def getAllData(self):
         global con
-        cursor = con.cursor()
+        cursor = ArtistDAL.con.cursor()
         cursor.execute("select * from artist")
         records = cursor.fetchall()
         cursor.close()

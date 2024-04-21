@@ -6,8 +6,8 @@ print(sys.path)
 from DAL.AlbumDAL import AlbumDAL
 
 class AlbumBLL:
-    def getAllData():
-        AlbumDAL.getAllData()
+    def getAllData(self):
+        return AlbumDAL.getAllData(self)
 
     def insert(album_dto):
         AlbumDAL.insert(album_dto)

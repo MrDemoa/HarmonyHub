@@ -10,9 +10,9 @@ class PlayListDAL:
     
     con = ConnectSQL.connect_mysql()
 
-    def getAllData():
+    def getAllData(self):
         global con
-        cursor = con.cursor()
+        cursor = PlayListDAL.con.cursor()
         cursor.execute("select * from playlist")
         records = cursor.fetchall()
         cursor.close()
@@ -46,5 +46,3 @@ class PlayListDAL:
         con.commit
         cursor.close()
     
-    def ping(self):
-        print("pong")
