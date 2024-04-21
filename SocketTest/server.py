@@ -211,9 +211,12 @@ class Server:
         json_string = json.dumps(list(map(tuple_to_dict, data_track)))
  
         client.send(json_string.encode())
-        
+    def stop_server(self):
+        self.server_socket.close()
+        print("Server stopped")
+       
 
-server = Server()
+# server = Server()
 
 
 

@@ -20,6 +20,7 @@ from DAL.AlbumDAL import AlbumDAL
 from DAL.ConnectDB import ConnectSQL
 from BLL.AlbumBLL import AlbumBLL
 from DTO.AlbumDTO import AlbumDTO
+from SocketTest.server import Server
 OUTPUT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ASSETS_PATH = os.path.join(OUTPUT_PATH, "GUI\\assets\\frame2")
 
@@ -34,7 +35,7 @@ class Admin:
         self.window.configure(bg = "#FFFFFF")
         self.album = AlbumDAL()
         self.con = ConnectSQL.connect_mysql()
-        
+        self.server = None
 
         self.canvas = Canvas(
             self.window,
@@ -154,7 +155,7 @@ class Admin:
             borderwidth=0,
             background="#2A2A2A",
             activebackground="#2A2A2A",
-            command=lambda: print("Shutdown clicked"),
+            command=lambda: self.window.destroy(),
             )
         self.shut_down_button.place(
             x=83.0,
@@ -166,7 +167,7 @@ class Admin:
         self.live_icon = PhotoImage(file=relative_to_assets("Live.png"))
         self.live_icon_1=Button(
             image=self.live_icon,
-            command=lambda: self.change_text(),
+            command=lambda: self.toggle_server(),
             relief="flat",
             borderwidth=0,
             background="#FFFFFF",
@@ -219,13 +220,6 @@ class Admin:
         # Show the first frame
         self.show_frame(AlbumFrame)
     
-    def change_text(self):
-        if self.label["text"] == "Server Offline":
-            self.label["text"] = "Server Online"
-            self.label["fg"] = "#00FF00"
-        else:
-            self.label["text"] = "Server Offline"
-            self.label["fg"] = "#000000"
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
@@ -348,6 +342,21 @@ class Admin:
     def run(self):
         self.window.resizable(False, False)
         self.window.mainloop()
+    def run_server(self):
+        self.server = Server()
+        self.server.run()
+    def toggle_server(self):
+        if self.label["text"] == "Server Offline":
+            self.label["text"] = "Server Online"
+            self.label["fg"] = "#00FF00"
+            threading.Thread(target=self.run_server).start()
+            print("Server started")
+        else:
+            self.label["text"] = "Server Offline"
+            self.label["fg"] = "#000000"
+            if self.server is not None:
+                threading.Thread(target=self.server.stop_server).start()
+            print("Server stopped")
 
 class AlbumFrame(Frame):
     def __init__(self, parent, big_frame,con):
@@ -414,21 +423,12 @@ class AlbumFrame(Frame):
             )
         self.insert_into_table_album() 
     def insert_into_table_album(self):
-        # # Create a cursor
-        # cursor = self.con.cursor()
-
-        # # Execute a query to fetch all rows from the album table
-        # cursor.execute("SELECT * FROM album")
-
-        # # Fetch all rows
-        # rows = cursor.fetchall()
         rows = AlbumBLL.getAllData(self)
         # Insert each row into the table
         for row in rows:
             self.album_table.insert('', 'end', values=row)
 
-        # # Close the cursor
-        # cursor.close() 
+
     def refresh_table(self):
         # Delete all rows from the table
         for i in self.album_table.get_children():
@@ -514,22 +514,12 @@ class TrackFrame(Frame):
             )
         self.insert_into_table_track()
     def insert_into_table_track(self):
-            # # Create a cursor
-            # cursor = self.con.cursor()
 
-            # # Execute a query to fetch all rows from the album table
-            # cursor.execute("SELECT * FROM track")
-
-            # # Fetch all rows
-            # rows = cursor.fetchall()
-            
             rows = TrackBLL.getAllData(self)
             # Insert each row into the table
             for row in rows:
                 self.track_table.insert('', 'end', values=row)
 
-            # # Close the cursor
-            # cursor.close()
     def refresh_table(self):
         # Delete all rows from the table
         for i in self.track_table.get_children():
@@ -606,21 +596,11 @@ class ArtistFrame(Frame):
             )
         self.insert_into_table_artist()
     def insert_into_table_artist(self):
-        # # Create a cursor
-        # cursor = self.con.cursor()
-
-        # # Execute a query to fetch all rows from the album table
-        # cursor.execute("SELECT * FROM artist")
-
-        # # Fetch all rows
-        # rows = cursor.fetchall()
         rows = ArtistBLL.getAllData(self)
         # Insert each row into the table
         for row in rows:
             self.artist_table.insert('', 'end', values=row)
 
-        # # Close the cursor
-        # cursor.close()
     def refresh_table(self):
         # Delete all rows from the table
         for i in self.artist_table.get_children():
