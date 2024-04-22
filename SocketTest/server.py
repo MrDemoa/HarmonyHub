@@ -33,7 +33,6 @@ class Server:
         # Khởi tạo socket của server
         self.host_ip = Server.ip
         self.port = Server.port
-        
         # Bắt đầu lắng nghe các kết nối đến server
         self.runServer()
 
@@ -42,6 +41,7 @@ class Server:
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
         # Bind socket với host và port
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((self.host_ip, self.port))
         print("HOST IN SEVER: " + self.host_ip)
 
@@ -212,9 +212,11 @@ class Server:
  
         client.send(json_string.encode())
     def stop_server(self):
-        self.server_socket.close()
-        print("Server stopped")
-       
+        try:
+            self.server_socket.close()
+            print("Server stopped")
+        except Exception as e:
+            print(f"Error stopping server: {e}")
 
 # server = Server()
 
