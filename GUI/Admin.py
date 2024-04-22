@@ -61,7 +61,7 @@ class Admin:
             0.0,
             1000.0,
             48.0,
-            fill="#B4B4B4",
+            fill="#FF9900",
             outline="")
 
         self.logo_image = PhotoImage(file=relative_to_assets("Hub.png"))
@@ -101,7 +101,7 @@ class Admin:
             anchor="nw",
             text="Hello Admin",
             fill="#FFFFFF",
-            font=("Inter ExtraBold", 20 * -1)
+            font=("Inter ExtraBold", 20 * -1,"bold")
         )
         #Albums
         self.canvas.create_text(
@@ -159,7 +159,7 @@ class Admin:
             )
         self.shut_down_button.place(
             x=83.0,
-            y=631.0,
+            y=625.0,
             width=80.0,
             height=60.0,)
 
@@ -377,9 +377,9 @@ class AlbumFrame(Frame):
         )
 
         self.add_album_button.place(
-            x=480.0,
+            x=520.0,
             y=0.0,
-            width=174.0,
+            width=134.0,
             height=43.0,
             )
         self.refrest_button = Button(
@@ -394,9 +394,41 @@ class AlbumFrame(Frame):
             command=lambda: AlbumFrame.refresh_table(self)
         )
         self.refrest_button.place(
-            x=290.0,
+            x=350.0,
             y=0.0,
-            width=174.0,
+            width=134.0,
+            height=43.0,
+            )
+        self.edit_button = Button(
+            self,
+            background="#4394AE",
+            text="Edit",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            )
+        self.edit_button.place(
+            x=180.0,
+            y=0.0,
+            width=134.0,
+            height=43.0,
+            )
+        self.delete_command = Button(
+            self,
+            background="#4394AE",
+            text="Delete",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            )
+        self.delete_command.place(
+            x=10.0,
+            y=0.0,
+            width=134.0,
             height=43.0,
             )
         #Table
@@ -465,9 +497,9 @@ class TrackFrame(Frame):
         )
 
         self.add_track_button.place(
-            x=480,
+            x=520,
             y=0,
-            width=174.0,
+            width=134.0,
             height=43.0,
             )
         self.refrest_button = Button(
@@ -482,11 +514,44 @@ class TrackFrame(Frame):
             command=lambda: TrackFrame.refresh_table(self)
         )
         self.refrest_button.place(
-            x=290.0,
+            x=350.0,
             y=0.0,
-            width=174.0,
+            width=134.0,
             height=43.0,
             )
+        self.edit_button = Button(
+            self,
+            background="#4394AE",
+            text="Edit",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            )
+        self.edit_button.place(
+            x=180.0,
+            y=0.0,
+            width=134.0,
+            height=43.0,
+            )
+        self.delete_button = Button(
+            self,
+            background="#4394AE",
+            text="Delete",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            )
+        self.delete_button.place(
+            x=10.0,
+            y=0.0,
+            width=134.0,
+            height=43.0,
+            )
+        
         #Table
 
         self.track_table = ttk.Treeview(self, columns=("Track ID","Title","Artist ID" ,"Album ID", "Duration","Release Date","Action"), show='headings')
@@ -554,9 +619,9 @@ class ArtistFrame(Frame):
             command=lambda: big_frame.show_dialog_artist()
         )
         self.add_artist_button.place(
-            x=480.0,
+            x=520.0,
             y=0.0,
-            width=174.0,
+            width=134.0,
             height=43.0,
             )
         self.refrest_button = Button(
@@ -571,9 +636,41 @@ class ArtistFrame(Frame):
             command=lambda: ArtistFrame.refresh_table(self)
         )
         self.refrest_button.place(
-            x=290.0,
+            x=350.0,
             y=0.0,
-            width=174.0,
+            width=134.0,
+            height=43.0,
+            )
+        self.edit_button = Button(
+            self,
+            background="#4394AE",
+            text="Edit",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            )
+        self.edit_button.place(
+            x=180.0,
+            y=0.0,
+            width=134.0,
+            height=43.0,
+            )
+        self.delete_button = Button(
+            self,
+            background="#4394AE",
+            text="Delete",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            )
+        self.delete_button.place(
+            x=10.0,
+            y=0.0,
+            width=134.0,
             height=43.0,
             )
         #Table
@@ -636,9 +733,9 @@ class UserFrame(Frame):
             command=lambda: big_frame.show_dialog_user()
         )
         self.add_user_button.place(
-            x=480.0,
+            x=520.0,
             y=0.0,
-            width=174.0,
+            width=134.0,
             height=43.0,
             )
         self.refrest_button = Button(
@@ -653,11 +750,44 @@ class UserFrame(Frame):
             command=lambda: UserFrame.refresh_table(self)
         )
         self.refrest_button.place(
-            x=290.0,
+            x=350.0,
             y=0.0,
-            width=174.0,
+            width=134.0,
             height=43.0,
             )
+        self.edit_button = Button(
+            self,
+            background="#4394AE",
+            text="Edit",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            )
+        self.edit_button.place(
+            x=180.0,
+            y=0.0,
+            width=134.0,
+            height=43.0,
+            )
+        self.delete_button = Button(
+            self,
+            background="#4394AE",
+            text="Delete",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            )
+        self.delete_button.place(
+            x=10.0,
+            y=0.0,
+            width=134.0,
+            height=43.0,
+            )
+        
         #Table     
         self.user_table = ttk.Treeview(self, columns=("User ID","Username", "Email", "Password","Action"), show='headings')
         self.user_table.heading("User ID", text="User ID")
