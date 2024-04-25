@@ -21,16 +21,17 @@ class ArtistDAL:
         cursor = self.con.cursor()
         cursor.execute("select artistID from artist order by artistID desc limit 1")
         artist_id = cursor.fetchone()
-        id = artist_id[0]
-        id = int(id[1:]) + 1
+        if artist_id :
+            id = artist_id[0]
+            id = int(id[2:]) + 1
+        else:
+            id = 1
         return "AT" + str(id)
 
-    def insert(artist_dto):
-        global con
-        con = ConnectSQL.connect_mysql()
-        cursor = con.cursor()
+    def insert(self,artist_dto):
+        cursor = self.con.cursor()
         cursor.execute("insert into artist values(%s, %s, %s)", (artist_dto.artistID, artist_dto.name, artist_dto.genre))
-        con.commit()
+        self.con.commit()
         cursor.close()
 
     def update(self,artist_dto):

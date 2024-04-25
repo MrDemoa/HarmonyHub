@@ -7,12 +7,14 @@ from pathlib import Path
 import os
 import subprocess
 from tkinter import *
+from tkinter import messagebox
 from PIL import Image, ImageTk
 import sys
 import threading
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUTPUT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ASSETS_PATH = os.path.join(OUTPUT_PATH, "GUI\\assets\\frame1")
+from BLL import UserBLL
 
 def on_forgot_password_click(event):
     print("Forgot password clicked")
@@ -46,7 +48,7 @@ class Login:
         self.window.title("Login")
         self.window.geometry("400x650")
         self.window.configure(bg = "#FFFFFF")
-
+        
 
         self.canvas = Canvas(
             self.window,
@@ -146,7 +148,7 @@ class Login:
         self.password_input.place(x=110.0, y=295.0, height=15.0)
         self.password_input.bind("<FocusIn>", self.clear_hint)
         self.password_input.bind("<FocusOut>", self.restore_hint)
-        self.password_input.bind("<Return>", lambda event: self.button_1.invoke())
+        self.password_input.bind("<Return>", lambda event: self.login_button.invoke())
         self.password_input.insert(0, "Enter Password")
         
         #Password and User icon
@@ -233,8 +235,13 @@ class Login:
         self.window.resizable(False, False)
         self.window.mainloop()
     def run_gui(self):
-        subprocess.Popen(["python", "GUI/gui.py"])
-        self.window.destroy()
+        username = self.user_input.get()
+        password = self.password_input.get()
+        if UserBLL.UserBLL.checkUsernameAndPass(self,username, password):
+            subprocess.Popen(["python", "GUI/gui.py"])
+            self.window.destroy()
+        else:
+            messagebox.showerror("Error", "Invalid username or password")
 if __name__ == "__main__":
     login = Login()
     login.run()

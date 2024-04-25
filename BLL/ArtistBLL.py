@@ -12,8 +12,8 @@ class ArtistBLL:
     def generateArtistID(self):
         return ArtistDAL.generateArtistID(self)
 
-    def insert(artist_dto):
-        ArtistDAL.insert(artist_dto)
+    def insert(self,artist_dto):
+        ArtistDAL.insert(self,artist_dto)
 
     def update(self,artist_dto):
         ArtistDAL.update(self,artist_dto)

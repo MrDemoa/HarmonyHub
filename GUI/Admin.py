@@ -36,7 +36,7 @@ class Admin:
         self.album = AlbumDAL()
         self.con = ConnectSQL.connect_mysql()
         self.server = None
-        #self.track_frame = TrackFrame() 
+
 
         self.canvas = Canvas(
             self.window,
@@ -229,7 +229,7 @@ class Admin:
         dialog = Toplevel(self.window)
         dialog.title("Input")
 
-        labels = ["ALbum ID", "Title", "Artist ID", "Genre", "Release Date"]
+        labels = [ "Title", "Artist ID", "Genre", "Release Date"]
         entries = []
 
         for i, label in enumerate(labels):
@@ -243,13 +243,13 @@ class Admin:
     def process_entries_album(self, entries,dialog):
         try:
             album_dto = AlbumDTO(
-                albumID=entries[0].get(),
-                title=entries[1].get(),
-                artistID=entries[2].get(),
-                genre=entries[3].get(),
-                releasedate=entries[4].get()
+                albumID=AlbumBLL.generateAlbumID(self),
+                title=entries[0].get(),
+                artistID=entries[1].get(),
+                genre=entries[2].get(),
+                releasedate=entries[3].get()
             )
-            AlbumBLL.insert(album_dto)
+            AlbumBLL.insert(self,album_dto)
             messagebox.showinfo("Success", "Album inserted successfully")
             dialog.destroy()
             
@@ -266,6 +266,8 @@ class Admin:
             Label(dialog, text=label).grid(row=i, column=0)
             entry = Entry(dialog)
             entry.grid(row=i, column=1)
+            if i in [2]:
+                entry.insert(0, "None")
             entries.append(entry)
 
         Button(dialog, text="Submit", command=lambda: self.process_entries_track(entries,dialog)).grid(row=len(labels), column=0, columnspan=2)
@@ -280,12 +282,11 @@ class Admin:
                 duration=entries[3].get(),
                 releasedate=entries[4].get()
             )
-            print("TRAC_DTO: ", track_dto.trackID, track_dto.title, track_dto.artistID,
-                  track_dto.albumID, track_dto.duration, track_dto.releasedate)
+
             TrackBLL.insert(self, track_dto)
             messagebox.showinfo("Success", "Track inserted successfully")
             dialog.destroy()
-            Frame.refresh_table(self)
+            
             
         except Exception as e:
             messagebox.showerror("Error", str(e))
@@ -293,7 +294,7 @@ class Admin:
         dialog = Toplevel(self.window)
         dialog.title("Input")
 
-        labels = ["Artist ID", "Name", "Genre"]
+        labels = [ "Name", "Genre"]
         entries = []
 
         for i, label in enumerate(labels):
@@ -306,9 +307,9 @@ class Admin:
     def process_entries_artist(self, entries,dialog):
         try:
             artist_dto = ArtistDTO(
-                artistID=entries[0].get(),
-                name=entries[1].get(),
-                genre=entries[2].get()
+                artistID=ArtistBLL.generateArtistID(self),
+                name=entries[0].get(),
+                genre=entries[1].get()
             )
             ArtistBLL.insert(artist_dto)
             messagebox.showinfo("Success", "Artist inserted successfully")
@@ -320,7 +321,7 @@ class Admin:
         dialog = Toplevel(self.window)
         dialog.title("Input")
 
-        labels = ["User ID", "Username", "Email", "Password"]
+        labels = [ "Username", "Email", "Password"]
         entries = []
 
         for i, label in enumerate(labels):
@@ -333,12 +334,12 @@ class Admin:
     def process_entries_user(self, entries,dialog):
         try:
             user_dto = UserDTO(
-                userID=entries[0].get(),
-                username=entries[1].get(),
-                email=entries[2].get(),
-                password=entries[3].get()
+                userID=UserBLL.generateUserID(self),
+                username=entries[0].get(),
+                email=entries[1].get(),
+                password=entries[2].get()
             )
-            UserBLL.insert(user_dto)
+            UserBLL.insert(self,user_dto)
             messagebox.showinfo("Success", "User inserted successfully")
             dialog.destroy()
             
@@ -451,7 +452,7 @@ class AlbumFrame(Frame):
         # Insert each row into the table
         for row in rows:
             self.album_table.insert('', 'end', values=row)
-        self.refresh_table()
+
 
     def refresh_table(self):
         # Delete all rows from the table
@@ -538,7 +539,7 @@ class TrackFrame(Frame):
             width=134.0,
             height=43.0,
             )
-        self.refrest_button = Button(
+        self.refresh_button = Button(
             self,
             background="#4394AE",
             text="Refresh",
@@ -549,7 +550,7 @@ class TrackFrame(Frame):
             activeforeground="#FFFFFF",
             command=lambda: TrackFrame.refresh_table(self)
         )
-        self.refrest_button.place(
+        self.refresh_button.place(
             x=350.0,
             y=0.0,
             width=134.0,
@@ -622,7 +623,7 @@ class TrackFrame(Frame):
             # Insert each row into the table
             for row in rows:
                 self.track_table.insert('', 'end', values=row)
-            self.refresh_table()
+    
 
     def refresh_table(self):
         # Delete all rows from the table
@@ -720,7 +721,7 @@ class ArtistFrame(Frame):
             width=134.0,
             height=43.0,
             )
-        self.refrest_button = Button(
+        self.refresh_button = Button(
             self,
             background="#4394AE",
             text="Refresh",
@@ -731,7 +732,7 @@ class ArtistFrame(Frame):
             activeforeground="#FFFFFF",
             command=lambda: ArtistFrame.refresh_table(self)
         )
-        self.refrest_button.place(
+        self.refresh_button.place(
             x=350.0,
             y=0.0,
             width=134.0,
@@ -781,8 +782,6 @@ class ArtistFrame(Frame):
         for row in rows:
             self.artist_table.insert('', 'end', values=row)
             
-        self.refresh_table()
-
     def refresh_table(self):
         # Delete all rows from the table
         for i in self.artist_table.get_children():
@@ -868,7 +867,7 @@ class UserFrame(Frame):
             width=134.0,
             height=43.0,
             )
-        self.refrest_button = Button(
+        self.refresh_button = Button(
             self,
             background="#4394AE",
             text="Refresh",
@@ -879,7 +878,7 @@ class UserFrame(Frame):
             activeforeground="#FFFFFF",
             command=lambda: UserFrame.refresh_table(self)
         )
-        self.refrest_button.place(
+        self.refresh_button.place(
             x=350.0,
             y=0.0,
             width=134.0,
@@ -931,25 +930,28 @@ class UserFrame(Frame):
         # Insert each row into the table
         for row in rows:
             self.user_table.insert('', 'end', values=row)
-        self.refresh_table()
+        
 
     def refresh_table(self):
-        # Delete all rows from the table
-        for i in self.user_table.get_children():
-            self.user_table.delete(i)
-        # Create a cursor
-        cursor = self.con.cursor()
+        try:
+            # Delete all rows from the table
+            for i in self.user_table.get_children():
+                self.user_table.delete(i)
+            # Create a cursor
+            cursor = self.con.cursor()
 
-        # Execute a query to fetch all rows from the album table
-        cursor.execute("SELECT * FROM user")
-       
-        # Fetch all rows
-        rows = cursor.fetchall()
+            # Execute a query to fetch all rows from the album table
+            cursor.execute("SELECT * FROM user")
         
-        # Insert the updated data into the table
-        for row in rows:
-            self.user_table.insert('', 'end', values=row)
-        cursor.close()
+            # Fetch all rows
+            rows = cursor.fetchall()
+            
+            # Insert the updated data into the table
+            for row in rows:
+                self.user_table.insert('', 'end', values=row)
+            cursor.close()
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
     def update_table(self):
         try:
             # Get the selected item

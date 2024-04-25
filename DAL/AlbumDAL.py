@@ -22,17 +22,18 @@ class AlbumDAL:
         cursor = self.con.cursor()
         cursor.execute("select albumID from album order by albumID desc limit 1")
         album_id = cursor.fetchone()
-        id = album_id[0]
-        id = int(id[1:]) + 1
+        if album_id :
+            id = album_id[0]
+            id = int(id[2:]) + 1
+        else:
+            id = 1
         return "AT" + str(id)
 
 
-    def insert(album_dto):
-        global con
-        con = ConnectSQL.connect_mysql()
-        cursor = con.cursor()
+    def insert(self,album_dto):
+        cursor = self.con.cursor()
         cursor.execute("insert into album values(%s, %s, %s, %s, %s)", (album_dto.albumID, album_dto.title, album_dto.artistID, album_dto.genre, album_dto.releasedate))
-        con.commit()
+        self.con.commit()
         cursor.close()
 
 #Chua xong ham sua

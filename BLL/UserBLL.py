@@ -9,8 +9,8 @@ class UserBLL:
     def getAllData(self):
         return UserDAL.getAllData(self)
 
-    def insert(user_dto):
-        UserDAL.insert(user_dto)
+    def insert(self,user_dto):
+        UserDAL.insert(self,user_dto)
 
     def generateUserID(self):
         return UserDAL.generateUserID(self)

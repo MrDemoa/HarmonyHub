@@ -22,16 +22,16 @@ class UserDAL():
         cursor = self.con.cursor()
         cursor.execute("select userID from user order by userID desc limit 1")
         user_id = cursor.fetchone()
-        id = user_id[0]
-        id = int(id[1:]) + 1
-        return str(id)
+        if user_id :
+            id = user_id[0] + 1
+        else:
+            id = 1
+        return id
 
-    def insert(user_dto):
-        global con
-        con = ConnectSQL.connect_mysql()
-        cursor = con.cursor()
+    def insert(self,user_dto):
+        cursor = self.con.cursor()
         cursor.execute("insert into user values(%s, %s, %s, %s)", (user_dto.userID, user_dto.username, user_dto.email, user_dto.password))
-        con.commit()
+        self.con.commit()
         cursor.close()
 
     def checkUsernameAndPass(self, username, password):

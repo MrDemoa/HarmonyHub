@@ -22,16 +22,17 @@ class PlayListDAL:
         cursor = self.con.cursor()
         cursor.execute("select PlaylistID from playlist order by playlistID desc limit 1")
         playlist_id = cursor.fetchone()
-        id = playlist_id[0]
-        id = int(id[1:]) + 1
+        if playlist_id:
+            id = playlist_id[0]
+            id = int(id[1:]) + 1
+        else:
+            id = 1
         return "PL" + str(id)
 
-    def insert(playlist_dto):
-        global con
-        con = ConnectSQL.connect_mysql()
-        cursor = con.cursor()
+    def insert(self,playlist_dto):
+        cursor = self.con.cursor()
         cursor.execute("insert into playlist values(%s, %s, %s, %s)", (playlist_dto.playlistID, playlist_dto.userID, playlist_dto.title, playlist_dto.creationdate))
-        con.commit()
+        self.con.commit()
         cursor.close()
 
     def delete(id):

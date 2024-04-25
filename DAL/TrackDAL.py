@@ -22,8 +22,11 @@ class TrackDAL():
         cursor = self.con.cursor()
         cursor.execute("select trackID from track order by trackID desc limit 1")
         track_id = cursor.fetchone()
-        id = track_id[0]
-        id = int(id[1:]) + 1
+        if track_id:
+            id = track_id[0]
+            id = int(id[1:]) + 1
+        else:
+            id = 1
         return "T" + str(id)
 
 
