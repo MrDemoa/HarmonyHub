@@ -12,5 +12,5 @@ class ArtistBLL:
     def insert(artist_dto):
         ArtistDAL.insert(artist_dto)
 
-    def update(artist_dto):
-        ArtistDAL.update(artist_dto)
+    def update(self,artist_dto):
+        ArtistDAL.update(self,artist_dto)

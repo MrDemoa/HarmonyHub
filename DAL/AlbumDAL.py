@@ -39,9 +39,8 @@ class AlbumDAL:
     #     else:
     #         print("ma khong ton tai")
 
-    def update(album_dto):
-        global con
-        cursor = con.cursor()
+    def update(self,album_dto):
+        cursor = self.con.cursor()
         cursor.execute("update album set title = %s, artistID = %s, genre = %s, realeasedate = %s where albumID = %s", (album_dto.title, album_dto.artistID, album_dto.genre, album_dto.releasedate,album_dto.albumID))
-        con.commit
+        self.con.commit()
         cursor.close()

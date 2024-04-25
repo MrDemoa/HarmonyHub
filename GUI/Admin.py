@@ -408,6 +408,7 @@ class AlbumFrame(Frame):
             relief="flat",
             activebackground="#4394AE",
             activeforeground="#FFFFFF",
+            command=lambda: AlbumFrame.update_table(self)
             )
         self.edit_button.place(
             x=180.0,
@@ -415,23 +416,7 @@ class AlbumFrame(Frame):
             width=134.0,
             height=43.0,
             )
-        self.delete_command = Button(
-            self,
-            background="#4394AE",
-            text="Delete",
-            font=("Inter Medium", 20 * -1,"bold"),
-            fg="#FFFFFF",
-            relief="flat",
-            activebackground="#4394AE",
-            activeforeground="#FFFFFF",
-            command=lambda: AlbumFrame.delete_selected(self)
-            )
-        self.delete_command.place(
-            x=10.0,
-            y=0.0,
-            width=134.0,
-            height=43.0,
-            )
+ 
         #Table
         self.album_table = ttk.Treeview(self, columns=("Album ID","Title", "Artist ID", "Genre", "Release Date"), show='headings')
         self.album_table.heading("Album ID", text="Album ID")
@@ -479,19 +464,49 @@ class AlbumFrame(Frame):
         for row in rows:
             self.album_table.insert('', 'end', values=row)
         cursor.close()
-    # def delete_selected(self):
-    #     try:
-    #         selected_item = self.album_table.selection()[0]
-    #         album_id = self.album_table.item(selected_item, 'values')[0]
-            
-    #         AlbumBLL.delete(self,album_id)
-            
-    #         self.refresh_table()
-    #         # Show a success message
-    #         messagebox.showinfo("Success", "The content has been deleted successfully.")
-    #     except Exception as e:
-    #         # Show an error message
-    #         messagebox.showerror("Error", str(e))
+    def update_table(self):
+        try:
+            # Get the selected item
+            selected_item = self.album_table.selection()[0]
+            selected_row = self.album_table.item(selected_item, 'values')
+
+            # Create a new window
+            self.edit_window = Toplevel(self.master)
+            self.edit_window.title("Edit Row")
+
+            column_names = self.album_table["columns"]
+            # Create entry fields for each column
+            entries = []
+            for i, value in enumerate(selected_row):
+                    Label(self.edit_window, text=f"{column_names[i]}:").grid(row=i, column=0)
+                    entry = Entry(self.edit_window)
+                    entry.insert(0, value)
+                    entry.grid(row=i, column=1)
+                    if i in [0,2]:
+                        entry.config(state='readonly')
+                    entries.append(entry)
+            # Create a save button
+            save_button = Button(self.edit_window, text="Save", command=lambda: self.save_changes(entries))
+            save_button.grid(row=len(selected_row), column=0, columnspan=2)
+        except Exception as e:
+            messagebox.showinfo("Warning!","Please select a row to edit")
+    def save_changes(self, entries):
+        try:
+            # Get the new values from the entry fields
+            new_values = [entry.get() for entry in entries]
+            # Create a new AlbumDTO object with the new values
+            album_dto = AlbumDTO(new_values[0], new_values[1], new_values[2], new_values[3], new_values[4])
+            # Update the selected row in the database
+            AlbumBLL.update(self, album_dto)
+
+            # Update the selected row in the table
+            self.refresh_table()
+
+            # Close the window
+            self.edit_window.destroy()
+            messagebox.showinfo("Success", "The content has been updated successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
             
 class TrackFrame(Frame):
     def __init__(self, parent, big_frame,con):
@@ -649,7 +664,7 @@ class TrackFrame(Frame):
                     entry = Entry(self.edit_window)
                     entry.insert(0, value)
                     entry.grid(row=i, column=1)
-                    if i in [0,2]:
+                    if i in [0,2,3]:
                         entry.config(state='readonly')
                     entries.append(entry)
             # Create a save button
@@ -722,6 +737,7 @@ class ArtistFrame(Frame):
             relief="flat",
             activebackground="#4394AE",
             activeforeground="#FFFFFF",
+            command=lambda: ArtistFrame.update_table(self)
             )
         self.edit_button.place(
             x=180.0,
@@ -774,6 +790,51 @@ class ArtistFrame(Frame):
         for row in rows:
             self.artist_table.insert('', 'end', values=row)
         cursor.close()
+    def update_table(self):
+        try:
+            # Get the selected item
+            selected_item = self.artist_table.selection()[0]
+            selected_row = self.artist_table.item(selected_item, 'values')
+
+            # Create a new window
+            self.edit_window = Toplevel(self.master)
+            self.edit_window.title("Edit Row")
+
+            column_names = self.artist_table["columns"]
+            # Create entry fields for each column
+            entries = []
+            for i, value in enumerate(selected_row):
+                if i <3:
+                    Label(self.edit_window, text=f"{column_names[i]}:").grid(row=i, column=0)
+                    entry = Entry(self.edit_window)
+                    entry.insert(0, value)
+                    entry.grid(row=i, column=1)
+                    if i in [0]:
+                        entry.config(state='readonly')
+                    entries.append(entry)
+            # Create a save button
+            save_button = Button(self.edit_window, text="Save", command=lambda: self.save_changes(entries))
+            save_button.grid(row=len(selected_row), column=0, columnspan=2)
+        except Exception as e:
+            # messagebox.showinfo("Warning!","Please select a row to edit")
+            messagebox.showerror("Error", str(e))
+    def save_changes(self, entries):
+        try:
+            # Get the new values from the entry fields
+            new_values = [entry.get() for entry in entries]
+            # Create a new ArtistDTO object with the new values
+            artist_dto = ArtistDTO(new_values[0], new_values[1], new_values[2])
+            # Update the selected row in the database
+            ArtistBLL.update(self, artist_dto)
+
+            # Update the selected row in the table
+            self.refresh_table()
+
+            # Close the window
+            self.edit_window.destroy()
+            messagebox.showinfo("Success", "The content has been updated successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
     
 class UserFrame(Frame):
     def __init__(self, parent, big_frame,con):

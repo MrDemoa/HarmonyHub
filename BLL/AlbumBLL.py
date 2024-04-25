@@ -15,5 +15,5 @@ class AlbumBLL:
     # def delete(self,id):
     #     AlbumDAL.delete(self,id)
 
-    def update(album_dto):
-        AlbumDAL.update(album_dto)
+    def update(self,album_dto):
+        AlbumDAL.update(self,album_dto)
