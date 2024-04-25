@@ -765,6 +765,7 @@ class ArtistFrame(Frame):
             height=480.0
             )
         self.insert_into_table_artist()
+        
     def insert_into_table_artist(self):
         rows = ArtistBLL.getAllData(self)
         # Insert each row into the table
@@ -781,7 +782,7 @@ class ArtistFrame(Frame):
         cursor = self.con.cursor()
 
         # Execute a query to fetch all rows from the album table
-        cursor.execute("SELECT * FROM user")
+        cursor.execute("SELECT * FROM artist")
        
         # Fetch all rows
         rows = cursor.fetchall()
