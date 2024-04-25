@@ -25,9 +25,8 @@ class ArtistDAL:
         con.commit()
         cursor.close()
 
-    def update(artist_dto):
-        global con
-        cursor = con.cursor()
+    def update(self,artist_dto):
+        cursor = self.con.cursor()
         cursor.execute("update artist set name = %s, genre = %s where artistID = %s", (artist_dto.name, artist_dto.genre, artist_dto.artistID))
-        con.commit
+        self.con.commit()
         cursor.close()
