@@ -9,8 +9,11 @@ class AlbumBLL:
     def getAllData(self):
         return AlbumDAL.getAllData(self)
 
-    def insert(album_dto):
-        AlbumDAL.insert(album_dto)
+    def generateAlbumID(self):
+        return AlbumDAL.generateAlbumID(self)
+
+    def insert(self, album_dto):
+        AlbumDAL.insert(self, album_dto)
 
     # def delete(self,id):
     #     AlbumDAL.delete(self,id)

@@ -9,6 +9,9 @@ class ArtistBLL:
     def getAllData(self):
         return ArtistDAL.getAllData(self)
 
+    def generateArtistID(self):
+        return ArtistDAL.generateArtistID(self)
+
     def insert(artist_dto):
         ArtistDAL.insert(artist_dto)
 

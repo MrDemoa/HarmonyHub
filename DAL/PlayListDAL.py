@@ -18,6 +18,14 @@ class PlayListDAL:
         cursor.close()
         return records
 
+    def generatePlaylistID(self):
+        cursor = self.con.cursor()
+        cursor.execute("select PlaylistID from playlist order by playlistID desc limit 1")
+        playlist_id = cursor.fetchone()
+        id = playlist_id[0]
+        id = int(id[1:]) + 1
+        return "PL" + str(id)
+
     def insert(playlist_dto):
         global con
         con = ConnectSQL.connect_mysql()

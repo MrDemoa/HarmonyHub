@@ -9,6 +9,9 @@ class PlayListBLL:
     def getAllData(self):
         return PlayListDAL.getAllData(self)
 
+    def generatePlaylistID(self):
+        return PlayListDAL.generatePlaylistID(self)
+
     def insert(playlist_dto):
         PlayListDAL.insert(playlist_dto)
 

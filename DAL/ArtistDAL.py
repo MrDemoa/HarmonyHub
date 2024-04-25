@@ -17,6 +17,14 @@ class ArtistDAL:
         cursor.close()
         return records
 
+    def generateArtistID(self):
+        cursor = self.con.cursor()
+        cursor.execute("select artistID from artist order by artistID desc limit 1")
+        artist_id = cursor.fetchone()
+        id = artist_id[0]
+        id = int(id[1:]) + 1
+        return "AT" + str(id)
+
     def insert(artist_dto):
         global con
         con = ConnectSQL.connect_mysql()

@@ -18,6 +18,14 @@ class UserDAL():
         cursor.close()
         return records
 
+    def generateUserID(self):
+        cursor = self.con.cursor()
+        cursor.execute("select userID from user order by userID desc limit 1")
+        user_id = cursor.fetchone()
+        id = user_id[0]
+        id = int(id[1:]) + 1
+        return str(id)
+
     def insert(user_dto):
         global con
         con = ConnectSQL.connect_mysql()

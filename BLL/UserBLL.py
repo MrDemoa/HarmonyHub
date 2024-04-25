@@ -12,6 +12,9 @@ class UserBLL:
     def insert(user_dto):
         UserDAL.insert(user_dto)
 
+    def generateUserID(self):
+        return UserDAL.generateUserID(self)
+
     def checkUsernameAndPass(self, username, password):
         return UserDAL.checkUsernameAndPass(self, username, password)
 

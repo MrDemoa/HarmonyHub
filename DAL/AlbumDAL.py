@@ -18,6 +18,15 @@ class AlbumDAL:
         cursor.close()
         return records
 
+    def generateAlbumID(self):
+        cursor = self.con.cursor()
+        cursor.execute("select albumID from album order by albumID desc limit 1")
+        album_id = cursor.fetchone()
+        id = album_id[0]
+        id = int(id[1:]) + 1
+        return "AT" + str(id)
+
+
     def insert(album_dto):
         global con
         con = ConnectSQL.connect_mysql()
