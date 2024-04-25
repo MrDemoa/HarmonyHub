@@ -5,6 +5,7 @@
 
 from pathlib import Path
 import os
+import subprocess
 from tkinter import *
 from PIL import Image, ImageTk
 import sys
@@ -77,17 +78,17 @@ class Login:
             image=self.logo_image
         )
         #Login Button
-        self.button_1 = Button(  
+        self.login_button = Button(  
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_1 clicked"),
+            command=self.run_gui,
             relief="flat",
             background="#3B66FF",
             text="Login",
             font=("Inter Medium", 24 * -1),
             fg="#FFFFFF"
         )
-        self.button_1.place(
+        self.login_button.place(
             x=94.0,
             y=399.0,
             width=212.0,
@@ -231,7 +232,9 @@ class Login:
     def run(self):
         self.window.resizable(False, False)
         self.window.mainloop()
-
+    def run_gui(self):
+        subprocess.Popen(["python", "GUI/gui.py"])
+        self.window.destroy()
 if __name__ == "__main__":
     login = Login()
     login.run()

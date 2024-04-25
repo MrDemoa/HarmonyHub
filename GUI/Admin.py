@@ -281,6 +281,7 @@ class Admin:
             TrackBLL.insert(track_dto)
             messagebox.showinfo("Success", "Track inserted successfully")
             dialog.destroy()
+            Frame.refresh_table(self)
             
         except Exception as e:
             messagebox.showerror("Error", str(e))
@@ -575,6 +576,7 @@ class TrackFrame(Frame):
             relief="flat",
             activebackground="#4394AE",
             activeforeground="#FFFFFF",
+            command=lambda: TrackFrame.delete_selected(self)
             )
         self.delete_button.place(
             x=10.0,
