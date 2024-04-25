@@ -12,6 +12,6 @@ class UserBLL:
     def insert(user_dto):
         UserDAL.insert(user_dto)
 
-    def update(user_dto):
-        UserDAL.update(user_dto)
+    def update(self,user_dto):
+        UserDAL.update(self,user_dto)
 

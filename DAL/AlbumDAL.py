@@ -27,18 +27,17 @@ class AlbumDAL:
         cursor.close()
 
 #Chua xong ham sua
-    def delete(id):
-        global con 
-        cursor = con.cursor()
-        cursor.execute("delete from album where albumID = %s", (id,))
-        count = int(cursor.rowcount)
-        con.commit()
-        cursor.close()
+    # def delete(self,id): 
+    #     cursor = self.con.cursor()
+    #     cursor.execute("delete from album where albumID = %s", (id,))
+    #     count = int(cursor.rowcount)
+    #     self.con.commit()
+    #     cursor.close()
 
-        if count > 0:
-            print("Xoa thanh cong")
-        else:
-            print("ma khong ton tai")
+    #     if count > 0:
+    #         print("Xoa thanh cong")
+    #     else:
+    #         print("ma khong ton tai")
 
     def update(album_dto):
         global con

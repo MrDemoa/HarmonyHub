@@ -12,8 +12,8 @@ class TrackBLL:
     def insert(track_dto):
         TrackDAL.insert(track_dto)
 
-    def delete(Trackid):
-        TrackDAL.delete(Trackid)
+    def delete(self,Trackid):
+        TrackDAL.delete(self,Trackid)
 
-    def update(track_dto):
-        TrackDAL.update(track_dto)
+    def update(self,track_dto):
+        TrackDAL.update(self,track_dto)

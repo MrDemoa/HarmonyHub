@@ -61,7 +61,7 @@ class Admin:
             0.0,
             1000.0,
             48.0,
-            fill="#B4B4B4",
+            fill="#FF9900",
             outline="")
 
         self.logo_image = PhotoImage(file=relative_to_assets("Hub.png"))
@@ -101,7 +101,7 @@ class Admin:
             anchor="nw",
             text="Hello Admin",
             fill="#FFFFFF",
-            font=("Inter ExtraBold", 20 * -1)
+            font=("Inter ExtraBold", 20 * -1,"bold")
         )
         #Albums
         self.canvas.create_text(
@@ -159,7 +159,7 @@ class Admin:
             )
         self.shut_down_button.place(
             x=83.0,
-            y=631.0,
+            y=625.0,
             width=80.0,
             height=60.0,)
 
@@ -377,9 +377,9 @@ class AlbumFrame(Frame):
         )
 
         self.add_album_button.place(
-            x=480.0,
+            x=520.0,
             y=0.0,
-            width=174.0,
+            width=134.0,
             height=43.0,
             )
         self.refrest_button = Button(
@@ -394,26 +394,59 @@ class AlbumFrame(Frame):
             command=lambda: AlbumFrame.refresh_table(self)
         )
         self.refrest_button.place(
-            x=290.0,
+            x=350.0,
             y=0.0,
-            width=174.0,
+            width=134.0,
+            height=43.0,
+            )
+        self.edit_button = Button(
+            self,
+            background="#4394AE",
+            text="Edit",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            )
+        self.edit_button.place(
+            x=180.0,
+            y=0.0,
+            width=134.0,
+            height=43.0,
+            )
+        self.delete_command = Button(
+            self,
+            background="#4394AE",
+            text="Delete",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            command=lambda: AlbumFrame.delete_selected(self)
+            )
+        self.delete_command.place(
+            x=10.0,
+            y=0.0,
+            width=134.0,
             height=43.0,
             )
         #Table
-        self.album_table = ttk.Treeview(self, columns=("Album ID","Title", "Artist ID", "Genre", "Release Date","Action"), show='headings')
+        self.album_table = ttk.Treeview(self, columns=("Album ID","Title", "Artist ID", "Genre", "Release Date"), show='headings')
         self.album_table.heading("Album ID", text="Album ID")
         self.album_table.heading("Title", text="Title")
         self.album_table.heading("Artist ID", text="Artist ID")
         self.album_table.heading("Genre", text="Genre")
         self.album_table.heading("Release Date", text="Release Date")
-        self.album_table.heading("Action", text="Action")
+        
 
         self.album_table.column("Album ID", width=100, anchor='center')
         self.album_table.column("Title", width=100, anchor='center')
         self.album_table.column("Artist ID", width=100, anchor='center')
         self.album_table.column("Genre", width=100, anchor='center')
         self.album_table.column("Release Date", width=100, anchor='center')
-        self.album_table.column("Action", width=100, anchor='center')
+    
 
         self.album_table.place(
             x=0,
@@ -427,7 +460,7 @@ class AlbumFrame(Frame):
         # Insert each row into the table
         for row in rows:
             self.album_table.insert('', 'end', values=row)
-
+        self.refresh_table()
 
     def refresh_table(self):
         # Delete all rows from the table
@@ -446,6 +479,20 @@ class AlbumFrame(Frame):
         for row in rows:
             self.album_table.insert('', 'end', values=row)
         cursor.close()
+    # def delete_selected(self):
+    #     try:
+    #         selected_item = self.album_table.selection()[0]
+    #         album_id = self.album_table.item(selected_item, 'values')[0]
+            
+    #         AlbumBLL.delete(self,album_id)
+            
+    #         self.refresh_table()
+    #         # Show a success message
+    #         messagebox.showinfo("Success", "The content has been deleted successfully.")
+    #     except Exception as e:
+    #         # Show an error message
+    #         messagebox.showerror("Error", str(e))
+            
 class TrackFrame(Frame):
     def __init__(self, parent, big_frame,con):
         super().__init__(parent)
@@ -465,9 +512,9 @@ class TrackFrame(Frame):
         )
 
         self.add_track_button.place(
-            x=480,
+            x=520,
             y=0,
-            width=174.0,
+            width=134.0,
             height=43.0,
             )
         self.refrest_button = Button(
@@ -482,21 +529,55 @@ class TrackFrame(Frame):
             command=lambda: TrackFrame.refresh_table(self)
         )
         self.refrest_button.place(
-            x=290.0,
+            x=350.0,
             y=0.0,
-            width=174.0,
+            width=134.0,
             height=43.0,
             )
+        self.edit_button = Button(
+            self,
+            background="#4394AE",
+            text="Edit",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            command=lambda: TrackFrame.update_table(self)
+            )
+        self.edit_button.place(
+            x=180.0,
+            y=0.0,
+            width=134.0,
+            height=43.0,
+            )
+        self.delete_button = Button(
+            self,
+            background="#4394AE",
+            text="Delete",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            )
+        self.delete_button.place(
+            x=10.0,
+            y=0.0,
+            width=134.0,
+            height=43.0,
+            )
+        
         #Table
 
-        self.track_table = ttk.Treeview(self, columns=("Track ID","Title","Artist ID" ,"Album ID", "Duration","Release Date","Action"), show='headings')
+        self.track_table = ttk.Treeview(self, columns=("Track ID","Title","Artist ID" ,"Album ID", "Duration","Release Date"), show='headings')
         self.track_table.heading("Track ID", text="Track ID")
         self.track_table.heading("Title", text="Title")
         self.track_table.heading("Artist ID", text="Artist ID")
         self.track_table.heading("Album ID", text="Album ID")
         self.track_table.heading("Duration", text="Duration")
         self.track_table.heading("Release Date", text="Release Date")
-        self.track_table.heading("Action", text="Action")
+    
 
         self.track_table.column("Track ID", width=75, anchor='center')
         self.track_table.column("Title", width=100, anchor='center')
@@ -504,7 +585,7 @@ class TrackFrame(Frame):
         self.track_table.column("Album ID", width=100, anchor='center')
         self.track_table.column("Duration", width=100, anchor='center')
         self.track_table.column("Release Date", width=100, anchor='center')
-        self.track_table.column("Action", width=90, anchor='center')
+
      
         self.track_table.place(
             x=0,
@@ -519,7 +600,7 @@ class TrackFrame(Frame):
             # Insert each row into the table
             for row in rows:
                 self.track_table.insert('', 'end', values=row)
-
+            self.refresh_table()
     def refresh_table(self):
         # Delete all rows from the table
         for i in self.track_table.get_children():
@@ -537,6 +618,62 @@ class TrackFrame(Frame):
         for row in rows:
             self.track_table.insert('', 'end', values=row)
         cursor.close()
+    def delete_selected(self):
+        try:
+            selected_item = self.track_table.selection()[0]
+            track_id = self.track_table.item(selected_item, 'values')[0]
+            
+            TrackBLL.delete(self,track_id)
+            
+            self.refresh_table()
+            # Show a success message
+            messagebox.showinfo("Success", "The content has been deleted successfully.")
+        except Exception as e:
+            # Show an error message
+            messagebox.showerror("Error", str(e))
+    def update_table(self):
+        try:
+            # Get the selected item
+            selected_item = self.track_table.selection()[0]
+            selected_row = self.track_table.item(selected_item, 'values')
+
+            # Create a new window
+            self.edit_window = Toplevel(self.master)
+            self.edit_window.title("Edit Row")
+
+            column_names = self.track_table["columns"]
+            # Create entry fields for each column
+            entries = []
+            for i, value in enumerate(selected_row):             
+                    Label(self.edit_window, text=f"{column_names[i]}:").grid(row=i, column=0)
+                    entry = Entry(self.edit_window)
+                    entry.insert(0, value)
+                    entry.grid(row=i, column=1)
+                    if i in [0,2]:
+                        entry.config(state='readonly')
+                    entries.append(entry)
+            # Create a save button
+            save_button = Button(self.edit_window, text="Save", command=lambda: self.save_changes(entries))
+            save_button.grid(row=len(selected_row), column=0, columnspan=2)
+        except Exception as e:
+            messagebox.showinfo("Warning!","Please select a row to edit")
+    def save_changes(self, entries):
+        try:
+            # Get the new values from the entry fields
+            new_values = [entry.get() for entry in entries]
+            # Create a new TrackDTO object with the new values
+            track_dto = TrackDTO(new_values[0], new_values[1], new_values[2], new_values[3], new_values[4], new_values[5])
+            # Update the selected row in the database
+            TrackBLL.update(self, track_dto)
+
+            # Update the selected row in the table
+            self.refresh_table()
+
+            # Close the window
+            self.edit_window.destroy()
+            messagebox.showinfo("Success", "The content has been updated successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
 class ArtistFrame(Frame):
     def __init__(self, parent, big_frame,con):
         super().__init__(parent)
@@ -554,9 +691,9 @@ class ArtistFrame(Frame):
             command=lambda: big_frame.show_dialog_artist()
         )
         self.add_artist_button.place(
-            x=480.0,
+            x=520.0,
             y=0.0,
-            width=174.0,
+            width=134.0,
             height=43.0,
             )
         self.refrest_button = Button(
@@ -571,22 +708,39 @@ class ArtistFrame(Frame):
             command=lambda: ArtistFrame.refresh_table(self)
         )
         self.refrest_button.place(
-            x=290.0,
+            x=350.0,
             y=0.0,
-            width=174.0,
+            width=134.0,
             height=43.0,
             )
+        self.edit_button = Button(
+            self,
+            background="#4394AE",
+            text="Edit",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            )
+        self.edit_button.place(
+            x=180.0,
+            y=0.0,
+            width=134.0,
+            height=43.0,
+            )
+        
         #Table
-        self.artist_table = ttk.Treeview(self, columns=("Artist ID","Name", "Genre","Action"), show='headings')
+        self.artist_table = ttk.Treeview(self, columns=("Artist ID","Name", "Genre"), show='headings')
         self.artist_table.heading("Artist ID", text="Artist ID")
         self.artist_table.heading("Name", text="Name")
         self.artist_table.heading("Genre", text="Genre")
-        self.artist_table.heading("Action", text="Action")
+
 
         self.artist_table.column("Artist ID", width=100, anchor='center')
         self.artist_table.column("Name", width=100, anchor='center')
         self.artist_table.column("Genre", width=100, anchor='center')
-        self.artist_table.column("Action", width=100, anchor='center')
+
 
         self.artist_table.place(
             x=0,
@@ -600,6 +754,8 @@ class ArtistFrame(Frame):
         # Insert each row into the table
         for row in rows:
             self.artist_table.insert('', 'end', values=row)
+            
+        self.refresh_table()
 
     def refresh_table(self):
         # Delete all rows from the table
@@ -618,7 +774,7 @@ class ArtistFrame(Frame):
         for row in rows:
             self.artist_table.insert('', 'end', values=row)
         cursor.close()
-        
+    
 class UserFrame(Frame):
     def __init__(self, parent, big_frame,con):
         super().__init__(parent)
@@ -636,9 +792,9 @@ class UserFrame(Frame):
             command=lambda: big_frame.show_dialog_user()
         )
         self.add_user_button.place(
-            x=480.0,
+            x=520.0,
             y=0.0,
-            width=174.0,
+            width=134.0,
             height=43.0,
             )
         self.refrest_button = Button(
@@ -653,24 +809,43 @@ class UserFrame(Frame):
             command=lambda: UserFrame.refresh_table(self)
         )
         self.refrest_button.place(
-            x=290.0,
+            x=350.0,
             y=0.0,
-            width=174.0,
+            width=134.0,
             height=43.0,
             )
+        self.edit_button = Button(
+            self,
+            background="#4394AE",
+            text="Edit",
+            font=("Inter Medium", 20 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            command=lambda: UserFrame.update_table(self)
+            )
+        self.edit_button.place(
+            x=180.0,
+            y=0.0,
+            width=134.0,
+            height=43.0,
+            )
+      
+        
         #Table     
-        self.user_table = ttk.Treeview(self, columns=("User ID","Username", "Email", "Password","Action"), show='headings')
+        self.user_table = ttk.Treeview(self, columns=("User ID","Username", "Email", "Password"), show='headings')
         self.user_table.heading("User ID", text="User ID")
         self.user_table.heading("Username", text="Username")
         self.user_table.heading("Email", text="Email")
         self.user_table.heading("Password", text="Password")
-        self.user_table.heading("Action", text="Action")
+
         
         self.user_table.column("User ID", width=100, anchor='center')
         self.user_table.column("Username", width=100, anchor='center')
         self.user_table.column("Email", width=100, anchor='center')
         self.user_table.column("Password", width=100, anchor='center')
-        self.user_table.column("Action", width=100, anchor='center')
+
         
         self.user_table.place(
             x=0,
@@ -685,6 +860,7 @@ class UserFrame(Frame):
         # Insert each row into the table
         for row in rows:
             self.user_table.insert('', 'end', values=row)
+        self.refresh_table()
 
     def refresh_table(self):
         # Delete all rows from the table
@@ -703,6 +879,49 @@ class UserFrame(Frame):
         for row in rows:
             self.user_table.insert('', 'end', values=row)
         cursor.close()
+    def update_table(self):
+        try:
+            # Get the selected item
+            selected_item = self.user_table.selection()[0]
+            selected_row = self.user_table.item(selected_item, 'values')
+
+            # Create a new window
+            self.edit_window = Toplevel(self.master)
+            self.edit_window.title("Edit Row")
+
+            column_names = self.user_table["columns"]
+            # Create entry fields for each column
+            entries = []
+            for i, value in enumerate(selected_row):
+                    Label(self.edit_window, text=f"{column_names[i]}:").grid(row=i, column=0)
+                    entry = Entry(self.edit_window)
+                    entry.insert(0, value)
+                    entry.grid(row=i, column=1)
+                    if i in [0]:
+                        entry.config(state='readonly')
+                    entries.append(entry)
+            # Create a save button
+            save_button = Button(self.edit_window, text="Save", command=lambda: self.save_changes(entries))
+            save_button.grid(row=len(selected_row), column=0, columnspan=2)
+        except Exception as e:
+            messagebox.showinfo("Warning!","Please select a row to edit")
+    def save_changes(self, entries):
+        try:
+            # Get the new values from the entry fields
+            new_values = [entry.get() for entry in entries]
+            # Create a new UserDTO object with the new values
+            user_dto = UserDTO(new_values[0], new_values[1], new_values[2], new_values[3])
+            # Update the selected row in the database
+            UserBLL.update(self, user_dto)
+
+            # Update the selected row in the table
+            self.refresh_table()
+
+            # Close the window
+            self.edit_window.destroy()
+            messagebox.showinfo("Success", "The content has been updated successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
 if __name__ == "__main__":
     admin = Admin()
     admin.run()

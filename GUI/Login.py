@@ -100,7 +100,7 @@ class Login:
             30.0,
             image=self.note_image
             )
-
+        
         self.user_field=create_rounded_rect(self.canvas, 
                                     61.0, 
                                     208.0, 
@@ -116,6 +116,7 @@ class Login:
                                                 328.0,
                                                 fill="#F3F2F2",
                                                 outline="")
+        
         self.user_input = Entry( width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1), fg="#AAAAAA")
         self.user_input.place(x=110.0, y=230.0, height=15.0)
         self.user_input.bind("<FocusIn>", self.clear_hint)
@@ -123,6 +124,23 @@ class Login:
         self.user_input.bind("<Return>", lambda event: self.password_input.focus())
         self.user_input.insert(0, "Enter Username")
         
+        #Show password icon
+        self.show_password_image = PhotoImage(file=relative_to_assets("Closed Eye.png"))
+        self.show_password_button=Button(
+            image=self.show_password_image,
+            relief="flat",
+            highlightthickness=0,
+            bd=0,
+            command=lambda: self.toggle_password(),
+            background="#F3F2F2",
+            activebackground="#F3F2F2"
+        )
+        self.show_password_button.place(x=322.0, y=285.0)
+        
+        # Create a BooleanVar to track whether the password is shown or hidden
+        self.password_shown = BooleanVar()
+        self.password_shown.set(False)
+
         self.password_input = Entry( width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1), fg="#AAAAAA",show="*")
         self.password_input.place(x=110.0, y=295.0, height=15.0)
         self.password_input.bind("<FocusIn>", self.clear_hint)
@@ -142,7 +160,7 @@ class Login:
             85.0,
             235.0,
             image=self.user_image)
-
+        
         # Forgot password text
         self.forgot_password_text=self.canvas.create_text(
             260.0,
@@ -201,6 +219,15 @@ class Login:
             elif event.widget == self.password_input:
                 event.widget.insert(0, "Enter Password")
             event.widget.config(fg="#AAAAAA")  
+    def toggle_password(self):
+        # If the password is currently shown, hide it
+        if self.password_shown.get():
+            self.password_input.config(show="*")
+            self.password_shown.set(False)
+        # If the password is currently hidden, show it
+        else:
+            self.password_input.config(show="")
+            self.password_shown.set(True)
     def run(self):
         self.window.resizable(False, False)
         self.window.mainloop()
