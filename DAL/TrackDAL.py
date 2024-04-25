@@ -27,12 +27,11 @@ class TrackDAL():
         cursor.close()
 
 #Chua xong
-    def delete(trackID):
-        global con 
-        cursor = con.cursor()
+    def delete(self,trackID):
+        cursor = self.con.cursor()
         cursor.execute("delete from track where trackID = %s", (trackID,))
         count = int(cursor.rowcount)
-        con.commit()
+        self.con.commit()
         cursor.close()
 
         if count > 0:
@@ -40,11 +39,10 @@ class TrackDAL():
         else:
             print("ma khong ton tai")
 
-    def update(track_dto):
-        global con
-        cursor = con.cursor()
-        cursor.execute("update track set title = %s, artistID = %s, albumID = %s, duration = %s, realeasedate = %s where trackID = %s", ( track_dto.title, track_dto.artistID, track_dto.albumID, track_dto.duration, track_dto.realeasedate, track_dto.trackID))
-        con.commit
+    def update(self,track_dto):
+        cursor = self.con.cursor()
+        cursor.execute("update track set title = %s, artistID = %s, albumID = %s, duration = %s, realeasedate = %s where trackID = %s", ( track_dto.title, track_dto.artistID, track_dto.albumID, track_dto.duration, track_dto.releasedate, track_dto.trackID))
+        self.con.commit()
         cursor.close()
 
 trackdal = TrackDAL()

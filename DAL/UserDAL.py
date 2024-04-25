@@ -28,9 +28,8 @@ class UserDAL():
 
     #def delete():
 
-    def update(user_dto):
-        global con
-        cursor = con.cursor()
+    def update(self,user_dto):
+        cursor = self.con.cursor()
         cursor.execute("update user set username = %s, email = %s, password = %s where userID = %s", (user_dto.username, user_dto.email, user_dto.password, user_dto.userID))
-        con.commit
+        self.con.commit()
         cursor.close()
