@@ -11,9 +11,11 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 import sys
 import threading
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUTPUT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ASSETS_PATH = os.path.join(OUTPUT_PATH, "GUI\\assets\\frame1")
+from DAL.ConnectDB import ConnectSQL
 from BLL import UserBLL
 
 def on_forgot_password_click(event):
@@ -48,7 +50,7 @@ class Login:
         self.window.title("Login")
         self.window.geometry("400x650")
         self.window.configure(bg = "#FFFFFF")
-        
+        self.con = ConnectSQL.connect_mysql()
 
         self.canvas = Canvas(
             self.window,
@@ -121,10 +123,10 @@ class Login:
                                                 outline="")
         
         self.user_input = Entry( width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1), fg="#AAAAAA")
-        self.user_input.place(x=110.0, y=230.0, height=15.0)
+        self.user_input.place(x=110.0, y=225.0, height=25.0)
         self.user_input.bind("<FocusIn>", self.clear_hint)
         self.user_input.bind("<FocusOut>", self.restore_hint)
-        self.user_input.bind("<Return>", lambda event: self.password_input.focus())
+        self.user_input.bind("<Return>", lambda event: self.password_input.focus_set())
         self.user_input.insert(0, "Enter Username")
         
         #Show password icon
@@ -145,7 +147,7 @@ class Login:
         self.password_shown.set(False)
 
         self.password_input = Entry( width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1), fg="#AAAAAA",show="*")
-        self.password_input.place(x=110.0, y=295.0, height=15.0)
+        self.password_input.place(x=110.0, y=290.0, height=25.0)
         self.password_input.bind("<FocusIn>", self.clear_hint)
         self.password_input.bind("<FocusOut>", self.restore_hint)
         self.password_input.bind("<Return>", lambda event: self.login_button.invoke())
@@ -188,18 +190,24 @@ class Login:
         #Facebook and Google icon
         self.facebook_image = PhotoImage(
             file=relative_to_assets("Facebook.png"))
-        self.facebook_image_1=self.canvas.create_image(
-            240.0,
-            577.0,
-            image=self.facebook_image)
+        self.facebook_button=Button(
+            image=self.facebook_image,
+            background="#272E41",
+            activebackground="#272E41",
+            relief="flat",
+            command=lambda : messagebox.showinfo("Facebook", "Facebook login is not available yet"),
+            )
+        self.facebook_button.place(x=210.0, y=550.0)
 
         self.google_image = PhotoImage(
             file=relative_to_assets("Google.png"))
-        self.google_image_image_1=self.canvas.create_image(
-            170.0,
-            577.0,
+        self.google_button=Button(
+            background="#272E41",
+            activebackground="#272E41",
+            relief="flat",
+            command=lambda : messagebox.showinfo("Google", "Google login is not available yet"),
             image=self.google_image)
-
+        self.google_button.place(x=150.0, y=552.0)
         self.canvas.create_text(
             150.0,
             521.0,
