@@ -36,6 +36,7 @@ class Admin:
         self.album = AlbumDAL()
         self.con = ConnectSQL.connect_mysql()
         self.server = None
+        #self.track_frame = TrackFrame() 
 
         self.canvas = Canvas(
             self.window,
@@ -258,7 +259,7 @@ class Admin:
         dialog = Toplevel(self.window)
         dialog.title("Input")
 
-        labels = ["Track ID", "Title","Artist ID", "Album ID", "Duration","Release Date"]
+        labels = ["Title","Artist ID", "Album ID", "Duration","Release Date"]
         entries = []
 
         for i, label in enumerate(labels):
@@ -270,15 +271,18 @@ class Admin:
         Button(dialog, text="Submit", command=lambda: self.process_entries_track(entries,dialog)).grid(row=len(labels), column=0, columnspan=2)
     def process_entries_track(self, entries,dialog):
         try:
+            print("ADMIN HERE:", TrackBLL.generateTrackID(self))
             track_dto = TrackDTO(
-                trackID=entries[0].get(),
-                title=entries[1].get(),
-                artistID=entries[2].get(),
-                albumID=entries[3].get(),
-                duration=entries[4].get(),
-                releasedate=entries[5].get()
+                trackID=TrackBLL.generateTrackID(self),
+                title=entries[0].get(),
+                artistID=entries[1].get(),
+                albumID=entries[2].get(),
+                duration=entries[3].get(),
+                releasedate=entries[4].get()
             )
-            TrackBLL.insert(track_dto)
+            print("TRAC_DTO: ", track_dto.trackID, track_dto.title, track_dto.artistID,
+                  track_dto.albumID, track_dto.duration, track_dto.releasedate)
+            TrackBLL.insert(self, track_dto)
             messagebox.showinfo("Success", "Track inserted successfully")
             dialog.destroy()
             
@@ -336,6 +340,7 @@ class Admin:
             UserBLL.insert(user_dto)
             messagebox.showinfo("Success", "User inserted successfully")
             dialog.destroy()
+            
             
         except Exception as e:
             messagebox.showerror("Error", str(e))
@@ -616,6 +621,7 @@ class TrackFrame(Frame):
             for row in rows:
                 self.track_table.insert('', 'end', values=row)
             self.refresh_table()
+
     def refresh_table(self):
         # Delete all rows from the table
         for i in self.track_table.get_children():
@@ -633,6 +639,7 @@ class TrackFrame(Frame):
         for row in rows:
             self.track_table.insert('', 'end', values=row)
         cursor.close()
+
     def delete_selected(self):
         try:
             selected_item = self.track_table.selection()[0]

@@ -18,13 +18,25 @@ class TrackDAL():
         cursor.close()
         return records
 
-    def insert(track_dto):
-        global con
-        con = ConnectSQL.connect_mysql()
-        cursor = con.cursor()
-        cursor.execute("insert into track values(%s, %s, %s, %s, %s, %s)", (track_dto.trackID, track_dto.title, track_dto.artistID, track_dto.albumID, track_dto.duration, track_dto.releasedate))
-        con.commit()
-        cursor.close()
+    def generateTrackID(self):
+        cursor = self.con.cursor()
+        cursor.execute("select trackID from track order by trackID desc limit 1")
+        track_id = cursor.fetchone()
+        id = track_id[0]
+        id = int(id[1:]) + 1
+        return "T" + str(id)
+
+
+    def insert(self, track_dto):
+        try:
+            cursor = self.con.cursor()
+            if track_dto.albumID == "None":
+                track_dto.albumID = None
+            cursor.execute("insert into track values(%s, %s, %s, %s, %s, %s)", (track_dto.trackID, track_dto.title, track_dto.artistID, track_dto.albumID, track_dto.duration, track_dto.releasedate))
+            self.con.commit()
+            cursor.close()
+        except Exception as e:
+            print("DAL TRACK:", str(e))
 
 #Chua xong
     def delete(self,trackID):
@@ -46,4 +58,4 @@ class TrackDAL():
         cursor.close()
 
 trackdal = TrackDAL()
-trackdal.getAllData()
+#trackdal.generateTrackID()
