@@ -285,6 +285,7 @@ class Admin:
             TrackBLL.insert(self, track_dto)
             messagebox.showinfo("Success", "Track inserted successfully")
             dialog.destroy()
+            Frame.refresh_table(self)
             
         except Exception as e:
             messagebox.showerror("Error", str(e))
@@ -580,6 +581,7 @@ class TrackFrame(Frame):
             relief="flat",
             activebackground="#4394AE",
             activeforeground="#FFFFFF",
+            command=lambda: TrackFrame.delete_selected(self)
             )
         self.delete_button.place(
             x=10.0,
@@ -772,6 +774,7 @@ class ArtistFrame(Frame):
             height=480.0
             )
         self.insert_into_table_artist()
+        
     def insert_into_table_artist(self):
         rows = ArtistBLL.getAllData(self)
         # Insert each row into the table
@@ -788,7 +791,7 @@ class ArtistFrame(Frame):
         cursor = self.con.cursor()
 
         # Execute a query to fetch all rows from the album table
-        cursor.execute("SELECT * FROM user")
+        cursor.execute("SELECT * FROM artist")
        
         # Fetch all rows
         rows = cursor.fetchall()
