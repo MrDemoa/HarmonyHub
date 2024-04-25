@@ -61,6 +61,14 @@ class Server:
             self.sendAudio(client, address)
         elif (signal == "DATA_TRACK"):
             self.sendDataTrack(client)
+        elif (signal == "DATA_ALBUM"):
+            self.senDataAlbum(client)
+        elif (signal == "DATA_TRACK_ALBUM"):
+            self.senDataTrackInAlbum(client)
+        elif (signal == "DATA_ARTIST"):
+            self.senDataArtist(client)
+        elif (signal == "DATA_TRACK_ARTIST"):
+            self.senDataTrackOfArtist(client)
 
     # def send_music(self, client, address):
     #     # Khởi tạo thread để nhận dữ liệu từ client
