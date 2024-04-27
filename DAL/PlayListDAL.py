@@ -17,6 +17,13 @@ class PlayListDAL:
         records = cursor.fetchall()
         cursor.close()
         return records
+    
+    def getDataPlaylistFromUserID(self, userID):
+        cursor = self.con.cursor()
+        cursor.execute("select playlistID, title, creationdate from playlist where userID = %s", (userID))
+        records = cursor.fetchall()
+        cursor.close()
+        return records
 
     def generatePlaylistID(self):
         cursor = self.con.cursor()
@@ -31,7 +38,7 @@ class PlayListDAL:
 
     def insert(self,playlist_dto):
         cursor = self.con.cursor()
-        cursor.execute("insert into playlist values(%s, %s, %s, %s)", (playlist_dto.playlistID, playlist_dto.userID, playlist_dto.title, playlist_dto.creationdate))
+        cursor.execute("insert into playlist values(%s, %s, %s, %s, %s)", (playlist_dto.playlistID, playlist_dto.userID, playlist_dto.trackID, playlist_dto.title, playlist_dto.creationdate))
         self.con.commit()
         cursor.close()
 

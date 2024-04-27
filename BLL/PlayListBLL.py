@@ -6,8 +6,12 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from DAL.PlayListDAL import PlayListDAL
 
 class PlayListBLL:
+
     def getAllData(self):
         return PlayListDAL.getAllData(self)
+    
+    def getDataPlaylistFromUserID(self, userID):
+        return PlayListDAL.getDataPlaylistFromUserID(self, userID)
 
     def generatePlaylistID(self):
         return PlayListDAL.generatePlaylistID(self)

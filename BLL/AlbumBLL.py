@@ -20,3 +20,6 @@ class AlbumBLL:
 
     def update(self,album_dto):
         AlbumDAL.update(self,album_dto)
+
+    def getTracksFromAlbumID(self, albumID):
+        return AlbumDAL.getTracksFromAlbumID(self, albumID)

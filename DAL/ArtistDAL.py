@@ -34,8 +34,15 @@ class ArtistDAL:
         self.con.commit()
         cursor.close()
 
-    def update(self,artist_dto):
+    def update(self, artist_dto):
         cursor = self.con.cursor()
         cursor.execute("update artist set name = %s, genre = %s where artistID = %s", (artist_dto.name, artist_dto.genre, artist_dto.artistID))
         self.con.commit()
         cursor.close()
+
+    def getTracksFromArtistID(self, artistID):
+        cursor = self.con.cursor()
+        cursor.execute("select * from track where artistID = %s", (artistID))
+        records = cursor.fetchall()
+        cursor.close()
+        return records

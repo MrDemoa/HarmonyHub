@@ -17,3 +17,6 @@ class ArtistBLL:
 
     def update(self,artist_dto):
         ArtistDAL.update(self,artist_dto)
+
+    def getTracksFromArtistID(self, artistID):
+        return ArtistDAL.getTracksFromArtistID(self, artistID)

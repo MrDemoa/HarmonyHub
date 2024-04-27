@@ -54,3 +54,10 @@ class AlbumDAL:
         cursor.execute("update album set title = %s, artistID = %s, genre = %s, realeasedate = %s where albumID = %s", (album_dto.title, album_dto.artistID, album_dto.genre, album_dto.releasedate,album_dto.albumID))
         self.con.commit()
         cursor.close()
+
+    def getTracksFromAlbumID(self, albumID):
+        cursor = self.con.cursor()
+        cursor.execute("select * from track where albumID = %s", (albumID))
+        records = cursor.fetchall()
+        cursor.close()
+        return records

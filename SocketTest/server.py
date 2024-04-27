@@ -11,6 +11,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from datetime import date
 from DTO.TrackDTO import TrackDTO
 from BLL.TrackBLL import TrackBLL
+from BLL.AlbumBLL import AlbumBLL
+from BLL.ArtistBLL import ArtistBLL
+from BLL.PlayListBLL import PlayListBLL
+from BLL.UserBLL import UserBLL
 
 # Initialize Pygame mixer
 from pygame import mixer
@@ -57,8 +61,10 @@ class Server:
         client, address = self.server_socket.accept()
         signal = client.recv(1024).decode("utf-8")
         print(signal)
-        if (signal == "PLAY_SONG_"):
-            self.sendAudio(client, address)
+        if (signal == "LOGIN"):
+            self.sendDataUser(client, address)
+        elif (signal == "DATA_PLAYLIST"):
+            self.sendDataPlayList(client, address)
         elif (signal == "DATA_TRACK"):
             self.sendDataTrack(client)
         elif (signal == "DATA_ALBUM"):
@@ -69,6 +75,8 @@ class Server:
             self.senDataArtist(client)
         elif (signal == "DATA_TRACK_ARTIST"):
             self.senDataTrackOfArtist(client)
+        elif (signal == "PLAY_SONG_"):
+            self.sendAudio(client, address)
 
     # def send_music(self, client, address):
     #     # Khởi tạo thread để nhận dữ liệu từ client
@@ -81,7 +89,7 @@ class Server:
     #     self.receive_thread.start()
     #========================================================================================
 
-    def get_audio_file_path(self,track_name):
+    def get_audio_file_path(self, track_name):
         # Directory where audio files are stored
         project_directory = os.getcwd()
         current_directory = os.path.join(project_directory, "SocketTest\\resource\\SongList")
@@ -96,34 +104,6 @@ class Server:
         
         # If no matching file found, return None
         return None
-
-
-    # Function to send audio data
-    def send_audio(self, client, filename):
-        try:
-            # Mở file audio
-            with open(filename, 'rb') as file:
-                # file_size = os.path.getsize(filename)
-                # print("FILE SIZE:" + file_size)
-                # client.send(str(file_size).encode())
-                
-                # with open(filename, "rb") as music_file:
-                #     data = music_file.read(1024)
-                #     while data:
-                #         self.clientSocket.sendall(data)
-                #         data = music_file.read(1024)
-
-                while True:
-                    # Đọc dữ liệu từ file
-                    data = file.read(1024)
-                    if not data:
-                        break
-                    # Gửi dữ liệu cho client
-                    client.sendall(data)
-
-        except FileNotFoundError:
-            # If the file is not found, inform the client
-            client.send("File not found".encode())
 
             
     def handle(self,client):
@@ -197,9 +177,6 @@ class Server:
             s.close()
         return IP    
     
-    # hàm lấy dữ liệu track từ db
-    def getDataTrack(self):
-        return TrackBLL.getAllData(self)
 
     def sendDataTrack(self, client):
         print("DANG GUI DU LIEU TRACK!!!")
@@ -219,6 +196,136 @@ class Server:
         json_string = json.dumps(list(map(tuple_to_dict, data_track)))
  
         client.send(json_string.encode())
+
+    # Gui du lieu album
+    def sendDataAlbum(self, client):
+        print("DANG GUI DU LIEU ALBUM!!!")
+        data_album = AlbumBLL.getAllData(self) #lấy dữ liệu track từ DB
+
+        def tuple_to_dict(tpl):
+            return {
+                'albumID': tpl[0],
+                'title': tpl[1],
+                'artistID': tpl[2],
+                'genre': tpl[3],
+                'releasedate': tpl[4].strftime("%Y-%m-%d")
+            }
+
+        #Convert to JSON string using map and dumps
+        json_string = json.dumps(list(map(tuple_to_dict, data_album)))
+ 
+        client.send(json_string.encode())
+
+    # Gui du lieu track cua mot album
+    def senDataTrackInAlbum(self, client):
+        print("DANG GUI DU LIEU ARTIST!!!")
+        albumID = client.recv(1024).decode()
+
+        data_track_album = AlbumBLL.getTracksFromAlbumID(self, albumID) #lấy dữ liệu track từ DB
+
+        def tuple_to_dict(tpl):
+            return {
+                'trackID': tpl[0],
+                'title': tpl[1],
+                'artistID': tpl[2],
+                'albumID': tpl[3],
+                'duration': tpl[4],
+                'releasedate': tpl[5].strftime("%Y-%m-%d")
+            }
+
+        #Convert to JSON string using map and dumps
+        json_string = json.dumps(list(map(tuple_to_dict, data_track_album)))
+ 
+        client.send(json_string.encode())
+
+    # Gui du lieu artist
+    def sendDataArtist(self, client):
+        print("DANG GUI DU LIEU ARTIST!!!")
+        data_artist = ArtistBLL.getAllData(self) #lấy dữ liệu track từ DB
+
+        def tuple_to_dict(tpl):
+            return {
+                'artistID': tpl[0],
+                'name': tpl[1],
+                'genre': tpl[2]
+            }
+
+        #Convert to JSON string using map and dumps
+        json_string = json.dumps(list(map(tuple_to_dict, data_artist)))
+ 
+        client.send(json_string.encode())
+
+    # Gui du lieu track cua mot artist
+    def senDataTrackOfArtist(self, client):
+        print("DANG GUI DU LIEU ARTIST!!!")
+        artistID = client.recv(1024).decode()
+
+        data_track_artist = ArtistBLL.getTracksFromArtistID(self, artistID) #lấy dữ liệu track từ DB
+
+        def tuple_to_dict(tpl):
+            return {
+                'trackID': tpl[0],
+                'title': tpl[1],
+                'artistID': tpl[2],
+                'albumID': tpl[3],
+                'duration': tpl[4],
+                'releasedate': tpl[5].strftime("%Y-%m-%d")
+            }
+
+        #Convert to JSON string using map and dumps
+        json_string = json.dumps(list(map(tuple_to_dict, data_track_artist)))
+ 
+        client.send(json_string.encode())
+ 
+
+    # Gui du lieu kiem tra dang nhap
+    def sendDataUser(self, client):
+        print("DANG GUI DU LIEU USER!!!")
+        username = client.recv(1024).decode()
+        password = client.recv(1024).decode()
+        data_artist = UserBLL.checkUsernameAndPass(self, username, password) #lấy dữ liệu track từ DB
+
+ 
+        client.send(bytes([data_artist]))
+
+    # Gui du lieu album
+    def sendDataPlaylistWithUserID(self, client):
+        userID = client.recv(1024).decode()
+
+        data_playlist = AlbumBLL.getDataPlaylistFromUserID(self, userID) #lấy dữ liệu track từ DB
+
+        def tuple_to_dict(tpl):
+            return {
+                'playlistID': tpl[0],
+                'title': tpl[2],
+                'creationdate': tpl[3]
+            }
+
+        #Convert to JSON string using map and dumps
+        json_string = json.dumps(list(map(tuple_to_dict, data_playlist)))
+ 
+        client.send(json_string.encode())
+
+    def senDataTrackInPlaylist(self, client):
+        playlistID = client.recv(1024).decode()
+
+        data_track_playlist = ArtistBLL.getTracksFromPlaylistID(self, playlistID) #lấy dữ liệu track từ DB
+
+        def tuple_to_dict(tpl):
+            return {
+                'trackID': tpl[0],
+                'title': tpl[1],
+                'artistID': tpl[2],
+                'albumID': tpl[3],
+                'duration': tpl[4],
+                'releasedate': tpl[5].strftime("%Y-%m-%d")
+            }
+
+        #Convert to JSON string using map and dumps
+        json_string = json.dumps(list(map(tuple_to_dict, data_track_playlist)))
+ 
+        client.send(json_string.encode())
+
     def stop_server(self):
         try:
             self.server_socket.close()
@@ -226,7 +333,7 @@ class Server:
         except Exception as e:
             print(f"Error stopping server: {e}")
 
-# server = Server()
+server = Server()
 
 
 

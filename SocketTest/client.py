@@ -21,9 +21,9 @@ class ClientListener:
         # response = self.client_socket.recv(1024).decode()
         # print("Received response from server:", response)
         # make a handshake with the server
-        # self.sendNameOfSongAndPlay('T01')
+        self.sendNameOfSongAndPlay('T01')
         # time.sleep(2)
-        self.getDataTrackFromServer()
+        #self.getDataTrackFromServer()
     
     def sendNameOfSongAndPlay(self, id):
         try:
@@ -92,6 +92,15 @@ class ClientListener:
             # print(time_mp3)
             # time.sleep(time_mp3)
 
+    # Function to play audio
+    def play_audio(self,data):
+            print("ĐANG GỌI HÀM PLAY AUDIO")
+            mixer.music.load(data)
+            mixer.music.set_volume(0.1) 
+            mixer.music.play()
+            while mixer.music.get_busy():
+                pygame.time.Clock().tick(10)
+
     def receive(self):
         while True:
             try:
@@ -140,14 +149,149 @@ class ClientListener:
             
             return record
 
-    # Function to play audio
-    def play_audio(self,data):
-            print("ĐANG GỌI HÀM PLAY AUDIO")
-            mixer.music.load(data)
-            mixer.music.set_volume(0.1) 
-            mixer.music.play()
-            while mixer.music.get_busy():
-                pygame.time.Clock().tick(10)
+    def getDataAlbumFromServer(self):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "DATA_ALBUM" 
+            self.client_socket.sendall(signal.encode())
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+
+
+        # Nhận dữ liệu từ server
+        print("NHẬN DỮ LIỆU TỪ SEVER!!!")
+        received_data = self.client_socket.recv(4096)
+
+        # decode dữ liệu
+        json_data_album = received_data.decode()
+            
+        # chuyển đổi dữ liệu từ dạng JSON thành danh sách từ điển
+        data_album = json.loads(json_data_album)
+            
+        # Print the received data
+        print("Received data album:")
+        for record in data_album:
+            print(record)
+            
+            return record
+        
+    def getDataTrackInAlbum(self, albumID):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "DATA_TRACK_ALBUM" 
+            self.client_socket.sendall(signal.encode())
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+
+        #Gửi albumID cho server
+        self.client_socket.sendall(albumID.encode())
+
+        # Nhận dữ liệu từ server
+        print("NHẬN DỮ LIỆU TỪ SEVER!!!")
+        received_data = self.client_socket.recv(4096)
+
+        # decode dữ liệu
+        track_in_album = received_data.decode()
+            
+        # chuyển đổi dữ liệu từ dạng JSON thành danh sách từ điển
+        data = json.loads(track_in_album)
+            
+        # Print the received data
+        print("Received data album:")
+        for record in data:
+            print(record)
+            
+            return record
+        
+    def getDataArtistFromServer(self):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "DATA_ARTIST" 
+            self.client_socket.sendall(signal.encode())
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+
+
+        # Nhận dữ liệu từ server
+        print("NHẬN DỮ LIỆU TỪ SEVER!!!")
+        received_data = self.client_socket.recv(4096)
+
+        # decode dữ liệu
+        json_data_artist = received_data.decode()
+            
+        # chuyển đổi dữ liệu từ dạng JSON thành danh sách từ điển
+        data_artist = json.loads(json_data_artist)
+            
+        # Print the received data
+        print("Received data artist:")
+        for record in data_artist:
+            print(record)
+            
+            return record
+
+    def getDataTrackOfArtist(self, artistID):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "DATA_TRACK_ARTIST" 
+            self.client_socket.sendall(signal.encode())
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+
+        #Gửi albumID cho server
+        self.client_socket.sendall(artistID.encode())
+
+        # Nhận dữ liệu từ server
+        print("NHẬN DỮ LIỆU TỪ SEVER!!!")
+        received_data = self.client_socket.recv(4096)
+
+        # decode dữ liệu
+        track_in_artist = received_data.decode()
+            
+        # chuyển đổi dữ liệu từ dạng JSON thành danh sách từ điển
+        data = json.loads(track_in_artist)
+            
+        # Print the received data
+        print("Received data artist:")
+        for record in data:
+            print(record)
+            
+            return record
 
 client = ClientListener() #mở client
 #client.getDataFromServer()
