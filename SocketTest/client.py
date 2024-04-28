@@ -261,7 +261,7 @@ class ClientListener:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # gửi yêu cầu connect
             self.client_socket.connect((self.host_ip, self.port)) 
-            signal = "DATA_TRACK_ARTIST" 
+            signal = "RESET_PASSWORD" 
             self.client_socket.sendall(signal.encode())
 
         except socket.timeout as e:
@@ -292,6 +292,111 @@ class ClientListener:
             print(record)
             
             return record
+    
+    def checkLogin(self, username, password):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "DATA_TRACK_ARTIST" 
+            self.client_socket.sendall(signal.encode())
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+        
+        self.client_socket.sendall(username.encode())
+        self.client_socket.sendall(password.encode())
+
+        # Thông báo đăng nhập thành công hoặc thất bại
+        # Nhận dữ liệu
+
+        Notification_Server = client.recv(1024)
+
+        Notification = bool(int.from_bytes(Notification_Server, byteorder='big'))
+
+        return Notification
+
+    def resetPassword(self, username, new_password):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "DATA_TRACK_ARTIST" 
+            self.client_socket.sendall(signal.encode())
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+        
+        self.client_socket.sendall(username.encode())
+        self.client_socket.sendall(new_password.encode())
+
+        # Thông báo thành công hoặc thất bại
+        Notification_Server = client.recv(1024)
+
+        Notification = bool(int.from_bytes(Notification_Server, byteorder='big'))
+
+        return Notification
+    
+    def addTrackToPlayList(self, PlayListID, UserID, trackID):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "ADD_TRACK_PLAYLIST" 
+            self.client_socket.sendall(signal.encode())
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+
+        self.client_socket.sendall(PlayListID.encode())
+        self.client_socket.sendall(UserID.encode())
+        self.client_socket.sendall(trackID.encode())
+
+        
+    def deleteTrackInPlayList(self, trackID):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "ADD_TRACK_PLAYLIST" 
+            self.client_socket.sendall(signal.encode())
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+
+        self.client_socket.sendall(trackID.encode())
+
+        # Thông báo thành công hoặc thất bại
+        Notification_Server = client.recv(1024)
+
+        Notification = bool(int.from_bytes(Notification_Server, byteorder='big'))
+
+        return Notification
+    
 
 client = ClientListener() #mở client
 #client.getDataFromServer()

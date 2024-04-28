@@ -21,3 +21,6 @@ class UserBLL:
     def update(self,user_dto):
         UserDAL.update(self,user_dto)
 
+    def resetPassWord(self, username, password):
+        UserDAL.update(self, username, password)
+

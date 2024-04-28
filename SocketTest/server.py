@@ -10,11 +10,13 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from datetime import date
 from DTO.TrackDTO import TrackDTO
+from DTO.PLDetailDTO import PLDetailDTO
 from BLL.TrackBLL import TrackBLL
 from BLL.AlbumBLL import AlbumBLL
 from BLL.ArtistBLL import ArtistBLL
 from BLL.PlayListBLL import PlayListBLL
 from BLL.UserBLL import UserBLL
+from BLL.PLDetailBLL import PLDetailBLL
 
 # Initialize Pygame mixer
 from pygame import mixer
@@ -288,6 +290,23 @@ class Server:
  
         client.send(bytes([data_artist]))
 
+    # Gui du lieu kiem tra dang nhap
+    def resetPassword(self, client):
+        print("DANG GUI DU LIEU USER!!!")
+        username = client.recv(1024).decode()
+        new_password = client.recv(1024).decode()
+        user = UserBLL.checkUsername(self, username) #lấy dữ liệu track từ DB
+
+        if user:
+            UserBLL.resetPassWord(self, username, new_password)
+            flag = True
+            client.send(bytes([flag]))
+        else:
+            client.sendall("Username is Wrong!!!".encode())
+            flag = False
+            client.send(bytes([flag]))
+            
+
     # Gui du lieu album
     def sendDataPlaylistWithUserID(self, client):
         userID = client.recv(1024).decode()
@@ -325,6 +344,23 @@ class Server:
         json_string = json.dumps(list(map(tuple_to_dict, data_track_playlist)))
  
         client.send(json_string.encode())
+
+    def insertTrackToPlayList(self, client):
+
+        detail = PLDetailDTO()
+        detail.PlayListID = client.recv(1024).decode()
+        detail.userID = client.recv(1024).decode()
+        detail.TrackID = client.recv(1024).decode()
+
+        PLDetailBLL.insertTracktoPlayList(self, detail) #lấy dữ liệu track từ DB
+
+    def deleteTrackInPlayList(self, client):
+
+        TrackID = client.recv(1024).decode()
+
+        flag = PLDetailBLL.insertTracktoPlayList(self, TrackID) #lấy dữ liệu track từ DB
+        
+        client.send(bytes([flag]))
 
     def stop_server(self):
         try:
