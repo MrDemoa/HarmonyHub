@@ -21,15 +21,15 @@ class ClientListener:
         # response = self.client_socket.recv(1024).decode()
         # print("Received response from server:", response)
         # make a handshake with the server
-        self.sendNameOfSongAndPlay('T01')
+        # self.sendNameOfSongAndPlay('T01')
         # time.sleep(2)
-        #self.getDataTrackFromServer()
+        # self.getDataTrackFromServer()
     
     def sendNameOfSongAndPlay(self, id):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # gửi yêu cầu connect
-            self.client_socket.connect((self.host_ip, self.port)) 
+            self.client_socket.connect((self.host_ip, self.port))
             signal = "PLAY_SONG_" 
             self.client_socket.sendall(signal.encode())
 
@@ -55,23 +55,7 @@ class ClientListener:
 
 
     def receiveSong(self):
-            # Receive the size of the file from the server
-            # print("ĐANG Ở ĐÂY")
-            # file_size = int(self.client_socket.recv(1024).decode())
-            # print("File size: ", file_size)
-            # # Receive data from server and save it to an audio file
-            # data = b''
-            # received_size = 0
-            # while received_size < file_size:
-            #     chunk = self.client_socket.recv(1024)
-            #     data += chunk
-            #     received_size += len(chunk)
 
-
-            # Write the received data to a temporary audio file
-            # project_directory = os.path.abspath(os.path.dirname(__file__))
-            # current_directory = os.path.join(project_directory, "resource")               
-            # temp_file_path = os.path.join(current_directory, "temp_audio.mp3")
             temp_audio_file = tempfile.SpooledTemporaryFile(max_size=10000000)  # Adjust max_size as needed
 
             while True:
@@ -298,8 +282,10 @@ class ClientListener:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # gửi yêu cầu connect
             self.client_socket.connect((self.host_ip, self.port)) 
-            signal = "LOGIN" 
-            self.client_socket.sendall(signal.encode())
+            signal = "LOGIN"
+            message = signal + "|" + username + "|" + password 
+            self.client_socket.sendall(message.encode())
+            #self.client_socket.recv(1024).decode("utf-8")
 
         except socket.timeout as e:
             print("TIMEOUT ERROR:", str(e))
@@ -310,8 +296,11 @@ class ClientListener:
             print("ERROR:", str(e))
             return 
         
-        self.client_socket.sendall(username.encode())
-        self.client_socket.sendall(password.encode())
+        # self.client_socket.send(username.encode())
+        # self.client_socket.recv(1024).decode("utf-8")
+
+        # self.client_socket.send(password.encode())
+        # self.client_socket.recv(1024).decode("utf-8")
 
         # Thông báo đăng nhập thành công hoặc thất bại
         # Nhận dữ liệu

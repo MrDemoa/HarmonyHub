@@ -68,4 +68,4 @@ class UserDAL():
         self.con.commit()
         cursor.close()
 
-userdal = UserDAL()
+#userdal = UserDAL()

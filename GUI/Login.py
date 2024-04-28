@@ -277,8 +277,8 @@ class Login:
     def run_gui(self):
         username = self.user_input.get()
         password = self.password_input.get()
-        print (ClientListener.checkLogin(self, username, password))
-        if not ClientListener.checkLogin(self, username, password):
+        print ("Login is: ", ClientListener.checkLogin(self, username, password))
+        if ClientListener.checkLogin(self, username, password):
             subprocess.Popen(["python", "GUI/gui.py"])
             self.window.destroy()
         else:

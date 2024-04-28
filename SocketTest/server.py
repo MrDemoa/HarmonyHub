@@ -9,6 +9,7 @@ import mysql.connector
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from datetime import date
+from DAL.ConnectDB import ConnectSQL
 from DTO.TrackDTO import TrackDTO
 from DTO.PLDetailDTO import PLDetailDTO
 from BLL.TrackBLL import TrackBLL
@@ -39,6 +40,7 @@ class Server:
         # Khởi tạo socket của server
         self.host_ip = Server.ip
         self.port = Server.port
+        self.con = ConnectSQL.connect_mysql()
         # Bắt đầu lắng nghe các kết nối đến server
         self.runServer()
 
@@ -62,11 +64,11 @@ class Server:
         print("Đang chờ kết nối: ")
         client, address = self.server_socket.accept()
         signal = client.recv(1024).decode("utf-8")
-        print(signal)
-        if (signal == "LOGIN"):
-            self.sendDataUser(client, address)
+        if ("LOGIN" in signal):
+            signal, username, password = signal.split("|")
+            self.sendDataUser(client, username, password)
         elif (signal == "DATA_PLAYLIST"):
-            self.sendDataPlayList(client, address)
+            self.sendDataPlayList(client)
         elif (signal == "DATA_TRACK"):
             self.sendDataTrack(client)
         elif (signal == "DATA_ALBUM"):
@@ -283,14 +285,17 @@ class Server:
  
 
     # Gui du lieu kiem tra dang nhap
-    def sendDataUser(self, client):
-        print("DANG GUI DU LIEU USER!!!")
-        username = client.recv(1024).decode()
-        password = client.recv(1024).decode()
-        data_artist = UserBLL.checkUsernameAndPass(self, username, password) #lấy dữ liệu track từ DB
+    def sendDataUser(self, client, username, password):
 
- 
-        client.send(bytes([data_artist]))
+        # client.send("ĐÃ NHẬN TÍN HIỆU".encode())
+        # username = client.recv(1024).decode()
+        # client.send("ĐÃ NHẬN USERNAME".encode())
+        # password = client.recv(1024).decode()
+        # client.send("ĐÃ NHẬN PASSWORD".encode())
+        data_user = UserBLL.checkUsernameAndPass(self, username, password) #lấy dữ liệu track từ DB
+        print("Data user: ", data_user)
+        client.sendall(bytes([data_user]))
+        print("Đã gửi dữ liệu cuối thành công")
 
     # Gui du lieu kiem tra dang nhap
     def resetPassword(self, client):
