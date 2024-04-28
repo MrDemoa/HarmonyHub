@@ -79,6 +79,8 @@ class Server:
             self.senDataTrackOfArtist(client)
         elif (signal == "PLAY_SONG_"):
             self.sendAudio(client, address)
+        elif (signal == "RESET_PASSWORD"):
+            self.resetPassword(client)
 
     # def send_music(self, client, address):
     #     # Khởi tạo thread để nhận dữ liệu từ client
@@ -369,7 +371,7 @@ class Server:
         except Exception as e:
             print(f"Error stopping server: {e}")
 
-server = Server()
+# server = Server()
 
 
 

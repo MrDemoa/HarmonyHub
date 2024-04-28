@@ -17,7 +17,8 @@ class UserBLL:
 
     def checkUsernameAndPass(self, username, password):
         return UserDAL.checkUsernameAndPass(self, username, password)
-
+    def checkUsername(self, username):
+        return UserDAL.checkUsername(self, username)
     def update(self,user_dto):
         UserDAL.update(self,user_dto)
 

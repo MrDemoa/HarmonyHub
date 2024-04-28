@@ -17,9 +17,9 @@ OUTPUT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ASSETS_PATH = os.path.join(OUTPUT_PATH, "GUI\\assets\\frame1")
 from DAL.ConnectDB import ConnectSQL
 from BLL import UserBLL
+from SocketTest.client import ClientListener
 
-def on_forgot_password_click(event):
-    print("Forgot password clicked")
+
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 def create_rounded_rect(canvas, x1, y1, x2, y2, radius=25, **kwargs):
@@ -51,7 +51,9 @@ class Login:
         self.window.geometry("400x650")
         self.window.configure(bg = "#FFFFFF")
         self.con = ConnectSQL.connect_mysql()
-
+        self.host_ip = '127.0.0.1'
+        self.port = 6767
+        
         self.canvas = Canvas(
             self.window,
             bg = "#FFFFFF",
@@ -177,7 +179,7 @@ class Login:
             tags="forgot_password_text"
         )
 
-        self.canvas.tag_bind("forgot_password_text", "<Button-1>", on_forgot_password_click)
+        self.canvas.tag_bind("forgot_password_text", "<Button-1>", lambda x: self.show_dialog_resetpassword())
         self.canvas.create_text(
             25.0,
             55.0,
@@ -216,6 +218,34 @@ class Login:
             fill="#FFFFFF",
             font=("Inter Medium", 16 * -1)
         )
+        
+    def show_dialog_resetpassword(self):
+        dialog = Toplevel(self.window,background="#272E41")
+        dialog.title("Reset Password")
+        dialog.grid_rowconfigure(0, weight=1)
+        
+        entries = []
+        Label(dialog, text="Username", font=("Inter Medium", 20 * -1)).grid(row=0, column=0)
+        entries.append(Entry(dialog, width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1)))
+        entries[0].grid(row=0, column=1)
+        Label(dialog, text="New Password", font=("Inter Medium", 20 * -1)).grid(row=1, column=0)
+        entries.append(Entry(dialog, width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1)))
+        entries[1].grid(row=1, column=1)
+            
+        Button(dialog, text="Reset Password", command=lambda: self.process_entry_resetpassword(entries,dialog)).grid(row=2, column=0, columnspan=2)
+            
+    def process_entry_resetpassword(self,entries,dialog):
+        try:
+            username = entries[0].get()
+            new_password = entries[1].get()
+            ClientListener.resetPassword(self, username, new_password)
+                
+            messagebox.showinfo("Success", "Password reset successfully")
+            dialog.destroy()
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+            
+                
     def clear_hint(self,event):
         current = event.widget.get()
         if current == "Enter Username" or current == "Enter Password":
@@ -230,6 +260,7 @@ class Login:
             elif event.widget == self.password_input:
                 event.widget.insert(0, "Enter Password")
             event.widget.config(fg="#AAAAAA")  
+            
     def toggle_password(self):
         # If the password is currently shown, hide it
         if self.password_shown.get():
@@ -239,13 +270,15 @@ class Login:
         else:
             self.password_input.config(show="")
             self.password_shown.set(True)
+            
     def run(self):
         self.window.resizable(False, False)
         self.window.mainloop()
     def run_gui(self):
         username = self.user_input.get()
         password = self.password_input.get()
-        if UserBLL.UserBLL.checkUsernameAndPass(self,username, password):
+        print (ClientListener.checkLogin(self, username, password))
+        if not ClientListener.checkLogin(self, username, password):
             subprocess.Popen(["python", "GUI/gui.py"])
             self.window.destroy()
         else:
@@ -253,3 +286,4 @@ class Login:
 if __name__ == "__main__":
     login = Login()
     login.run()
+    client = ClientListener()

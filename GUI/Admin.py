@@ -995,6 +995,7 @@ class UserFrame(Frame):
             messagebox.showinfo("Success", "The content has been updated successfully.")
         except Exception as e:
             messagebox.showerror("Error", str(e))
+            
 if __name__ == "__main__":
     admin = Admin()
     admin.run()

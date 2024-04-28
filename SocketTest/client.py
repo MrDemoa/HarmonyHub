@@ -298,7 +298,7 @@ class ClientListener:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # gửi yêu cầu connect
             self.client_socket.connect((self.host_ip, self.port)) 
-            signal = "DATA_TRACK_ARTIST" 
+            signal = "LOGIN" 
             self.client_socket.sendall(signal.encode())
 
         except socket.timeout as e:
@@ -316,7 +316,7 @@ class ClientListener:
         # Thông báo đăng nhập thành công hoặc thất bại
         # Nhận dữ liệu
 
-        Notification_Server = client.recv(1024)
+        Notification_Server = self.client_socket.recv(1024)
 
         Notification = bool(int.from_bytes(Notification_Server, byteorder='big'))
 
@@ -327,7 +327,7 @@ class ClientListener:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # gửi yêu cầu connect
             self.client_socket.connect((self.host_ip, self.port)) 
-            signal = "DATA_TRACK_ARTIST" 
+            signal = "RESET_PASSWORD" 
             self.client_socket.sendall(signal.encode())
 
         except socket.timeout as e:
@@ -343,7 +343,7 @@ class ClientListener:
         self.client_socket.sendall(new_password.encode())
 
         # Thông báo thành công hoặc thất bại
-        Notification_Server = client.recv(1024)
+        Notification_Server = self.client_socket.recv(1024)
 
         Notification = bool(int.from_bytes(Notification_Server, byteorder='big'))
 
@@ -397,7 +397,7 @@ class ClientListener:
 
         return Notification
     
-
-client = ClientListener() #mở client
+if __name__ == "__main__":
+    client = ClientListener() #mở client
 #client.getDataFromServer()
 
