@@ -317,7 +317,8 @@ class ClientListener:
             # gửi yêu cầu connect
             self.client_socket.connect((self.host_ip, self.port)) 
             signal = "RESET_PASSWORD" 
-            self.client_socket.sendall(signal.encode())
+            message = signal + "|" + username + "|" + new_password 
+            self.client_socket.sendall(message.encode())
 
         except socket.timeout as e:
             print("TIMEOUT ERROR:", str(e))
@@ -328,8 +329,8 @@ class ClientListener:
             print("ERROR:", str(e))
             return 
         
-        self.client_socket.sendall(username.encode())
-        self.client_socket.sendall(new_password.encode())
+        # self.client_socket.sendall(username.encode())
+        # self.client_socket.sendall(new_password.encode())
 
         # Thông báo thành công hoặc thất bại
         Notification_Server = self.client_socket.recv(1024)

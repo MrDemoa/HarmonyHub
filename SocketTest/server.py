@@ -67,6 +67,9 @@ class Server:
         if ("LOGIN" in signal):
             signal, username, password = signal.split("|")
             self.sendDataUser(client, username, password)
+        elif ("RESET_PASSWORD" in signal):
+            signal, username, new_password = signal.split("|")
+            self.resetPassword(client, username, new_password)
         elif (signal == "DATA_PLAYLIST"):
             self.sendDataPlayList(client)
         elif (signal == "DATA_TRACK"):
@@ -81,8 +84,6 @@ class Server:
             self.senDataTrackOfArtist(client)
         elif (signal == "PLAY_SONG_"):
             self.sendAudio(client, address)
-        elif (signal == "RESET_PASSWORD"):
-            self.resetPassword(client)
 
     # def send_music(self, client, address):
     #     # Khởi tạo thread để nhận dữ liệu từ client
@@ -298,10 +299,10 @@ class Server:
         print("Đã gửi dữ liệu cuối thành công")
 
     # Gui du lieu kiem tra dang nhap
-    def resetPassword(self, client):
+    def resetPassword(self, client, username, new_password):
         print("DANG GUI DU LIEU USER!!!")
-        username = client.recv(1024).decode()
-        new_password = client.recv(1024).decode()
+        # username = client.recv(1024).decode()
+        # new_password = client.recv(1024).decode()
         user = UserBLL.checkUsername(self, username) #lấy dữ liệu track từ DB
 
         if user:
