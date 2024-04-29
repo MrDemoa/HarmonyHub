@@ -225,12 +225,13 @@ class Login:
         dialog.grid_rowconfigure(0, weight=1)
         
         entries = []
-        Label(dialog, text="Username", font=("Inter Medium", 20 * -1)).grid(row=0, column=0)
+        Label(dialog, text="Username", font=("Inter Medium", 20 * -1),background="#272E41",fg="#FFFFFF").grid(row=0, column=0)
         entries.append(Entry(dialog, width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1)))
         entries[0].grid(row=0, column=1)
-        Label(dialog, text="New Password", font=("Inter Medium", 20 * -1)).grid(row=1, column=0)
+        Label(dialog, text="New Password", font=("Inter Medium", 20 * -1),background="#272E41",fg="#FFFFFF").grid(row=1, column=0)
         entries.append(Entry(dialog, width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1)))
         entries[1].grid(row=1, column=1)
+        
             
         Button(dialog, text="Reset Password", command=lambda: self.process_entry_resetpassword(entries,dialog)).grid(row=2, column=0, columnspan=2)
             
