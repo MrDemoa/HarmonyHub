@@ -71,15 +71,15 @@ class Server:
             signal, username, new_password = signal.split("|")
             self.resetPassword(client, username, new_password)
         elif (signal == "DATA_PLAYLIST"):
-            self.sendDataPlayList(client)
+            self.sendDataPlaylistWithUserID(client)
         elif (signal == "DATA_TRACK"):
             self.sendDataTrack(client)
         elif (signal == "DATA_ALBUM"):
-            self.senDataAlbum(client)
+            self.sendDataAlbum(client)
         elif (signal == "DATA_TRACK_ALBUM"):
-            self.senDataTrackInAlbum(client)
+            self.sendDataTrackInAlbum(client)
         elif (signal == "DATA_ARTIST"):
-            self.senDataArtist(client)
+            self.sendDataArtist(client)
         elif (signal == "DATA_TRACK_ARTIST"):
             self.senDataTrackOfArtist(client)
         elif (signal == "PLAY_SONG_"):
@@ -208,7 +208,7 @@ class Server:
     def sendDataAlbum(self, client):
         print("DANG GUI DU LIEU ALBUM!!!")
         data_album = AlbumBLL.getAllData(self) #lấy dữ liệu track từ DB
-
+        print("DATA ALBUM: ", data_album)
         def tuple_to_dict(tpl):
             return {
                 'albumID': tpl[0],
@@ -224,7 +224,7 @@ class Server:
         client.send(json_string.encode())
 
     # Gui du lieu track cua mot album
-    def senDataTrackInAlbum(self, client):
+    def sendDataTrackInAlbum(self, client):
         print("DANG GUI DU LIEU ARTIST!!!")
         albumID = client.recv(1024).decode()
 
@@ -263,7 +263,7 @@ class Server:
         client.send(json_string.encode())
 
     # Gui du lieu track cua mot artist
-    def senDataTrackOfArtist(self, client):
+    def sendDataTrackOfArtist(self, client):
         print("DANG GUI DU LIEU ARTIST!!!")
         artistID = client.recv(1024).decode()
 
@@ -333,7 +333,7 @@ class Server:
  
         client.send(json_string.encode())
 
-    def senDataTrackInPlaylist(self, client):
+    def sendDataTrackInPlaylist(self, client):
         playlistID = client.recv(1024).decode()
 
         data_track_playlist = ArtistBLL.getTracksFromPlaylistID(self, playlistID) #lấy dữ liệu track từ DB
