@@ -297,7 +297,6 @@ class Login:
     def run_gui(self):
         username = self.user_input.get()
         password = self.password_input.get()
-        
         login_status,user_id = ClientListener.checkLogin(self, username, password)
         # Split the returned tuple
         
