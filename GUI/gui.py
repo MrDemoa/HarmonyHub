@@ -227,7 +227,7 @@ class Presentation:
             activebackground="#FF9900",
             height=35,
             width=46,
-            command= lambda: ClientListener.ping(self)
+            
         )
         self.button_1.place(
             x=123,
@@ -359,6 +359,64 @@ class PlaylistFrame(Frame):
         self.host_ip = host_ip
         self.port = port
         
+        self.add_playlist_button = Button(
+            self,
+            background="#4394AE",
+            text="Add Playlist",
+            font=("Inter Medium", 14 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            command=lambda: ClientListener.addTrackToPlayList(self)
+        )
+        
+        self.add_playlist_button.place(
+            x=380.0,
+            y=13.0,
+            width=100.0,
+            height=25.0,
+        )
+        #Table
+
+        self.playlist_table = ttk.Treeview(self, columns=("Playlist ID","User ID" ,"Track ID", "Title","Creation Date"), show='headings')
+        self.playlist_table.heading("Playlist ID", text="Playlist ID")
+        self.playlist_table.heading("User ID", text="User ID")
+        self.playlist_table.heading("Track ID", text="Track ID")
+        self.playlist_table.heading("Title", text="Title")
+        self.playlist_table.heading("Creation Date", text="Creation Date")
+    
+
+        self.playlist_table.column("Playlist ID", width=35, anchor='center')
+        self.playlist_table.column("User ID", width=35, anchor='center')
+        self.playlist_table.column("Track ID", width=35, anchor='center')
+        self.playlist_table.column("Title", width=35, anchor='center')
+        self.playlist_table.column("Creation Date", width=35, anchor='center')
+
+
+        self.playlist_table.place(
+            x=0,
+            y=48,
+            width=493.0,
+            height=480.0
+            )
+    #     self.insert_into_table_track()
+    # def insert_into_table_track(self):
+
+    #     rows = ClientListener.ge
+    #     # If rows is a dictionary, convert it to a list of one dictionary
+    #     if isinstance(rows, dict):
+    #         rows = [rows]
+    #     # Insert each row into the table
+    #     for row in rows:
+    #         self.track_table.insert('', 'end', values=row)
+class PlaylistDetailFrame(PlaylistFrame):
+    def __init__(self,parent,host_ip,port):
+        super().__init__(parent,host_ip,port)
+        self.pack(fill='both', expand=True)
+        self.host_ip = host_ip
+        self.port = port
+        
         self.delete_track_button = Button(
             self,
             background="#4394AE",
@@ -376,43 +434,7 @@ class PlaylistFrame(Frame):
             width=100.0,
             height=25.0,
             )
-        
-        #Table
-
-        self.playlist_table = ttk.Treeview(self, columns=("Track ID","Title","Artist ID" ,"Album ID", "Duration","Release Date"), show='headings')
-        self.playlist_table.heading("Track ID", text="Track ID")
-        self.playlist_table.heading("Title", text="Title")
-        self.playlist_table.heading("Artist ID", text="Artist ID")
-        self.playlist_table.heading("Album ID", text="Album ID")
-        self.playlist_table.heading("Duration", text="Duration")
-        self.playlist_table.heading("Release Date", text="Release Date")
-    
-
-        self.playlist_table.column("Track ID", width=35, anchor='center')
-        self.playlist_table.column("Title", width=35, anchor='center')
-        self.playlist_table.column("Artist ID", width=35, anchor='center')
-        self.playlist_table.column("Album ID", width=35, anchor='center')
-        self.playlist_table.column("Duration", width=35, anchor='center')
-        self.playlist_table.column("Release Date", width=35, anchor='center')
-
-     
-        self.playlist_table.place(
-            x=0,
-            y=48,
-            width=493.0,
-            height=480.0
-            )
-    #     self.insert_into_table_track()
-    # def insert_into_table_track(self):
-
-    #     rows = ClientListener.ge
-    #     # If rows is a dictionary, convert it to a list of one dictionary
-    #     if isinstance(rows, dict):
-    #         rows = [rows]
-    #     # Insert each row into the table
-    #     for row in rows:
-    #         self.track_table.insert('', 'end', values=row)
- 
+            
 class ArtistFrame(Frame):
     def __init__(self, parent, big_frame, host_ip, port):
         super().__init__(parent)
