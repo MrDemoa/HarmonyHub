@@ -85,16 +85,6 @@ class ClientListener:
             while mixer.music.get_busy():
                 pygame.time.Clock().tick(10)
 
-    def receive(self):
-        while True:
-            try:
-                message = self.client_socket.recv(1024).decode('utf-8')
-                self.song_listbox.insert(self.window.END, message)
-            except:
-                print('An error occurred!')
-                self.client_socket.close()
-                break 
-
 
     # Hàm nhận dữ liệu từ server
     def getDataTrackFromServer(self):
@@ -131,7 +121,7 @@ class ClientListener:
             for record in data_track:
                 print(record)
             
-            return record
+            return data_track
 
     def getDataAlbumFromServer(self):
         try:
@@ -166,7 +156,7 @@ class ClientListener:
         for record in data_album:
             print(record)
             
-            return record
+        return data_album
         
     def getDataTrackInAlbum(self, albumID):
         try:
@@ -203,7 +193,7 @@ class ClientListener:
         for record in data:
             print(record)
             
-            return record
+        return record
         
     def getDataArtistFromServer(self):
         try:
@@ -238,7 +228,7 @@ class ClientListener:
         for record in data_artist:
             print(record)
             
-            return record
+        return data_artist
 
     def getDataTrackOfArtist(self, artistID):
         try:
@@ -275,7 +265,7 @@ class ClientListener:
         for record in data:
             print(record)
             
-            return record
+        return data
     
     def checkLogin(self, username, password):
         try:
@@ -389,5 +379,5 @@ class ClientListener:
     
 if __name__ == "__main__":
     client = ClientListener() #mở client
-#client.getDataFromServer()
+    # client.getDataAlbumFromServer()
 
