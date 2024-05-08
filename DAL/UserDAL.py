@@ -47,7 +47,7 @@ class UserDAL():
 
     def getUserIDByUsername(self, username):
         cursor = self.con.cursor()
-        cursor.execute("select userid from user where username = %s", (username,))
+        cursor.execute("select userIDs from user where username = %s", (username,))
         user_id = cursor.fetchone()
         self.con.commit()
         cursor.close()
