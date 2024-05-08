@@ -285,15 +285,7 @@ class ClientListener:
         except Exception as e:
             print("ERROR:", str(e))
             return 
-        
-        # self.client_socket.send(username.encode())
-        # self.client_socket.recv(1024).decode("utf-8")
-
-        # self.client_socket.send(password.encode())
-        # self.client_socket.recv(1024).decode("utf-8")
-
-        # Thông báo đăng nhập thành công hoặc thất bại
-        # Nhận dữ liệu
+    
 
         Notification_Server = self.client_socket.recv(1024)
 

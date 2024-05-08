@@ -22,7 +22,7 @@ class UserBLL:
         return UserDAL.checkUsername(self, username)
     
     def getUserIDByUsername(self, username):
-        return UserDAL.checkUsernameAndPass(self, username)
+        return UserDAL.getUserIDByUsername(self, username)
 
     def update(self, user_dto):
         UserDAL.update(self,user_dto)
