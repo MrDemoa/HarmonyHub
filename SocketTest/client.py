@@ -447,5 +447,12 @@ class ClientListener:
 
 if __name__ == "__main__":
     client = ClientListener() #mở client
-    # client.getDataAlbumFromServer()
+    bool, id = client.checkLogin("vph", "vph123456")
+    if id:
+        print("Login success")
+        print("UserID: ", bool)
+        print(type(bool))
+        print(type(id))
+    else:
+        print("Failed")
 

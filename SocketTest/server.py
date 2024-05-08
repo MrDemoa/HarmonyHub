@@ -297,12 +297,6 @@ class Server:
 
     # Gui du lieu kiem tra dang nhap
     def sendDataUser(self, client, username, password):
-
-        # client.send("ĐÃ NHẬN TÍN HIỆU".encode())
-        # username = client.recv(1024).decode()
-        # client.send("ĐÃ NHẬN USERNAME".encode())
-        # password = client.recv(1024).decode()
-        # client.send("ĐÃ NHẬN PASSWORD".encode())
         checkLogin = str(UserBLL.checkUsernameAndPass(self, username, password)) #lấy dữ liệu track từ DB
         userID = UserBLL.getUserIDByUsername(self, username)
         message = checkLogin + "|" + userID 
