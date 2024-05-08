@@ -75,7 +75,7 @@ class Server:
         elif (signal == "DATA_TRACK"):
             self.sendDataTrack(client)
         elif (signal == "DATA_ALBUM"):
-            self.senDataAlbum(client)
+            self.sendDataAlbum(client)
         elif (signal == "DATA_TRACK_ALBUM"):
             self.senDataTrackInAlbum(client)
         elif (signal == "DATA_ARTIST"):
