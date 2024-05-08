@@ -305,6 +305,8 @@ class Server:
         # client.send("ĐÃ NHẬN PASSWORD".encode())
         checkLogin = str(UserBLL.checkUsernameAndPass(self, username, password)) #lấy dữ liệu track từ DB
         userID = str(UserBLL.getUserIDByUsername(self, username))
+        print("CHECK LOGIN: ", checkLogin)
+        print("USER ID: ", userID)
         message = checkLogin + "|" + userID 
         client.sendall(message.encode())
         
@@ -400,7 +402,6 @@ class Server:
         except Exception as e:
             print(f"Error stopping server: {e}")
 
-# server = Server()
 
 
 

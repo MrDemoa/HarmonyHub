@@ -289,11 +289,11 @@ class ClientListener:
     
 
         Notification_Server = self.client_socket.recv(1024).decode()
-
+        print("Notification_Server:", Notification_Server)
         Notification, userID = Notification_Server.split("|")
 
         return Notification, userID
-
+    
     def resetPassword(self, username, new_password):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -448,5 +448,4 @@ class ClientListener:
 
 if __name__ == "__main__":
     client = ClientListener() #mở client
-    # client.getDataAlbumFromServer()
-
+    

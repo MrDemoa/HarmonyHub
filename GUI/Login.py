@@ -296,15 +296,17 @@ class Login:
         self.window.mainloop()
     def run_gui(self):
         username = self.user_input.get()
-        password = self.password_input.get() 
-        login_result = ClientListener.checkLogin(self, username, password)
+        password = self.password_input.get()
+        
+        login_status,user_id = ClientListener.checkLogin(self, username, password)
         # Split the returned tuple
-        login_status, user_id = login_result
-        if login_status :
+        
+        if login_status == "True":
             subprocess.Popen(["python", "GUI/gui.py",str(user_id)])
             self.window.destroy()
         else:
             messagebox.showerror("Error", "Invalid username or password")
+            
     def run_sign_up(self):
         subprocess.Popen(["python", "GUI/Signup.py"])
         self.window.destroy()

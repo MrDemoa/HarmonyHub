@@ -16,7 +16,7 @@ from tkinter import Canvas, Entry, Text, Button, PhotoImage, Listbox, Scrollbar,
 from PIL import Image, ImageTk
 import socket
 import json
-user_id = sys.argv[1]
+
 OUTPUT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ASSETS_PATH = os.path.join(OUTPUT_PATH, "GUI\\assets\\frame0")
 
@@ -34,8 +34,9 @@ class Presentation:
         self.host_ip = '127.0.0.1'
         self.port = 6767
         self.current_track_id = None
-        self.client = ClientListener() 
-        # self.window.after(1, self.start_client)
+        self.window.after(1, self.start_client)
+        # self.client = None
+        # self.client = ClientListener() 
        
         self.canvas = Canvas(
                 self.window,
@@ -303,11 +304,11 @@ class Presentation:
     def run(self):
         self.window.resizable(False, False)
         self.window.mainloop()
-    # def run_client(self):
-    #     self.client = ClientListener()
-    # def start_client(self):
-    #     self.client_thread = threading.Thread(target=self.run_client)
-    #     self.client_thread.start() 
+    def run_client(self):
+        self.client = ClientListener()
+    def start_client(self):
+        self.client_thread = threading.Thread(target=self.run_client)
+        self.client_thread.start() 
         
         
 class AlbumFrame(Frame):
