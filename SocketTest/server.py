@@ -306,7 +306,7 @@ class Server:
         checkLogin = str(UserBLL.checkUsernameAndPass(self, username, password)) #lấy dữ liệu track từ DB
         userID = UserBLL.getUserIDByUsername(self, username)
         message = checkLogin + "|" + userID 
-        client.sendall(message)
+        client.sendall(message.encode())
         
 
     # Gui du lieu kiem tra dang nhap

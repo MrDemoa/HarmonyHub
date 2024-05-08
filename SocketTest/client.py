@@ -287,7 +287,7 @@ class ClientListener:
             return 
     
 
-        Notification_Server = self.client_socket.recv(1024)
+        Notification_Server = self.client_socket.recv(1024).decode()
 
         Notification, userID = Notification_Server.split("|")
 
