@@ -10,20 +10,36 @@ class PlayListDAL:
     
     con = ConnectSQL.connect_mysql()
 
-    def getAllData():
+    def getAllData(self):
         global con
-        cursor = con.cursor()
+        cursor = PlayListDAL.con.cursor()
         cursor.execute("select * from playlist")
         records = cursor.fetchall()
         cursor.close()
         return records
+    
+    def getDataPlaylistFromUserID(self, userID):
+        cursor = self.con.cursor()
+        cursor.execute("select playlistID, title, creationdate from playlist where userID = %s", (userID))
+        records = cursor.fetchall()
+        cursor.close()
+        return records
 
-    def insert(playlist_dto):
-        global con
-        con = ConnectSQL.connect_mysql()
-        cursor = con.cursor()
-        cursor.execute("insert into playlist values(%s, %s, %s, %s)", (playlist_dto.playlistID, playlist_dto.userID, playlist_dto.title, playlist_dto.creationdate))
-        con.commit()
+    def generatePlaylistID(self):
+        cursor = self.con.cursor()
+        cursor.execute("select PlaylistID from playlist order by playlistID desc limit 1")
+        playlist_id = cursor.fetchone()
+        if playlist_id:
+            id = playlist_id[0]
+            id = int(id[1:]) + 1
+        else:
+            id = 1
+        return "PL" + str(id)
+
+    def insert(self,playlist_dto):
+        cursor = self.con.cursor()
+        cursor.execute("insert into playlist values(%s, %s, %s, %s, %s)", (playlist_dto.playlistID, playlist_dto.userID, playlist_dto.trackID, playlist_dto.title, playlist_dto.creationdate))
+        self.con.commit()
         cursor.close()
 
     def delete(id):
@@ -46,5 +62,3 @@ class PlayListDAL:
         con.commit
         cursor.close()
     
-    def ping(self):
-        print("pong")

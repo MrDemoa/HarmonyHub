@@ -9,11 +9,14 @@ class TrackBLL:
     def getAllData(self):
         return TrackDAL.getAllData(self)
 
-    def insert(track_dto):
-        TrackDAL.insert(track_dto)
+    def generateTrackID(self):
+        return TrackDAL.generateTrackID(self)
 
-    def delete(Trackid):
-        TrackDAL.delete(Trackid)
+    def insert(self, track_dto):
+        TrackDAL.insert(self, track_dto)
 
-    def update(track_dto):
-        TrackDAL.update(track_dto)
+    def delete(self,Trackid):
+        TrackDAL.delete(self,Trackid)
+
+    def update(self,track_dto):
+        TrackDAL.update(self,track_dto)

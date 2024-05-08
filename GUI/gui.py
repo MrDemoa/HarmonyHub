@@ -4,12 +4,14 @@
 import os
 import sys
 import threading
+
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pathlib import Path
-from DAL.PlayListDAL import PlayListDAL
+
 from SocketTest.client import ClientListener 
-from tkinter import Frame, Label, Tk, ttk  # Import the Tk class
+from tkinter import Frame, Label, Tk, messagebox, ttk  # Import the Tk class
 from tkinter import Canvas, Entry, Text, Button, PhotoImage, Listbox, Scrollbar, Menubutton, Menu, filedialog
 from PIL import Image, ImageTk
 import socket
@@ -29,8 +31,11 @@ class Presentation:
         self.window.title("HarmonyHub")
         self.window.geometry("700x500")
         self.window.configure(bg="#FFFFFF")
-        self.play_list = PlayListDAL()
-        self.window.after(1000, self.start_client)
+        self.host_ip = '127.0.0.1'
+        self.port = 6767
+        
+        
+        self.window.after(1, self.start_client)
        
         self.canvas = Canvas(
                 self.window,
@@ -75,58 +80,9 @@ class Presentation:
             fill="#313131",
             outline="")
         
-        # Create a new style
-        style = ttk.Style()
-        style.configure("TabPanel.TNotebook", background="#404040")
-        style.configure("TNotebook.Tab",padding =[10,10] )
-        #Pannel
-        Pannel = ttk.Notebook(self.window,style="TabPanel.TNotebook")
+
         
-        #Playlist frame
-        frame_playlist = Frame(Pannel,bg="#787676",relief="flat")
-        frame_playlist.place(x=208.0, y=2.0, width=472.0, height=405.0)
-        # List of songs 
-        song_listbox = Listbox(frame_playlist, 
-                               bg="#787676", 
-                               fg="#FFFFFF", 
-                               font=("Helvetica", 14), 
-                               selectbackground="#FF9900", 
-                               selectforeground="#FFFFFF",
-                               relief="flat",
-                               highlightthickness=0)
         
-        song_listbox.pack(fill="both", expand=True)
-        song_listbox.insert(0, "Song 1")
-        song_listbox.insert(1, "Song 2")
-        #Album frame
-        frame_album = Frame(Pannel,bg="#787676",relief="flat")
-        frame_album.place(x=208.0, y=2.0, width=472.0, height=405.0)
-        #List of albums
-        album_listbox = Listbox(frame_album, 
-                                bg="#787676", 
-                                fg="#FFFFFF", 
-                                font=("Helvetica", 14), 
-                                selectbackground="#FF9900", 
-                                selectforeground="#FFFFFF",
-                                relief="flat",
-                                highlightthickness=0)
-        album_listbox.pack(fill="both", expand=True)
-        album_listbox.insert(0, "Album 1")
-        #Add frame to pannel
-        Pannel.add(frame_playlist, text="Playlist")
-        Pannel.add(frame_album, text="Album")
-        
-        Pannel.place(x=208.0, y=2.0, width=472.0, height=405.0)
-        # Scrollbar
-        Scrollbar_1 = Scrollbar(self.window, orient="vertical")
-        Scrollbar_1.config(command=song_listbox.yview)
-        song_listbox.config(yscrollcommand=Scrollbar_1.set)
-        Scrollbar_1.place(
-            x=680.0,
-            y=47.0,
-            width=20.0,
-            height=360.0
-        )
         # Play button
         self.button_image_4=PhotoImage(file=relative_to_assets("Circled Play.png"))
         
@@ -134,11 +90,12 @@ class Presentation:
             image=self.button_image_4,
             # command=self.play_list.play_song,
             borderwidth=0,
-            relief="sunken",
+            relief="flat",
             bg="#FF9900",
             activebackground="#FF9900",
             height=30,
-            width=46
+            width=46,
+            command= lambda: ClientListener.getDataTrackFromServer(self)
             )
         self.button_4.place(
             x=72.0,
@@ -157,7 +114,7 @@ class Presentation:
         self.button_6=Button(
             image=self.button_image_6,
             borderwidth=0,
-            relief="sunken",
+            relief="flat",
             bg="#FF9900",
             activebackground="#FF9900",
             height=35,
@@ -171,7 +128,7 @@ class Presentation:
         self.button_3=Button(
             image=self.button_image_3,
             borderwidth=0,
-            relief="sunken",
+            relief="flat",
             bg="#FF9900",
             activebackground="#FF9900",
             height=35,
@@ -185,7 +142,7 @@ class Presentation:
         self.button_2=Button(    
             image= self.button_image_2,
             borderwidth=0,
-            relief="sunken",
+            relief="flat",
             bg="#FF9900",
             activebackground="#FF9900",
             height=30,
@@ -201,7 +158,7 @@ class Presentation:
         self.button_5=Button(
             image= self.button_image_5,
             borderwidth=0,
-            relief="sunken",
+            relief="flat",
             bg="#FF9900",
             activebackground="#FF9900",
             height=15,
@@ -216,7 +173,7 @@ class Presentation:
         self.button_7=Button(
             image= self.button_image_7,
             borderwidth=0,
-            relief="sunken",
+            relief="flat",
             bg="#FF9900",
             activebackground="#FF9900",
             height=30,
@@ -230,7 +187,7 @@ class Presentation:
         self.button_8=Button(
             image= self.button_image_8,
             borderwidth=0,
-            relief="sunken",
+            relief="flat",
             bg="#FF9900",
             activebackground="#FF9900",
             height=30,
@@ -245,7 +202,7 @@ class Presentation:
         self.button_9=Menubutton(
             image= self.button_image_9,
             borderwidth=0,
-            relief="sunken",
+            relief="flat",
             bg="#313131",
             activebackground="#FF9900",
             height=20,
@@ -253,7 +210,7 @@ class Presentation:
             )
         self.button_9.place(
             x=660.0,
-            y=410.0,
+            y=413.0,
         )
         self.button_9.menu=Menu(self.button_9,tearoff = False)
         self.button_9["menu"]=self.button_9.menu
@@ -265,11 +222,12 @@ class Presentation:
         self.button_1=Button(
             image=self.button_image_1,
             borderwidth=0,
-            relief="sunken",
+            relief="flat",
             bg="#FF9900",
             activebackground="#FF9900",
             height=35,
-            width=46
+            width=46,
+            command= lambda: ClientListener.ping(self)
         )
         self.button_1.place(
             x=123,
@@ -294,13 +252,6 @@ class Presentation:
         label = Label (frame, image=self.image_image_3)
         label.pack()
         
-        self.canvas.create_rectangle(
-            208.0,
-            0.0,
-            700.0,
-            46.0,
-            fill="#3F3F3F",
-            outline="")
         
         # Search icon
         self.image_image_2=PhotoImage(file=relative_to_assets("Search.png"))
@@ -311,6 +262,41 @@ class Presentation:
             )
         Search_field = Entry(self.window,bd=0, bg="#E8E8E8", font=("Helvetica", 12))
         Search_field.place(x=244, y=413, width=200, height=18)
+
+        #Playlist frame
+        self.big_frame = Frame(self.window,bg="#313131",relief="flat")
+        self.big_frame.place(x=208.0, y=0.0, width=493.0, height=407.0)
+        
+        
+        # Create the smaller frames and add them to the big frame
+        self.frames = {}
+        for F in (AlbumFrame, PlaylistFrame, ArtistFrame,TrackFrame):
+            frame = F(self.big_frame, self,self.host_ip,self.port)
+            frame.configure(background='#313131')
+            self.frames[F] = frame
+            frame.place(x=0, y=0, width=665.0, height=568.0)
+            album_label = Label(frame, bg="#313131",fg="#FFFFFF", text="Albums", font=("Inter", 16 * -1,"bold"))
+            album_label.place(x=10, y=15 )
+            album_label.bind("<Button-1>", lambda x: self.show_frame(AlbumFrame))
+            
+            artist_label = Label(frame, bg="#313131",fg="#FFFFFF", text="Artists", font=("Inter", 16 * -1,"bold"))
+            artist_label.place(x=90, y=15 )
+            artist_label.bind("<Button-1>", lambda x: self.show_frame(ArtistFrame))
+            
+            track_label = Label(frame, bg="#313131",fg="#FFFFFF", text="Tracks", font=("Inter", 16 * -1,"bold"))
+            track_label.place(x=240, y=15 )
+            track_label.bind("<Button-1>", lambda x: self.show_frame(TrackFrame))
+            
+            playlist_label = Label(frame, bg="#313131",fg="#FFFFFF", text="Playlist", font=("Inter", 16 * -1,"bold"))
+            playlist_label.place(x=165, y=15 )
+            playlist_label.bind("<Button-1>", lambda x: self.show_frame(PlaylistFrame))
+            
+        # Show the first frame
+        self.show_frame(AlbumFrame)
+        
+    def show_frame(self, cont):
+        frame = self.frames[cont]
+        frame.tkraise()
     def run(self):
         self.window.resizable(False, False)
         self.window.mainloop()
@@ -318,7 +304,219 @@ class Presentation:
         self.client = ClientListener()
     def start_client(self):
         self.client_thread = threading.Thread(target=self.run_client)
-        self.client_thread.start()    
+        self.client_thread.start() 
+        
+        
+class AlbumFrame(Frame):
+    def __init__(self, parent, big_frame, host_ip, port):
+        super().__init__(parent)
+        self.host_ip = host_ip
+        self.port = port
+        self.pack(fill='both', expand=True)
+ 
+        #Table
+        self.album_table = ttk.Treeview(self, columns=("Album ID","Title", "Artist ID", "Genre", "Release Date"), show='headings')
+        self.album_table.heading("Album ID", text="Album ID")
+        self.album_table.heading("Title", text="Title")
+        self.album_table.heading("Artist ID", text="Artist ID")
+        self.album_table.heading("Genre", text="Genre")
+        self.album_table.heading("Release Date", text="Release Date")
+        
+
+        self.album_table.column("Album ID", width=50, anchor='center')
+        self.album_table.column("Title", width=50, anchor='center')
+        self.album_table.column("Artist ID", width=50, anchor='center')
+        self.album_table.column("Genre", width=50, anchor='center')
+        self.album_table.column("Release Date", width=50, anchor='center')
+    
+
+        self.album_table.place(
+            x=0,
+            y=48,
+            width=493.0,
+            height=480.0
+            )
+        self.insert_into_table_album()
+         
+    def insert_into_table_album(self):
+        rows = ClientListener.getDataAlbumFromServer(self)
+        # If rows is a dictionary, convert it to a list of one dictionary
+        if isinstance(rows, dict):
+            rows = [rows]
+        # Insert each row into the table
+        if rows is not None:
+            for row in rows:
+        #     for value in row.values():
+        #         print(value)
+                values = tuple(row.values())
+                self.album_table.insert('', 'end', values=values)
+
+            
+class PlaylistFrame(Frame):
+    def __init__(self, parent, big_frame, host_ip, port):
+        super().__init__(parent)
+        self.pack(fill='both', expand=True)
+        self.host_ip = host_ip
+        self.port = port
+        
+        self.delete_track_button = Button(
+            self,
+            background="#4394AE",
+            text="Delete Track",
+            font=("Inter Medium", 14 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            command=lambda: ClientListener.deleteTrackInPlayList(self)
+        )
+        self.delete_track_button.place(
+            x=380.0,
+            y=13.0,
+            width=100.0,
+            height=25.0,
+            )
+        
+        #Table
+
+        self.playlist_table = ttk.Treeview(self, columns=("Track ID","Title","Artist ID" ,"Album ID", "Duration","Release Date"), show='headings')
+        self.playlist_table.heading("Track ID", text="Track ID")
+        self.playlist_table.heading("Title", text="Title")
+        self.playlist_table.heading("Artist ID", text="Artist ID")
+        self.playlist_table.heading("Album ID", text="Album ID")
+        self.playlist_table.heading("Duration", text="Duration")
+        self.playlist_table.heading("Release Date", text="Release Date")
+    
+
+        self.playlist_table.column("Track ID", width=35, anchor='center')
+        self.playlist_table.column("Title", width=35, anchor='center')
+        self.playlist_table.column("Artist ID", width=35, anchor='center')
+        self.playlist_table.column("Album ID", width=35, anchor='center')
+        self.playlist_table.column("Duration", width=35, anchor='center')
+        self.playlist_table.column("Release Date", width=35, anchor='center')
+
+     
+        self.playlist_table.place(
+            x=0,
+            y=48,
+            width=493.0,
+            height=480.0
+            )
+    #     self.insert_into_table_track()
+    # def insert_into_table_track(self):
+
+    #     rows = ClientListener.ge
+    #     # If rows is a dictionary, convert it to a list of one dictionary
+    #     if isinstance(rows, dict):
+    #         rows = [rows]
+    #     # Insert each row into the table
+    #     for row in rows:
+    #         self.track_table.insert('', 'end', values=row)
+ 
+class ArtistFrame(Frame):
+    def __init__(self, parent, big_frame, host_ip, port):
+        super().__init__(parent)
+        self.pack(fill='both', expand=True)
+        self.host_ip = host_ip
+        self.port = port
+    
+        #Table
+        self.artist_table = ttk.Treeview(self, columns=("Artist ID","Name", "Genre"), show='headings')
+        self.artist_table.heading("Artist ID", text="Artist ID")
+        self.artist_table.heading("Name", text="Name")
+        self.artist_table.heading("Genre", text="Genre")
+
+
+        self.artist_table.column("Artist ID", width=30, anchor='center')
+        self.artist_table.column("Name", width=30, anchor='center')
+        self.artist_table.column("Genre", width=30, anchor='center')
+
+
+        self.artist_table.place(
+            x=0,
+            y=48,
+            width=493.0,
+            height=480.0
+            )
+        self.insert_into_table_artist()
+        
+    def insert_into_table_artist(self):
+        rows = ClientListener.getDataArtistFromServer(self)
+        
+        # If rows is a dictionary, convert it to a list of one dictionary
+        if isinstance(rows, dict):
+            rows = [rows]
+
+        # Insert each row into the table
+        if rows is not None:
+            for row in rows:
+                values = tuple(row.values())
+                self.artist_table.insert('', 'end', values=values)
+
+class TrackFrame(Frame):
+    def __init__(self, parent, big_frame, host_ip, port):
+        super().__init__(parent)
+        self.pack(fill='both', expand=True)
+        self.host_ip = host_ip
+        self.port = port
+        
+        self.add_track_button = Button(
+            self,
+            background="#4394AE",
+            text="To Playlist",
+            font=("Inter Medium", 14 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#4394AE",
+            activeforeground="#FFFFFF",
+            command=lambda: ClientListener.addTrackToPlayList(self)
+        )
+        self.add_track_button.place(
+            x=380.0,
+            y=13.0,
+            width=100.0,
+            height=25.0,
+            )
+        
+        #Table
+
+        self.track_table = ttk.Treeview(self, columns=("Track ID","Title","Artist ID" ,"Album ID", "Duration","Release Date"), show='headings')
+        self.track_table.heading("Track ID", text="Track ID")
+        self.track_table.heading("Title", text="Title")
+        self.track_table.heading("Artist ID", text="Artist ID")
+        self.track_table.heading("Album ID", text="Album ID")
+        self.track_table.heading("Duration", text="Duration")
+        self.track_table.heading("Release Date", text="Release Date")
+    
+
+        self.track_table.column("Track ID", width=35, anchor='center')
+        self.track_table.column("Title", width=35, anchor='center')
+        self.track_table.column("Artist ID", width=35, anchor='center')
+        self.track_table.column("Album ID", width=35, anchor='center')
+        self.track_table.column("Duration", width=35, anchor='center')
+        self.track_table.column("Release Date", width=35, anchor='center')
+
+     
+        self.track_table.place(
+            x=0,
+            y=48,
+            width=493.0,
+            height=480.0
+            )
+        self.insert_into_table_track()
+    def insert_into_table_track(self):
+        rows = ClientListener.getDataTrackFromServer(self)
+     
+        # If rows is a dictionary, convert it to a list of one dictionary
+        if isinstance(rows, dict):
+            rows = [rows]
+
+        # Insert each row into the table
+        if rows is not None:
+            for row in rows:
+                values = tuple(row.values())
+                self.track_table.insert('', 'end', values=values)
+             
 if __name__ == "__main__":
     app = Presentation()
     app.run()

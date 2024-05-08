@@ -5,16 +5,21 @@
 
 from pathlib import Path
 import os
+import subprocess
 from tkinter import *
+from tkinter import messagebox
 from PIL import Image, ImageTk
 import sys
 import threading
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUTPUT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ASSETS_PATH = os.path.join(OUTPUT_PATH, "GUI\\assets\\frame1")
+from DAL.ConnectDB import ConnectSQL
+from BLL import UserBLL
+from SocketTest.client import ClientListener
 
-def on_forgot_password_click(event):
-    print("Forgot password clicked")
+
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 def create_rounded_rect(canvas, x1, y1, x2, y2, radius=25, **kwargs):
@@ -45,8 +50,10 @@ class Login:
         self.window.title("Login")
         self.window.geometry("400x650")
         self.window.configure(bg = "#FFFFFF")
-
-
+        self.con = ConnectSQL.connect_mysql()
+        self.host_ip = '127.0.0.1'
+        self.port = 6767
+        
         self.canvas = Canvas(
             self.window,
             bg = "#FFFFFF",
@@ -77,17 +84,17 @@ class Login:
             image=self.logo_image
         )
         #Login Button
-        self.button_1 = Button(  
+        self.login_button = Button(  
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_1 clicked"),
+            command=self.run_gui,
             relief="flat",
             background="#3B66FF",
             text="Login",
             font=("Inter Medium", 24 * -1),
             fg="#FFFFFF"
         )
-        self.button_1.place(
+        self.login_button.place(
             x=94.0,
             y=399.0,
             width=212.0,
@@ -100,7 +107,7 @@ class Login:
             30.0,
             image=self.note_image
             )
-
+        
         self.user_field=create_rounded_rect(self.canvas, 
                                     61.0, 
                                     208.0, 
@@ -116,12 +123,38 @@ class Login:
                                                 328.0,
                                                 fill="#F3F2F2",
                                                 outline="")
-        self.user_input = Entry( width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1), fg="#000000")
-        self.user_input.place(x=110.0, y=230.0, height=15.0)
+        
+        self.user_input = Entry( width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1), fg="#AAAAAA")
+        self.user_input.place(x=110.0, y=225.0, height=25.0)
+        self.user_input.bind("<FocusIn>", self.clear_hint)
+        self.user_input.bind("<FocusOut>", self.restore_hint)
+        self.user_input.bind("<Return>", lambda event: self.password_input.focus_set())
+        self.user_input.insert(0, "Enter Username")
+        
+        #Show password icon
+        self.show_password_image = PhotoImage(file=relative_to_assets("Closed Eye.png"))
+        self.show_password_button=Button(
+            image=self.show_password_image,
+            relief="flat",
+            highlightthickness=0,
+            bd=0,
+            command=lambda: self.toggle_password(),
+            background="#F3F2F2",
+            activebackground="#F3F2F2"
+        )
+        self.show_password_button.place(x=322.0, y=285.0)
+        
+        # Create a BooleanVar to track whether the password is shown or hidden
+        self.password_shown = BooleanVar()
+        self.password_shown.set(False)
 
-        self.password_input = Entry( width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1), fg="#000000", show="*")
-        self.password_input.place(x=110.0, y=295.0, height=15.0)
-
+        self.password_input = Entry( width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1), fg="#AAAAAA",show="*")
+        self.password_input.place(x=110.0, y=290.0, height=25.0)
+        self.password_input.bind("<FocusIn>", self.clear_hint)
+        self.password_input.bind("<FocusOut>", self.restore_hint)
+        self.password_input.bind("<Return>", lambda event: self.login_button.invoke())
+        self.password_input.insert(0, "Enter Password")
+        
         #Password and User icon
         self.password_image = PhotoImage(file=relative_to_assets("Password.png"))
         self.password_image_1=self.canvas.create_image(
@@ -134,7 +167,7 @@ class Login:
             85.0,
             235.0,
             image=self.user_image)
-
+        
         # Forgot password text
         self.forgot_password_text=self.canvas.create_text(
             260.0,
@@ -146,7 +179,7 @@ class Login:
             tags="forgot_password_text"
         )
 
-        self.canvas.tag_bind("forgot_password_text", "<Button-1>", on_forgot_password_click)
+        self.canvas.tag_bind("forgot_password_text", "<Button-1>", lambda x: self.show_dialog_resetpassword())
         self.canvas.create_text(
             25.0,
             55.0,
@@ -159,18 +192,24 @@ class Login:
         #Facebook and Google icon
         self.facebook_image = PhotoImage(
             file=relative_to_assets("Facebook.png"))
-        self.facebook_image_1=self.canvas.create_image(
-            240.0,
-            577.0,
-            image=self.facebook_image)
+        self.facebook_button=Button(
+            image=self.facebook_image,
+            background="#272E41",
+            activebackground="#272E41",
+            relief="flat",
+            command=lambda : messagebox.showinfo("Facebook", "Facebook login is not available yet"),
+            )
+        self.facebook_button.place(x=210.0, y=550.0)
 
         self.google_image = PhotoImage(
             file=relative_to_assets("Google.png"))
-        self.google_image_image_1=self.canvas.create_image(
-            170.0,
-            577.0,
+        self.google_button=Button(
+            background="#272E41",
+            activebackground="#272E41",
+            relief="flat",
+            command=lambda : messagebox.showinfo("Google", "Google login is not available yet"),
             image=self.google_image)
-
+        self.google_button.place(x=150.0, y=552.0)
         self.canvas.create_text(
             150.0,
             521.0,
@@ -179,10 +218,72 @@ class Login:
             fill="#FFFFFF",
             font=("Inter Medium", 16 * -1)
         )
+        
+    def show_dialog_resetpassword(self):
+        dialog = Toplevel(self.window,background="#272E41")
+        dialog.title("Reset Password")
+        dialog.grid_rowconfigure(0, weight=1)
+        
+        entries = []
+        Label(dialog, text="Username", font=("Inter Medium", 20 * -1),background="#272E41",fg="#FFFFFF").grid(row=0, column=0)
+        entries.append(Entry(dialog, width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1)))
+        entries[0].grid(row=0, column=1)
+        Label(dialog, text="New Password", font=("Inter Medium", 20 * -1),background="#272E41",fg="#FFFFFF").grid(row=1, column=0)
+        entries.append(Entry(dialog, width=18, bd=0, bg="#F3F2F2", font=("Inter Medium", 20 * -1)))
+        entries[1].grid(row=1, column=1)
+        
+            
+        Button(dialog, text="Reset Password", command=lambda: self.process_entry_resetpassword(entries,dialog)).grid(row=2, column=0, columnspan=2)
+            
+    def process_entry_resetpassword(self,entries,dialog):
+        try:
+            username = entries[0].get()
+            new_password = entries[1].get()
+            ClientListener.resetPassword(self, username, new_password)
+                
+            messagebox.showinfo("Success", "Password reset successfully")
+            dialog.destroy()
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+            
+                
+    def clear_hint(self,event):
+        current = event.widget.get()
+        if current == "Enter Username" or current == "Enter Password":
+            event.widget.delete(0, END)
+            event.widget.config(fg="#000000")  
+
+    def restore_hint(self,event):
+        current = event.widget.get()
+        if current == "":
+            if event.widget == self.user_input:
+                event.widget.insert(0, "Enter Username")
+            elif event.widget == self.password_input:
+                event.widget.insert(0, "Enter Password")
+            event.widget.config(fg="#AAAAAA")  
+            
+    def toggle_password(self):
+        # If the password is currently shown, hide it
+        if self.password_shown.get():
+            self.password_input.config(show="*")
+            self.password_shown.set(False)
+        # If the password is currently hidden, show it
+        else:
+            self.password_input.config(show="")
+            self.password_shown.set(True)
+            
     def run(self):
         self.window.resizable(False, False)
         self.window.mainloop()
-
+    def run_gui(self):
+        username = self.user_input.get()
+        password = self.password_input.get() 
+        if ClientListener.checkLogin(self, username, password):
+            subprocess.Popen(["python", "GUI/gui.py"])
+            self.window.destroy()
+        else:
+            messagebox.showerror("Error", "Invalid username or password")
 if __name__ == "__main__":
     login = Login()
     login.run()
+    client = ClientListener()

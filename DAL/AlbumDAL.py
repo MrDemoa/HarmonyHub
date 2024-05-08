@@ -10,39 +10,54 @@ class AlbumDAL:
 
     con = ConnectSQL.connect_mysql()
 
-    def getAllData():
+    def getAllData(self):
         global con
-        cursor = con.cursor()
+        cursor = AlbumDAL.con.cursor()
         cursor.execute("select * from album")
         records = cursor.fetchall()
         cursor.close()
         return records
 
-    def insert(album_dto):
-        global con
-        con = ConnectSQL.connect_mysql()
-        cursor = con.cursor()
+    def generateAlbumID(self):
+        cursor = self.con.cursor()
+        cursor.execute("select albumID from album order by albumID desc limit 1")
+        album_id = cursor.fetchone()
+        if album_id :
+            id = album_id[0]
+            id = int(id[2:]) + 1
+        else:
+            id = 1
+        return "AT" + str(id)
+
+
+    def insert(self,album_dto):
+        cursor = self.con.cursor()
         cursor.execute("insert into album values(%s, %s, %s, %s, %s)", (album_dto.albumID, album_dto.title, album_dto.artistID, album_dto.genre, album_dto.releasedate))
-        con.commit()
+        self.con.commit()
         cursor.close()
 
 #Chua xong ham sua
-    def delete(id):
-        global con 
-        cursor = con.cursor()
-        cursor.execute("delete from album where albumID = %s", (id,))
-        count = int(cursor.rowcount)
-        con.commit()
-        cursor.close()
+    # def delete(self,id): 
+    #     cursor = self.con.cursor()
+    #     cursor.execute("delete from album where albumID = %s", (id,))
+    #     count = int(cursor.rowcount)
+    #     self.con.commit()
+    #     cursor.close()
 
-        if count > 0:
-            print("Xoa thanh cong")
-        else:
-            print("ma khong ton tai")
+    #     if count > 0:
+    #         print("Xoa thanh cong")
+    #     else:
+    #         print("ma khong ton tai")
 
-    def update(album_dto):
-        global con
-        cursor = con.cursor()
+    def update(self,album_dto):
+        cursor = self.con.cursor()
         cursor.execute("update album set title = %s, artistID = %s, genre = %s, realeasedate = %s where albumID = %s", (album_dto.title, album_dto.artistID, album_dto.genre, album_dto.releasedate,album_dto.albumID))
-        con.commit
+        self.con.commit()
         cursor.close()
+
+    def getTracksFromAlbumID(self, albumID):
+        cursor = self.con.cursor()
+        cursor.execute("select * from track where albumID = %s", (albumID))
+        records = cursor.fetchall()
+        cursor.close()
+        return records

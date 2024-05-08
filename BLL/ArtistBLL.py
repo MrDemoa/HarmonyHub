@@ -6,11 +6,17 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from DAL.ArtistDAL import ArtistDAL
 
 class ArtistBLL:
-    def getAllData():
-        ArtistDAL.getAllData()
+    def getAllData(self):
+        return ArtistDAL.getAllData(self)
 
-    def insert(artist_dto):
-        ArtistDAL.insert(artist_dto)
+    def generateArtistID(self):
+        return ArtistDAL.generateArtistID(self)
 
-    def update(artist_dto):
-        ArtistDAL.update(artist_dto)
+    def insert(self,artist_dto):
+        ArtistDAL.insert(self,artist_dto)
+
+    def update(self,artist_dto):
+        ArtistDAL.update(self,artist_dto)
+
+    def getTracksFromArtistID(self, artistID):
+        return ArtistDAL.getTracksFromArtistID(self, artistID)

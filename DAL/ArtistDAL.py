@@ -9,25 +9,40 @@ class ArtistDAL:
 
     con = ConnectSQL.connect_mysql()
 
-    def getAllData():
+    def getAllData(self):
         global con
-        cursor = con.cursor()
+        cursor = ArtistDAL.con.cursor()
         cursor.execute("select * from artist")
         records = cursor.fetchall()
         cursor.close()
         return records
 
-    def insert(artist_dto):
-        global con
-        con = ConnectSQL.connect_mysql()
-        cursor = con.cursor()
+    def generateArtistID(self):
+        cursor = self.con.cursor()
+        cursor.execute("select artistID from artist order by artistID desc limit 1")
+        artist_id = cursor.fetchone()
+        if artist_id :
+            id = artist_id[0]
+            id = int(id[2:]) + 1
+        else:
+            id = 1
+        return "AT" + str(id)
+
+    def insert(self,artist_dto):
+        cursor = self.con.cursor()
         cursor.execute("insert into artist values(%s, %s, %s)", (artist_dto.artistID, artist_dto.name, artist_dto.genre))
-        con.commit()
+        self.con.commit()
         cursor.close()
 
-    def update(artist_dto):
-        global con
-        cursor = con.cursor()
+    def update(self, artist_dto):
+        cursor = self.con.cursor()
         cursor.execute("update artist set name = %s, genre = %s where artistID = %s", (artist_dto.name, artist_dto.genre, artist_dto.artistID))
-        con.commit
+        self.con.commit()
         cursor.close()
+
+    def getTracksFromArtistID(self, artistID):
+        cursor = self.con.cursor()
+        cursor.execute("select * from track where artistID = %s", (artistID))
+        records = cursor.fetchall()
+        cursor.close()
+        return records
