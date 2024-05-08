@@ -16,7 +16,7 @@ from tkinter import Canvas, Entry, Text, Button, PhotoImage, Listbox, Scrollbar,
 from PIL import Image, ImageTk
 import socket
 import json
-
+# user_id = sys.argv[1]
 OUTPUT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ASSETS_PATH = os.path.join(OUTPUT_PATH, "GUI\\assets\\frame0")
 
@@ -34,8 +34,8 @@ class Presentation:
         self.host_ip = '127.0.0.1'
         self.port = 6767
         self.current_track_id = None
+        
         self.window.after(1, self.start_client)
-        # self.client = None
         # self.client = ClientListener() 
        
         self.canvas = Canvas(
@@ -577,13 +577,17 @@ class TrackFrame(Frame):
         self.track_table.bind("<Double-1>", self.on_row_double_click)
         self.insert_into_table_track()
     def on_row_click(self, event):
-        # Get the selected row
-        item = self.track_table.selection()[0]
+        # Get the selected items
+        selected_items = self.track_table.selection()
+        # Check if any items are selected
+        if selected_items:
+            # Get the first selected item
+            item = selected_items[0]
 
-        # Get the values of the selected row
-        values = self.track_table.item(item, 'values')
-        print(values[0])
-        self.big_frame.current_track_id = values[0]
+            # Get the values of the selected item
+            values = self.track_table.item(item, 'values')
+   
+            self.big_frame.current_track_id = values[0]
     def on_row_double_click(self, event):
         # Get the selected row
         item = self.track_table.selection()[0]
