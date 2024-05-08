@@ -270,7 +270,7 @@ class Presentation:
         
         # Create the smaller frames and add them to the big frame
         self.frames = {}
-        for F in (AlbumFrame, PlaylistFrame, ArtistFrame,TrackFrame):
+        for F in (AlbumFrame, PlaylistFrame,PlaylistDetailFrame ,ArtistFrame,TrackFrame):
             frame = F(self.big_frame, self,self.host_ip,self.port)
             frame.configure(background='#313131')
             self.frames[F] = frame
@@ -400,19 +400,19 @@ class PlaylistFrame(Frame):
             width=493.0,
             height=480.0
             )
-    #     self.insert_into_table_track()
-    # def insert_into_table_track(self):
+    #     self.insert_into_table_playlist()
+    # def insert_into_table_playlist(self):
 
-    #     rows = ClientListener.ge
+    #     rows = ClientListener.get
     #     # If rows is a dictionary, convert it to a list of one dictionary
     #     if isinstance(rows, dict):
     #         rows = [rows]
     #     # Insert each row into the table
     #     for row in rows:
     #         self.track_table.insert('', 'end', values=row)
-class PlaylistDetailFrame(PlaylistFrame):
-    def __init__(self,parent,host_ip,port):
-        super().__init__(parent,host_ip,port)
+class PlaylistDetailFrame(Frame):
+    def __init__(self,parent,bigframe,host_ip,port):
+        super().__init__(parent)
         self.pack(fill='both', expand=True)
         self.host_ip = host_ip
         self.port = port
@@ -441,6 +441,7 @@ class ArtistFrame(Frame):
         self.pack(fill='both', expand=True)
         self.host_ip = host_ip
         self.port = port
+        self.big_frame = big_frame
     
         #Table
         self.artist_table = ttk.Treeview(self, columns=("Artist ID","Name", "Genre"), show='headings')
@@ -460,6 +461,10 @@ class ArtistFrame(Frame):
             width=493.0,
             height=480.0
             )
+        # Bind the <<TreeviewSelect>> event to the Treeview
+        self.artist_table.bind("<<TreeviewSelect>>", self.on_row_click)
+        # Bind the double-click event to the Treeview
+        self.artist_table.bind("<Double-1>", self.on_row_double_click)
         self.insert_into_table_artist()
         
     def insert_into_table_artist(self):
@@ -474,7 +479,26 @@ class ArtistFrame(Frame):
             for row in rows:
                 values = tuple(row.values())
                 self.artist_table.insert('', 'end', values=values)
+    def on_row_click(self, event):
+        # Get the selected row
+        item = self.artist_table.selection()[0]
 
+        # Get the values of the selected row
+        values = self.artist_table.item(item, 'values')
+
+        # Print the values of the selected row
+        print(values)
+    def on_row_double_click(self, event):
+        # Get the selected row
+        item = self.artist_table.selection()[0]
+
+        # Get the values of the selected row
+        values = self.artist_table.item(item, 'values')
+        
+        self.big_frame.show_frame(TrackFrame)
+        track_frame = self.big_frame.frames[TrackFrame] 
+        
+        track_frame.insert_into_table_track_artist(values[0])
 class TrackFrame(Frame):
     def __init__(self, parent, big_frame, host_ip, port):
         super().__init__(parent)
@@ -498,6 +522,25 @@ class TrackFrame(Frame):
             y=13.0,
             width=100.0,
             height=25.0,
+            )
+        self.image_refresh = PhotoImage(file=relative_to_assets("Reset.png"))
+        self.refresh_button = Button(
+            self,
+            background="#313131",
+            image=self.image_refresh,
+            text="Refresh",
+            font=("Inter Medium", 14 * -1,"bold"),
+            fg="#FFFFFF",
+            relief="flat",
+            activebackground="#313131",
+            activeforeground="#FFFFFF",
+            command=lambda: self.insert_into_table_track()
+        )
+        self.refresh_button.place(
+            x=340.0,
+            y=13.0,
+            width=27.0,
+            height=27.0,
             )
         
         #Table
@@ -527,6 +570,9 @@ class TrackFrame(Frame):
             )
         self.insert_into_table_track()
     def insert_into_table_track(self):
+        # Delete all rows from the table
+        for i in self.track_table.get_children():
+            self.track_table.delete(i)
         rows = ClientListener.getDataTrackFromServer(self)
      
         # If rows is a dictionary, convert it to a list of one dictionary
@@ -538,7 +584,24 @@ class TrackFrame(Frame):
             for row in rows:
                 values = tuple(row.values())
                 self.track_table.insert('', 'end', values=values)
-             
+    def insert_into_table_track_artist(self,artistID) :
+        # Delete all rows from the table
+        for i in self.track_table.get_children():
+            self.track_table.delete(i)
+        rows = ClientListener.getDataTrackFromServer(self)
+
+        # If rows is a dictionary, convert it to a list of one dictionary
+        if isinstance(rows, dict):
+            rows = [rows]
+
+        # Filter the rows based on the artist ID
+        rows = [row for row in rows if row['artistID'] == artistID]
+
+        # Insert each row into the table
+        if rows is not None:
+            for row in rows:
+                values = tuple(row.values())
+                self.track_table.insert('', 'end', values=values)
 if __name__ == "__main__":
     app = Presentation()
     app.run()
