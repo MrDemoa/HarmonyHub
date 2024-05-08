@@ -304,7 +304,7 @@ class Server:
         # password = client.recv(1024).decode()
         # client.send("ĐÃ NHẬN PASSWORD".encode())
         checkLogin = str(UserBLL.checkUsernameAndPass(self, username, password)) #lấy dữ liệu track từ DB
-        userID = UserBLL.getUserIDByUsername(self, username)
+        userID = str(UserBLL.getUserIDByUsername(self, username))
         message = checkLogin + "|" + userID 
         client.sendall(message)
         

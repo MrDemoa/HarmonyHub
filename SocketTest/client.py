@@ -24,8 +24,9 @@ class ClientListener:
         # self.sendNameOfSongAndPlay('T01')
         # time.sleep(2)
         # self.getDataTrackFromServer()
-    
     def sendNameOfSongAndPlay(self, id):
+        threading.Thread(target=self._sendNameOfSongAndPlay, args=(id,)).start()
+    def _sendNameOfSongAndPlay(self, id):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # gửi yêu cầu connect
