@@ -11,6 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from datetime import date
 from DAL.ConnectDB import ConnectSQL
 from DTO.TrackDTO import TrackDTO
+from DTO.PlayListDTO import PlayListDTO
 from DTO.PLDetailDTO import PLDetailDTO
 from BLL.TrackBLL import TrackBLL
 from BLL.AlbumBLL import AlbumBLL
@@ -70,7 +71,7 @@ class Server:
         elif ("RESET_PASSWORD" in signal):
             signal, username, new_password = signal.split("|")
             self.resetPassword(client, username, new_password)
-        elif (signal == "DATA_PLAYLIST"):
+        elif (signal == "DATA_PLAYLIST_USERID"):
             self.sendDataPlaylistWithUserID(client)
         elif (signal == "DATA_TRACK"):
             self.sendDataTrack(client)
@@ -84,7 +85,16 @@ class Server:
             self.senDataTrackOfArtist(client)
         elif (signal == "PLAY_SONG_"):
             self.sendAudio(client, address)
-
+        elif ("ADD_PLAYLIST" in signal):
+            signal, playlistID, userID, title, creationdate = signal.split("|")
+            self.addPlayList(playlistID, userID, title, creationdate)
+        elif ("DELETE_PLAYLIST" in signal):
+            signal, playlistID = signal.split("|")
+            self.deletePlayList(playlistID)
+        elif (signal == "ADD_TRACK_PLAYLIST"):
+            self.insertTrackToPlayList(client)
+        elif (signal == "DELETE_TRACK_PLAYLIST"):
+            self.deleteTrackInPlayList(client)
     # def send_music(self, client, address):
     #     # Khởi tạo thread để nhận dữ liệu từ client
     #     self.receive_thread = threading.Thread(target=self.receive, args=(client, address))
@@ -293,10 +303,11 @@ class Server:
         # client.send("ĐÃ NHẬN USERNAME".encode())
         # password = client.recv(1024).decode()
         # client.send("ĐÃ NHẬN PASSWORD".encode())
-        data_user = UserBLL.checkUsernameAndPass(self, username, password) #lấy dữ liệu track từ DB
-        print("Data user: ", data_user)
-        client.sendall(bytes([data_user]))
-        print("Đã gửi dữ liệu cuối thành công")
+        checkLogin = str(UserBLL.checkUsernameAndPass(self, username, password)) #lấy dữ liệu track từ DB
+        userID = UserBLL.getUserIDByUsername(self, username)
+        message = checkLogin + "|" + userID 
+        client.sendall(message)
+        
 
     # Gui du lieu kiem tra dang nhap
     def resetPassword(self, client, username, new_password):
@@ -313,7 +324,19 @@ class Server:
             client.sendall("Username is Wrong!!!".encode())
             flag = False
             client.send(bytes([flag]))
-            
+
+
+    def addPlayList(self, playlistID, userID, title, creationdate):
+        pl = PlayListDTO()
+        pl.playplistID = playlistID
+        pl.userID = userID
+        pl.title = title
+        pl.createiondate = creationdate
+
+        PlayListBLL.insert(self, pl) 
+        
+    def deletePlayList(self, playlistID):
+        PlayListBLL.insert(self, playlistID) 
 
     # Gui du lieu album
     def sendDataPlaylistWithUserID(self, client):

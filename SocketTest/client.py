@@ -297,9 +297,9 @@ class ClientListener:
 
         Notification_Server = self.client_socket.recv(1024)
 
-        Notification = bool(int.from_bytes(Notification_Server, byteorder='big'))
+        Notification, userID = Notification_Server.split("|")
 
-        return Notification
+        return Notification, userID
 
     def resetPassword(self, username, new_password):
         try:
@@ -377,6 +377,82 @@ class ClientListener:
 
         return Notification
     
+    def getDataTrackOfArtist(self, artistID):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "DATA_PLAYLIST_USERID" 
+            self.client_socket.sendall(signal.encode())
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+
+        #Gửi albumID cho server
+        self.client_socket.sendall(artistID.encode())
+
+        # Nhận dữ liệu từ server
+        print("NHẬN DỮ LIỆU TỪ SEVER!!!")
+        received_data = self.client_socket.recv(4096)
+
+        # decode dữ liệu
+        track_in_artist = received_data.decode()
+            
+        # chuyển đổi dữ liệu từ dạng JSON thành danh sách từ điển
+        data = json.loads(track_in_artist)
+            
+        # Print the received data
+        print("Received data artist:")
+        for record in data:
+            print(record)
+            
+        return data
+    
+    def addPlayList(self, playlistID, userID, title, creationdate):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "ADD_PLAYLIST"
+            message = signal + "|" + playlistID + "|" + userID + "|" + title + "|" + creationdate
+            self.client_socket.sendall(message.encode())
+            #self.client_socket.recv(1024).decode("utf-8")
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+        
+    def addPlayList(self, playlistID):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "ADD_PLAYLIST"
+            message = signal + "|" + playlistID 
+            self.client_socket.sendall(message.encode())
+            #self.client_socket.recv(1024).decode("utf-8")
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+     
+
 if __name__ == "__main__":
     client = ClientListener() #mở client
     # client.getDataAlbumFromServer()

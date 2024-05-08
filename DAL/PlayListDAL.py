@@ -36,9 +36,9 @@ class PlayListDAL:
             id = 1
         return "PL" + str(id)
 
-    def insert(self,playlist_dto):
+    def insert(self, playlist_dto):
         cursor = self.con.cursor()
-        cursor.execute("insert into playlist values(%s, %s, %s, %s, %s)", (playlist_dto.playlistID, playlist_dto.userID, playlist_dto.trackID, playlist_dto.title, playlist_dto.creationdate))
+        cursor.execute("insert into playlist values(%s, %s, %s, %s, %s)", (playlist_dto.playlistID, playlist_dto.userID, playlist_dto.title, playlist_dto.creationdate))
         self.con.commit()
         cursor.close()
 
