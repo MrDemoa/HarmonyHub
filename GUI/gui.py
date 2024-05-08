@@ -33,9 +33,10 @@ class Presentation:
         self.window.configure(bg="#FFFFFF")
         self.host_ip = '127.0.0.1'
         self.port = 6767
-        
-        
+        self.current_track_id = None
         self.window.after(1, self.start_client)
+        # self.client = None
+        # self.client = ClientListener() 
        
         self.canvas = Canvas(
                 self.window,
@@ -88,14 +89,13 @@ class Presentation:
         
         self.button_4=Button(
             image=self.button_image_4,
-            # command=self.play_list.play_song,
             borderwidth=0,
             relief="flat",
             bg="#FF9900",
             activebackground="#FF9900",
             height=30,
             width=46,
-            command= lambda: ClientListener.getDataTrackFromServer(self)
+            command=lambda: self.play_song()
             )
         self.button_4.place(
             x=72.0,
@@ -292,8 +292,12 @@ class Presentation:
             playlist_label.bind("<Button-1>", lambda x: self.show_frame(PlaylistFrame))
             
         # Show the first frame
-        self.show_frame(AlbumFrame)
-        
+        self.show_frame(AlbumFrame)  
+    def play_song(self):
+        if self.current_track_id is not None:
+                self.client.sendNameOfSongAndPlay(self.current_track_id)
+        else :
+            messagebox.showerror(("Error") )       
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
@@ -358,7 +362,7 @@ class PlaylistFrame(Frame):
         self.pack(fill='both', expand=True)
         self.host_ip = host_ip
         self.port = port
-        
+        self.big_frame = big_frame
         self.add_playlist_button = Button(
             self,
             background="#4394AE",
@@ -411,12 +415,12 @@ class PlaylistFrame(Frame):
     #     for row in rows:
     #         self.track_table.insert('', 'end', values=row)
 class PlaylistDetailFrame(Frame):
-    def __init__(self,parent,bigframe,host_ip,port):
+    def __init__(self,parent,big_frame,host_ip,port):
         super().__init__(parent)
         self.pack(fill='both', expand=True)
         self.host_ip = host_ip
         self.port = port
-        
+        self.big_frame = big_frame
         self.delete_track_button = Button(
             self,
             background="#4394AE",
@@ -505,7 +509,8 @@ class TrackFrame(Frame):
         self.pack(fill='both', expand=True)
         self.host_ip = host_ip
         self.port = port
-        
+        self.big_frame = big_frame
+        self.client= ClientListener()
         self.add_track_button = Button(
             self,
             background="#4394AE",
@@ -568,7 +573,25 @@ class TrackFrame(Frame):
             width=493.0,
             height=480.0
             )
+        self.track_table.bind("<<TreeviewSelect>>", self.on_row_click)
+        self.track_table.bind("<Double-1>", self.on_row_double_click)
         self.insert_into_table_track()
+    def on_row_click(self, event):
+        # Get the selected row
+        item = self.track_table.selection()[0]
+
+        # Get the values of the selected row
+        values = self.track_table.item(item, 'values')
+        print(values[0])
+        self.big_frame.current_track_id = values[0]
+    def on_row_double_click(self, event):
+        # Get the selected row
+        item = self.track_table.selection()[0]
+
+        # Get the values of the selected row
+        values = self.track_table.item(item, 'values')
+        
+        self.client.sendNameOfSongAndPlay(values[0])
     def insert_into_table_track(self):
         # Delete all rows from the table
         for i in self.track_table.get_children():

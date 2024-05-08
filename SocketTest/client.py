@@ -24,8 +24,9 @@ class ClientListener:
         # self.sendNameOfSongAndPlay('T01')
         # time.sleep(2)
         # self.getDataTrackFromServer()
-    
     def sendNameOfSongAndPlay(self, id):
+        threading.Thread(target=self._sendNameOfSongAndPlay, args=(id,)).start()
+    def _sendNameOfSongAndPlay(self, id):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # gửi yêu cầu connect
@@ -288,11 +289,11 @@ class ClientListener:
     
 
         Notification_Server = self.client_socket.recv(1024).decode()
-
+        print("Notification_Server:", Notification_Server)
         Notification, userID = Notification_Server.split("|")
 
         return Notification, userID
-
+    
     def resetPassword(self, username, new_password):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -447,12 +448,4 @@ class ClientListener:
 
 if __name__ == "__main__":
     client = ClientListener() #mở client
-    bool, id = client.checkLogin("vph", "vph123456")
-    if id:
-        print("Login success")
-        print("UserID: ", bool)
-        print(type(bool))
-        print(type(id))
-    else:
-        print("Failed")
 

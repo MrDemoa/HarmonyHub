@@ -298,7 +298,9 @@ class Server:
     # Gui du lieu kiem tra dang nhap
     def sendDataUser(self, client, username, password):
         checkLogin = str(UserBLL.checkUsernameAndPass(self, username, password)) #lấy dữ liệu track từ DB
-        userID = UserBLL.getUserIDByUsername(self, username)
+        userID = str(UserBLL.getUserIDByUsername(self, username))
+        print("CHECK LOGIN: ", checkLogin)
+        print("USER ID: ", userID)
         message = checkLogin + "|" + userID 
         client.sendall(message.encode())
         
@@ -394,7 +396,6 @@ class Server:
         except Exception as e:
             print(f"Error stopping server: {e}")
 
-# server = Server()
 
 
 
