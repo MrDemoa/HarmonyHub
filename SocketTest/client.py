@@ -19,12 +19,9 @@ class ClientListener:
         self.port = 6767
         # Add a state variable to keep track of whether the audio is muted
         self.is_muted = False
-<<<<<<< HEAD
         self.temp_audio_file = None
-=======
         self.isPlayThisSong = False
         self.pause_state = False
->>>>>>> bd5dcdfb76fe9a3bd33e2f38c6fa0d7f9bdac86a
         # response = self.client_socket.recv(1024).decode()
         # print("Received response from server:", response)
         # make a handshake with the server
@@ -99,7 +96,6 @@ class ClientListener:
             mixer.music.play()
             while mixer.music.get_busy():
                 pygame.time.Clock().tick(10)
-<<<<<<< HEAD
     def get_music_length(self):    
         filename = 'received_song.mp3'
         # Get the length of the music
@@ -127,7 +123,6 @@ class ClientListener:
             mixer.music.set_pos(new_position)
         else:
             print("Music isn't playing")
-=======
         
 
     # Function to pause audio
@@ -149,7 +144,6 @@ class ClientListener:
     def set_volume(self, volume):
         mixer.music.set_volume(volume)
 
->>>>>>> bd5dcdfb76fe9a3bd33e2f38c6fa0d7f9bdac86a
     def mute_volume(self):
         if self.is_muted:
             # If the audio is currently muted, unmute it
