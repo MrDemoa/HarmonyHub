@@ -340,7 +340,8 @@ class Server:
         if UserBLL.hasUsername(self, username):
             msg = "Username already exists"
             client.sendall(msg.encode())
-        elif UserBLL.insert(self, new_user):
+        else:
+            UserBLL.insert(self, new_user)
             msg = "Register successfully"
             client.sendall(msg.encode())
 
@@ -417,7 +418,6 @@ class Server:
             print("Server stopped")
         except Exception as e:
             print(f"Error stopping server: {e}")
-
 
 
     
