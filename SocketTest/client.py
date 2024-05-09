@@ -19,6 +19,8 @@ class ClientListener:
         self.port = 6767
         # Add a state variable to keep track of whether the audio is muted
         self.is_muted = False
+        self.isPlayThisSong = False
+        self.pause_state = False
         # response = self.client_socket.recv(1024).decode()
         # print("Received response from server:", response)
         # make a handshake with the server
@@ -81,13 +83,33 @@ class ClientListener:
     # Function to play audio
     def play_audio(self,data):
             print("ĐANG GỌI HÀM PLAY AUDIO")
+            self.isPlayThisSong = True
             mixer.music.load(data)
             mixer.music.set_volume(20) 
             mixer.music.play()
             while mixer.music.get_busy():
                 pygame.time.Clock().tick(10)
+        
+
+    # Function to pause audio
+    def Pause_audio(self):
+        self.pause_state = True
+        mixer.music.pause()
+
+    def isPaused(self):
+        return self.pause_state
+
+    # Function to unpause audio:
+    def Unpause_audio(self):
+        self.pause_state = False
+        mixer.music.unpause()
+
+    def isPlaying(self):
+        return self.isPlayThisSong
+
     def set_volume(self, volume):
         mixer.music.set_volume(volume)
+
     def mute_volume(self):
         if self.is_muted:
             # If the audio is currently muted, unmute it
@@ -98,6 +120,7 @@ class ClientListener:
             self.previous_volume = mixer.music.get_volume()
             mixer.music.set_volume(0)
             self.is_muted = True
+
     # Hàm nhận dữ liệu từ server
     def getDataTrackFromServer(self):
             try:

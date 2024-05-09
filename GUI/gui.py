@@ -608,19 +608,32 @@ class TrackFrame(Frame):
         self.track_table.bind("<Double-1>", self.on_row_double_click)
         self.insert_into_table_track()
     def play_song(self):
-        # Get the selected items
-        selected_items = self.track_table.selection()
-        # Check if any items are selected
-        if selected_items:
-            # Get the first selected item
-            item = selected_items[0]
+        if not self.client.isPlaying():
+            print(self.client.isPlaying())
+            print("Play")
+            # Get the selected items
+            selected_items = self.track_table.selection()
+            # Check if any items are selected
+            if selected_items:
+                # Get the first selected item
+                item = selected_items[0]
 
-            # Get the values of the selected item
-            values = self.track_table.item(item, 'values')
-            self.client.sendNameOfSongAndPlay(values[0])
+                # Get the values of the selected item
+                values = self.track_table.item(item, 'values')
+                self.client.sendNameOfSongAndPlay(values[0])
+
+        elif self.client.isPaused():
+            print("Unpause")
+            self.client.Unpause_audio()
+        
+        else:
+            print("Pause")
+            self.client.Pause_audio()
+
     def set_volume(self,val):
         volume = float(val)/100
         self.client.set_volume(volume)
+
     def on_row_click(self, event):
         # Get the selected items
         selected_items = self.track_table.selection()
