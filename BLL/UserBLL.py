@@ -9,6 +9,9 @@ class UserBLL:
     def getAllData(self):
         return UserDAL.getAllData(self)
 
+    def hasUsername(self, username):
+        return UserDAL.hasUsername(self, username)
+
     def insert(self,user_dto):
         UserDAL.insert(self,user_dto)
 

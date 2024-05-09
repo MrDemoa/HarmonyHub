@@ -28,6 +28,17 @@ class UserDAL():
             id = str(1)
         return str(id)
 
+    def hasUsername(self, username):
+        cursor = self.con.cursor()
+        cursor.execute("select * from user where username = %s", (username,))
+        records = cursor.fetchall()
+        self.con.commit()
+        cursor.close()
+        if records:
+            return True
+        else:
+            return False
+
     def insert(self,user_dto):
         cursor = self.con.cursor()
         cursor.execute("insert into user values(%s, %s, %s, %s)", (str(user_dto.userID), str(user_dto.username), str(user_dto.email), str(user_dto.password)))

@@ -457,7 +457,7 @@ class ClientListener:
 
         return Notification
     
-    def Register(self, UserID, UserName, Email, PassWord):
+    def Register(self, UserName, Email, PassWord):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # gửi yêu cầu connect
@@ -465,6 +465,7 @@ class ClientListener:
             signal = "REGISTER" 
             message = signal + "|" + UserName + "|" + Email + "|" + PassWord
             self.client_socket.sendall(message.encode())
+            msg = self.client_socket.recv(1024).decode("utf-8")
 
         except socket.timeout as e:
             print("TIMEOUT ERROR:", str(e))
@@ -475,6 +476,7 @@ class ClientListener:
             print("ERROR:", str(e))
             return
 
+        return msg
 
     def addTrackToPlayList(self, PlayListID, UserID, trackID):
         try:
