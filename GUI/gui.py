@@ -119,20 +119,7 @@ class Presentation:
             x=75.0,
             y=477.0
         )
-        # Audio icon
-        self.button_image_7= PhotoImage(file=relative_to_assets("Audio.png"))
-        self.button_7=Button(
-            image= self.button_image_7,
-            borderwidth=0,
-            relief="flat",
-            bg="#FF9900",
-            activebackground="#FF9900",
-            height=30,
-            width=40)
-        self.button_7.place(
-            x=235.0,
-            y=470.0
-        )
+        
         # Adjust button
         self.button_image_8=PhotoImage(file=relative_to_assets("Adjust.png"))
         self.button_8=Button(
@@ -544,6 +531,32 @@ class TrackFrame(Frame):
             x=72.0,
             y=446.0
         )
+        # Audio icon
+        self.button_image_7= PhotoImage(file=relative_to_assets("Audio.png"))
+        self.button_7=Button(
+            image= self.button_image_7,
+            borderwidth=0,
+            relief="flat",
+            bg="#FF9900",
+            activebackground="#FF9900",
+            height=30,
+            width=40,
+            command=lambda: self.client.mute_volume())
+        self.button_7.place(
+            x=235.0,
+            y=470.0
+        )
+        #volume slider
+        style = ttk.Style()
+        style.configure("TScale", background="#FF9900")
+        self.volume_slider = ttk.Scale( from_=0, to=100, orient='horizontal',state="TScale", command=lambda val :self.set_volume(val))
+        self.volume_slider.set(50)
+        self.volume_slider.place(
+            x=270.0,
+            y=479.0,
+            width=100.0,
+            height=15.0
+        )
         #Table
 
         self.track_table = ttk.Treeview(self, columns=("Track ID","Title","Artist ID" ,"Album ID", "Duration","Release Date"), show='headings')
@@ -583,6 +596,9 @@ class TrackFrame(Frame):
             # Get the values of the selected item
             values = self.track_table.item(item, 'values')
             self.client.sendNameOfSongAndPlay(values[0])
+    def set_volume(self,val):
+        volume = float(val)/100
+        self.client.set_volume(volume)
     def on_row_click(self, event):
         # Get the selected items
         selected_items = self.track_table.selection()
