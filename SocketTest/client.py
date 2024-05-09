@@ -77,6 +77,7 @@ class ClientListener:
             
             temp_audio_file.seek(0)
             #Play the received audio
+            
             self.play_audio(temp_audio_file)
            
             #time.sleep(200)
@@ -456,6 +457,25 @@ class ClientListener:
 
         return Notification
     
+    def Register(self, UserID, UserName, Email, PassWord):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "REGISTER" 
+            message = signal + "|" + UserID + "|" + UserName + "|" + Email + "|" + PassWord
+            self.client_socket.sendall(message.encode())
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return
+
+
     def addTrackToPlayList(self, PlayListID, UserID, trackID):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

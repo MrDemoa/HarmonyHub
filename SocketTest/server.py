@@ -11,6 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from datetime import date
 from DAL.ConnectDB import ConnectSQL
 from DTO.TrackDTO import TrackDTO
+from DTO.UserDTO import UserDTO
 from DTO.PlayListDTO import PlayListDTO
 from DTO.PLDetailDTO import PLDetailDTO
 from BLL.TrackBLL import TrackBLL
@@ -71,6 +72,9 @@ class Server:
         elif ("RESET_PASSWORD" in signal):
             signal, username, new_password = signal.split("|")
             self.resetPassword(client, username, new_password)
+        elif ("REGISTER" in signal):
+            signal, userid, username, email, password = signal.split("|")
+            self.Register(client, userid, username, email, password)
         elif (signal == "DATA_PLAYLIST_USERID"):
             self.sendDataPlaylistWithUserID(client)
         elif (signal == "DATA_TRACK"):
@@ -328,6 +332,15 @@ class Server:
             flag = False
             client.send(bytes([flag]))
 
+
+    def Register(self, userid, username, email, password):
+        new_user = UserDTO()
+        new_user.userID = userid
+        new_user.username = username
+        new_user.email = email
+        new_user.password = password
+
+        username = UserBLL.insert(self, new_user)
 
     def addPlayList(self, playlistID, userID, title, creationdate):
         pl = PlayListDTO()
