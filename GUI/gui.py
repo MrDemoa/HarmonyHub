@@ -609,7 +609,6 @@ class TrackFrame(Frame):
         self.insert_into_table_track()
     def play_song(self):
         if not self.client.isPlaying():
-            print(self.client.isPlaying())
             print("Play")
             # Get the selected items
             selected_items = self.track_table.selection()

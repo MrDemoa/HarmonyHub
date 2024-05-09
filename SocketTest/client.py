@@ -71,6 +71,7 @@ class ClientListener:
 
             temp_audio_file.seek(0)
             #Play the received audio
+            
             self.play_audio(temp_audio_file)
             #time.sleep(200)
             # Load the temporary file as music
