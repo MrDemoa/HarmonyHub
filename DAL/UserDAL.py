@@ -23,14 +23,14 @@ class UserDAL():
         cursor.execute("select userID from user order by userID desc limit 1")
         user_id = cursor.fetchone()
         if user_id :
-            id = user_id[0] + 1
+            id = int(user_id[0]) + 1
         else:
-            id = 1
-        return id
+            id = str(1)
+        return str(id)
 
     def insert(self,user_dto):
         cursor = self.con.cursor()
-        cursor.execute("insert into user values(%s, %s, %s, %s)", (user_dto.userID, user_dto.username, user_dto.email, user_dto.password))
+        cursor.execute("insert into user values(%s, %s, %s, %s)", (str(user_dto.userID), str(user_dto.username), str(user_dto.email), str(user_dto.password)))
         self.con.commit()
         cursor.close()
 
