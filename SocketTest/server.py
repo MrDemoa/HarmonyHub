@@ -334,17 +334,14 @@ class Server:
 
 
     def Register(self, client, username, email, password):
-        new_user = UserDTO()
-        new_user.userID = UserBLL.generateUserID(self)
-        new_user.username = username
-        new_user.email = email
-        new_user.password = password
+        userID = UserBLL.generateUserID(self)
+        new_user = UserDTO(userID=userID, username=username, email=email, password=password)
 
-        username = UserBLL.insert(self, new_user)
         if UserBLL.hasUsername(self, username):
             msg = "Username already exists"
             client.sendall(msg.encode())
-        else:
+
+        if UserBLL.insert(self, new_user):
             msg = "Register successfully"
             client.sendall(msg.encode())
 
