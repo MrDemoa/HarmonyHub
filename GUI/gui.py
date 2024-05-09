@@ -479,8 +479,8 @@ class TrackFrame(Frame):
             command=lambda: self.select_next_row()
             )
         self.button_6.place(
-            x=178.0,
-            y=443.0,
+            x=123,
+            y=442
         )
         # skip to start button
         self.button_image_3= PhotoImage(file=relative_to_assets("Skip to Start.png"))
@@ -536,23 +536,7 @@ class TrackFrame(Frame):
             x=60.0,
             y=410.0
         )
-        # Pause button
-        self.button_image_1=PhotoImage(file=relative_to_assets("Pause Button.png"))
-
-        self.button_1=Button(
-            image=self.button_image_1,
-            borderwidth=0,
-            relief="flat",
-            bg="#FF9900",
-            activebackground="#FF9900",
-            height=35,
-            width=46,
-            command=self.client.getUserNameByUserID(userID)
-        )
-        self.button_1.place(
-            x=123,
-            y=442
-        )
+        
         # Audio icon
         self.button_image_7= PhotoImage(file=relative_to_assets("Audio.png"))
         self.button_7=Button(
@@ -600,13 +584,13 @@ class TrackFrame(Frame):
             x=650.0,
             y=445.0)
         #Time Label Start
-        self.time_label = Label(
+        self.time_label_2 = Label(
             text="0:00",
             bg="#FF9900",
             fg="#FFFFFF",
             font=("Inter", 16 * -1,"bold")
         )
-        self.time_label.place(
+        self.time_label_2.place(
             x=230.0,
             y=445.0)
         #Table
