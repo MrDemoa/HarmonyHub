@@ -439,7 +439,7 @@ class TrackFrame(Frame):
             relief="flat",
             activebackground="#4394AE",
             activeforeground="#FFFFFF",
-            command=lambda: ClientListener.addTrackToPlayList(self,userID,self.current_track_id)
+            # command=lambda: ClientListener.addTrackToPlayList(self,PlayListID,userID,self.current_track_id)
         )
         self.add_track_button.place(
             x=380.0,
@@ -579,6 +579,36 @@ class TrackFrame(Frame):
             width=100.0,
             height=15.0
         )
+        
+        #Time slider
+        self.time_slider = ttk.Scale( from_=0, to=100, orient='horizontal',state="TScale",command=lambda val :self.set_time(val))
+        self.time_slider.set(0)
+        self.time_slider.place(
+            x=270.0,
+            y=450.0,
+            width=360.0, 
+            height=15.0
+        )
+        #Time Label
+        self.time_label = Label(
+            text=self.client.convert_time_to_string(),
+            bg="#FF9900",
+            fg="#FFFFFF",
+            font=("Inter", 16 * -1,"bold")
+        )
+        self.time_label.place(
+            x=650.0,
+            y=445.0)
+        #Time Label Start
+        self.time_label = Label(
+            text="0:00",
+            bg="#FF9900",
+            fg="#FFFFFF",
+            font=("Inter", 16 * -1,"bold")
+        )
+        self.time_label.place(
+            x=230.0,
+            y=445.0)
         #Table
 
         self.track_table = ttk.Treeview(self, columns=("Track ID","Title","Artist ID" ,"Album ID", "Duration","Release Date"), show='headings')
@@ -607,6 +637,9 @@ class TrackFrame(Frame):
         self.track_table.bind("<<TreeviewSelect>>", self.on_row_click)
         self.track_table.bind("<Double-1>", self.on_row_double_click)
         self.insert_into_table_track()
+    def update_time_label(self):
+        self.time_label.config(text=self.client.convert_time_to_string())
+        
     def play_song(self):
         # Get the selected items
         selected_items = self.track_table.selection()
@@ -618,9 +651,13 @@ class TrackFrame(Frame):
             # Get the values of the selected item
             values = self.track_table.item(item, 'values')
             self.client.sendNameOfSongAndPlay(values[0])
+            self.update_time_label()
     def set_volume(self,val):
         volume = float(val)/100
         self.client.set_volume(volume)
+    def set_time(self,val):
+        time = float(val)/100
+        self.client.set_time(time)
     def on_row_click(self, event):
         # Get the selected items
         selected_items = self.track_table.selection()
@@ -641,6 +678,7 @@ class TrackFrame(Frame):
         values = self.track_table.item(item, 'values')
         
         self.client.sendNameOfSongAndPlay(values[0])
+        self.update_time_label()
     def select_next_row(self):
        # Get the selected item
         selected = self.track_table.selection()
@@ -666,7 +704,7 @@ class TrackFrame(Frame):
         self.track_table.focus(next_item)
         values = self.track_table.item(next_item, 'values')
         self.client.sendNameOfSongAndPlay(values[0])
-
+        self.update_time_label()
     def insert_into_table_track(self):
         # Delete all rows from the table
         for i in self.track_table.get_children():
@@ -703,7 +741,8 @@ class TrackFrame(Frame):
         self.track_table.selection_set(previous_item)
         self.track_table.focus(previous_item)
         values = self.track_table.item(previous_item, 'values')
-        self.client.sendNameOfSongAndPlay(values[0])    
+        self.client.sendNameOfSongAndPlay(values[0])
+        self.update_time_label()    
     def insert_into_table_track_artist(self,artistID) :
         # Delete all rows from the table
         for i in self.track_table.get_children():
