@@ -33,11 +33,9 @@ class Presentation:
         self.window.configure(bg="#FFFFFF")
         self.host_ip = '127.0.0.1'
         self.port = 6767
-        self.current_track_id = None
         
         self.window.after(1, self.start_client)
-        # self.client = ClientListener() 
-       
+        
         self.canvas = Canvas(
                 self.window,
                 bg = "#FFFFFF",
@@ -80,28 +78,7 @@ class Presentation:
             437.0,
             fill="#313131",
             outline="")
-        
 
-        
-        
-        # Play button
-        self.button_image_4=PhotoImage(file=relative_to_assets("Circled Play.png"))
-        
-        self.button_4=Button(
-            image=self.button_image_4,
-            borderwidth=0,
-            relief="flat",
-            bg="#FF9900",
-            activebackground="#FF9900",
-            height=30,
-            width=46,
-            command=lambda: self.play_song()
-            )
-        self.button_4.place(
-            x=72.0,
-            y=446.0
-        )
-        
         # Logo
         self.image_image_1 = PhotoImage(file=relative_to_assets("Hub.png"))
         self.image_1=self.canvas.create_image(
@@ -109,34 +86,8 @@ class Presentation:
             12.0,  
             image = self.image_image_1
             )
-        # Stop button
-        self.button_image_6= PhotoImage(file=relative_to_assets("End.png"))
-        self.button_6=Button(
-            image=self.button_image_6,
-            borderwidth=0,
-            relief="flat",
-            bg="#FF9900",
-            activebackground="#FF9900",
-            height=35,
-            width=46)
-        self.button_6.place(
-            x=178.0,
-            y=443.0,
-        )
-        # skip to start button
-        self.button_image_3= PhotoImage(file=relative_to_assets("Skip to Start.png"))
-        self.button_3=Button(
-            image=self.button_image_3,
-            borderwidth=0,
-            relief="flat",
-            bg="#FF9900",
-            activebackground="#FF9900",
-            height=35,
-            width=46)
-        self.button_3.place(
-            x=22.0,
-            y=443.0
-        )
+        
+        
         # Shuffle button
         self.button_image_2= PhotoImage(file=relative_to_assets("Shuffle.png"))
         self.button_2=Button(    
@@ -293,11 +244,7 @@ class Presentation:
             
         # Show the first frame
         self.show_frame(AlbumFrame)  
-    def play_song(self):
-        if self.current_track_id is not None:
-                self.client.sendNameOfSongAndPlay(self.current_track_id)
-        else :
-            messagebox.showerror(("Error") )       
+        
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
@@ -520,7 +467,8 @@ class TrackFrame(Frame):
             relief="flat",
             activebackground="#4394AE",
             activeforeground="#FFFFFF",
-            command=lambda: ClientListener.addTrackToPlayList(self)
+            # command=lambda: ClientListener.addTrackToPlayList(self)
+            # command=lambda: self.select_next_row()
         )
         self.add_track_button.place(
             x=380.0,
@@ -547,7 +495,55 @@ class TrackFrame(Frame):
             width=27.0,
             height=27.0,
             )
+        # Stop button
+        self.button_image_6= PhotoImage(file=relative_to_assets("End.png"))
+        self.button_6=Button(
+            image=self.button_image_6,
+            borderwidth=0,
+            relief="flat",
+            bg="#FF9900",
+            activebackground="#FF9900",
+            height=35,
+            width=46,
+            command=lambda: self.select_next_row()
+            )
+        self.button_6.place(
+            x=178.0,
+            y=443.0,
+        )
+        # skip to start button
+        self.button_image_3= PhotoImage(file=relative_to_assets("Skip to Start.png"))
+        self.button_3=Button(
+            image=self.button_image_3,
+            borderwidth=0,
+            relief="flat",
+            bg="#FF9900",
+            activebackground="#FF9900",
+            height=35,
+            width=46,
+            command=lambda: self.select_previous_row()
+            )
+        self.button_3.place(
+            x=22.0,
+            y=443.0
+        )
+        # Play button
+        self.button_image_4=PhotoImage(file=relative_to_assets("Circled Play.png"))
         
+        self.button_4=Button(
+            image=self.button_image_4,
+            borderwidth=0,
+            relief="flat",
+            bg="#FF9900",
+            activebackground="#FF9900",
+            height=30,
+            width=46,
+            command=lambda: self.play_song()
+            )
+        self.button_4.place(
+            x=72.0,
+            y=446.0
+        )
         #Table
 
         self.track_table = ttk.Treeview(self, columns=("Track ID","Title","Artist ID" ,"Album ID", "Duration","Release Date"), show='headings')
@@ -576,6 +572,17 @@ class TrackFrame(Frame):
         self.track_table.bind("<<TreeviewSelect>>", self.on_row_click)
         self.track_table.bind("<Double-1>", self.on_row_double_click)
         self.insert_into_table_track()
+    def play_song(self):
+        # Get the selected items
+        selected_items = self.track_table.selection()
+        # Check if any items are selected
+        if selected_items:
+            # Get the first selected item
+            item = selected_items[0]
+
+            # Get the values of the selected item
+            values = self.track_table.item(item, 'values')
+            self.client.sendNameOfSongAndPlay(values[0])
     def on_row_click(self, event):
         # Get the selected items
         selected_items = self.track_table.selection()
@@ -596,6 +603,32 @@ class TrackFrame(Frame):
         values = self.track_table.item(item, 'values')
         
         self.client.sendNameOfSongAndPlay(values[0])
+    def select_next_row(self):
+       # Get the selected item
+        selected = self.track_table.selection()
+
+        # If no row is selected, select the first one
+        if not selected:
+            next_item = self.track_table.get_children()[0]
+        else:
+            # Get the index of the current selected item
+            cur_index = self.track_table.index(selected[0])
+
+            # Get the total number of items
+            total_items = len(self.track_table.get_children())
+
+            # If the current selected item is the last one, select the first one
+            if cur_index == total_items - 1:
+                next_item = self.track_table.get_children()[0]
+            else:
+                # Otherwise, select the next item
+                next_item = self.track_table.get_children()[cur_index + 1]
+
+        self.track_table.selection_set(next_item)
+        self.track_table.focus(next_item)
+        values = self.track_table.item(next_item, 'values')
+        self.client.sendNameOfSongAndPlay(values[0])
+
     def insert_into_table_track(self):
         # Delete all rows from the table
         for i in self.track_table.get_children():
@@ -611,6 +644,28 @@ class TrackFrame(Frame):
             for row in rows:
                 values = tuple(row.values())
                 self.track_table.insert('', 'end', values=values)
+    def select_previous_row(self):
+        # Get the selected item
+        selected = self.track_table.selection()
+
+        # If no row is selected, select the last one
+        if not selected:
+            previous_item = self.track_table.get_children()[-1]
+        else:
+            # Get the index of the current selected item
+            cur_index = self.track_table.index(selected[0])
+
+            # If the current selected item is the first one, select the last one
+            if cur_index == 0:
+                previous_item = self.track_table.get_children()[-1]
+            else:
+                # Otherwise, select the previous item
+                previous_item = self.track_table.get_children()[cur_index - 1]
+
+        self.track_table.selection_set(previous_item)
+        self.track_table.focus(previous_item)
+        values = self.track_table.item(previous_item, 'values')
+        self.client.sendNameOfSongAndPlay(values[0])    
     def insert_into_table_track_artist(self,artistID) :
         # Delete all rows from the table
         for i in self.track_table.get_children():

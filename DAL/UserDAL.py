@@ -62,7 +62,6 @@ class UserDAL():
         if user_id:
             return user_id[0]
         else:
-            print("User not found")
             return None
 
 
