@@ -8,7 +8,7 @@ import pygame
 from pygame import mixer
 from datetime import datetime
 import threading
-
+from mutagen.mp3 import MP3
 mixer.init()
 # server_ip='192.168.3.115'
 # port=6767
@@ -19,6 +19,7 @@ class ClientListener:
         self.port = 6767
         # Add a state variable to keep track of whether the audio is muted
         self.is_muted = False
+        self.temp_audio_file = None
         self.isPlayThisSong = False
         self.pause_state = False
         # response = self.client_socket.recv(1024).decode()
@@ -67,12 +68,18 @@ class ClientListener:
                 if not data:
                     break
                 temp_audio_file.write(data)
-                        
-
+            print("Song received and stored in self.temp_audio_file")            
+            file_name = "received_song.mp3"
+            with open(file_name, 'wb') as f:
+                temp_audio_file.seek(0)
+                f.write(temp_audio_file.read())
+           
+            
             temp_audio_file.seek(0)
             #Play the received audio
             
             self.play_audio(temp_audio_file)
+           
             #time.sleep(200)
             # Load the temporary file as music
 
@@ -80,7 +87,7 @@ class ClientListener:
             # time_mp3 = file_size * 8 /(128 * 1000)
             # print(time_mp3)
             # time.sleep(time_mp3)
-
+  
     # Function to play audio
     def play_audio(self,data):
             print("ĐANG GỌI HÀM PLAY AUDIO")
@@ -90,6 +97,33 @@ class ClientListener:
             mixer.music.play()
             while mixer.music.get_busy():
                 pygame.time.Clock().tick(10)
+    def get_music_length(self):    
+        filename = 'received_song.mp3'
+        # Get the length of the music
+        audio = MP3(filename)
+        music_length = audio.info.length
+        
+        return music_length
+    def convert_time_to_string(self):
+        # Convert the length to minutes and seconds
+        minutes, seconds = divmod(self.get_music_length(), 60)
+        # Format the length as a string
+        music_length_str = f"{int(minutes)}:{int(seconds):02d}"
+    
+        return music_length_str
+    def set_volume(self, volume):
+        mixer.music.set_volume(volume)
+    def set_time(self, time):
+        # Check if music is playing
+        if mixer.music.get_busy():
+            # Get the total length of the music
+            music_length = self.get_music_length()
+            # Calculate the new position in the music
+            new_position = float(time) * music_length
+            
+            mixer.music.set_pos(new_position)
+        else:
+            print("Music isn't playing")
         
 
     # Function to pause audio

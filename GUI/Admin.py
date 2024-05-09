@@ -354,6 +354,9 @@ class Admin:
     def run_server(self):
         self.server = Server()
         self.server.run()
+    def turn_off_and_shutdown(self):
+        self.window.destroy()
+        threading.Thread(target=self.server.stop_server).start()
     def toggle_server(self):
         if self.label["text"] == "Server Offline":
             self.label["text"] = "Server Online"
