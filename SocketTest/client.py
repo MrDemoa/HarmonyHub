@@ -241,7 +241,44 @@ class ClientListener:
             print(record)
             
         return data_artist
+    def getDataPlayListFromServer(self, userID):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "DATA_PLAYLIST_USERID" 
+            self.client_socket.sendall(signal.encode())
 
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+
+        #Gửi albumID cho server
+        self.client_socket.sendall(userID.encode())
+
+        # Nhận dữ liệu từ server
+        print("NHẬN DỮ LIỆU TỪ SEVER!!!")
+        received_data = self.client_socket.recv(4096)
+        playlist_in_user = received_data.decode()
+        if playlist_in_user:
+            # decode dữ liệu
+            data = json.loads(playlist_in_user)
+        else:
+            print("No data received from the server")
+            data = []    
+        
+            
+        # Print the received data
+        print("Received data artist:")
+        for record in data:
+            print(record)
+            
+        return data
     def getDataTrackOfArtist(self, artistID):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -278,7 +315,33 @@ class ClientListener:
             print(record)
             
         return data
+    def getUserNameByUserID(self, userID):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "GET_USERNAME_USERID" 
+            self.client_socket.sendall(signal.encode())
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+        print("userID:", userID)
+        self.client_socket.sendall(userID.encode())
+
+        # Nhận dữ liệu từ server
+        print("NHẬN DỮ LIỆU TỪ SEVER!!!")
+        received_data = self.client_socket.recv(4096)
+
+        # decode dữ liệu
+        username = received_data.decode()
     
+        return username
     def checkLogin(self, username, password):
         # Assign a default value to Notification_Server
         Notification_Server = ""
@@ -462,4 +525,3 @@ class ClientListener:
 
 if __name__ == "__main__":
     client = ClientListener() #mở client
-

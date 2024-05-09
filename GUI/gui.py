@@ -16,7 +16,7 @@ from tkinter import Canvas, Entry, Text, Button, PhotoImage, Listbox, Scrollbar,
 from PIL import Image, ImageTk
 import socket
 import json
-# user_id = sys.argv[1]
+userID = str(sys.argv[1])
 OUTPUT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ASSETS_PATH = os.path.join(OUTPUT_PATH, "GUI\\assets\\frame0")
 
@@ -154,23 +154,7 @@ class Presentation:
         self.button_9["menu"]=self.button_9.menu
         self.button_9.menu.add_command(label="Select Folder")
         
-        # Pause button
-        self.button_image_1=PhotoImage(file=relative_to_assets("Pause Button.png"))
-
-        self.button_1=Button(
-            image=self.button_image_1,
-            borderwidth=0,
-            relief="flat",
-            bg="#FF9900",
-            activebackground="#FF9900",
-            height=35,
-            width=46,
-            
-        )
-        self.button_1.place(
-            x=123,
-            y=442
-        )
+        
         
         # Lego name
         self.canvas.create_text(
@@ -230,7 +214,7 @@ class Presentation:
             playlist_label.bind("<Button-1>", lambda x: self.show_frame(PlaylistFrame))
             
         # Show the first frame
-        self.show_frame(AlbumFrame)  
+        self.show_frame(TrackFrame)  
         
     def show_frame(self, cont):
         frame = self.frames[cont]
@@ -338,16 +322,16 @@ class PlaylistFrame(Frame):
             width=493.0,
             height=480.0
             )
-    #     self.insert_into_table_playlist()
-    # def insert_into_table_playlist(self):
+        self.insert_into_table_playlist()
+    def insert_into_table_playlist(self):
 
-    #     rows = ClientListener.get
-    #     # If rows is a dictionary, convert it to a list of one dictionary
-    #     if isinstance(rows, dict):
-    #         rows = [rows]
-    #     # Insert each row into the table
-    #     for row in rows:
-    #         self.track_table.insert('', 'end', values=row)
+        rows = ClientListener.getDataPlayListFromServer(self,userID)
+        # If rows is a dictionary, convert it to a list of one dictionary
+        if isinstance(rows, dict):
+            rows = [rows]
+        # Insert each row into the table
+        for row in rows:
+            self.playlist_table.insert('', 'end', values=row)
 class PlaylistDetailFrame(Frame):
     def __init__(self,parent,big_frame,host_ip,port):
         super().__init__(parent)
@@ -380,7 +364,7 @@ class ArtistFrame(Frame):
         self.host_ip = host_ip
         self.port = port
         self.big_frame = big_frame
-    
+        
         #Table
         self.artist_table = ttk.Treeview(self, columns=("Artist ID","Name", "Genre"), show='headings')
         self.artist_table.heading("Artist ID", text="Artist ID")
@@ -445,6 +429,7 @@ class TrackFrame(Frame):
         self.port = port
         self.big_frame = big_frame
         self.client= ClientListener()
+        self.current_track_id = None
         self.add_track_button = Button(
             self,
             background="#4394AE",
@@ -454,8 +439,7 @@ class TrackFrame(Frame):
             relief="flat",
             activebackground="#4394AE",
             activeforeground="#FFFFFF",
-            # command=lambda: ClientListener.addTrackToPlayList(self)
-            # command=lambda: self.select_next_row()
+            command=lambda: ClientListener.addTrackToPlayList(self,userID,self.current_track_id)
         )
         self.add_track_button.place(
             x=380.0,
@@ -530,6 +514,44 @@ class TrackFrame(Frame):
         self.button_4.place(
             x=72.0,
             y=446.0
+        )
+        #Hello
+        self.label_1 = Label(
+            text="Hello",
+            bg="#2D2D2D",
+            fg="#FFFFFF",
+            font=("Inter", 16 * -1,"bold")
+        )
+        self.label_1.place(
+            x=10.0,
+            y=410.0
+        )
+        self.label_2 = Label(
+            text=self.client.getUserNameByUserID(userID),
+            bg="#2D2D2D",
+            fg="#FFFFFF",
+            font=("Inter", 16 * -1,"bold")
+        )
+        self.label_2.place(
+            x=60.0,
+            y=410.0
+        )
+        # Pause button
+        self.button_image_1=PhotoImage(file=relative_to_assets("Pause Button.png"))
+
+        self.button_1=Button(
+            image=self.button_image_1,
+            borderwidth=0,
+            relief="flat",
+            bg="#FF9900",
+            activebackground="#FF9900",
+            height=35,
+            width=46,
+            command=self.client.getUserNameByUserID(userID)
+        )
+        self.button_1.place(
+            x=123,
+            y=442
         )
         # Audio icon
         self.button_image_7= PhotoImage(file=relative_to_assets("Audio.png"))
@@ -610,7 +632,7 @@ class TrackFrame(Frame):
             # Get the values of the selected item
             values = self.track_table.item(item, 'values')
    
-            self.big_frame.current_track_id = values[0]
+            self.current_track_id = values[0]
     def on_row_double_click(self, event):
         # Get the selected row
         item = self.track_table.selection()[0]

@@ -28,7 +28,13 @@ class UserBLL:
             return None
         else:
             return user_id
-
+    def getUserNameByUserId(self, userID):
+        username= UserDAL.getUserNameByUserID(self, userID)
+        if username is None:
+            print("User not found")
+            return None
+        else:
+            return username
     def update(self, user_dto):
         UserDAL.update(self,user_dto)
 

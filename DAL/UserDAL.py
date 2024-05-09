@@ -63,7 +63,14 @@ class UserDAL():
             return user_id[0]
         else:
             return None
-
+        
+    def getUserNameByUserID(self, userID):
+        cursor = self.con.cursor()
+        cursor.execute("select username from user where userID = %s", (userID,))
+        username = cursor.fetchone()
+        cursor.close()
+        return username[0]
+       
 
     def update(self, user_dto):
         cursor = self.con.cursor()
@@ -88,4 +95,5 @@ class UserDAL():
         self.con.commit()
         cursor.close()
 
-#userdal = UserDAL()
+# userdal = UserDAL()
+# print(userdal.getUserNameByUserID(3))
