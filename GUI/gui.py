@@ -479,8 +479,8 @@ class TrackFrame(Frame):
             command=lambda: self.select_next_row()
             )
         self.button_6.place(
-            x=123,
-            y=442
+            x=178,
+            y=443
         )
         # skip to start button
         self.button_image_3= PhotoImage(file=relative_to_assets("Skip to Start.png"))
@@ -536,7 +536,23 @@ class TrackFrame(Frame):
             x=60.0,
             y=410.0
         )
-        
+        # Pause button
+        self.button_image_1=PhotoImage(file=relative_to_assets("Pause Button.png"))
+
+        self.button_1=Button(
+            image=self.button_image_1,
+            borderwidth=0,
+            relief="flat",
+            bg="#FF9900",
+            activebackground="#FF9900",
+            height=35,
+            width=46,
+            command=lambda : self.pause_song()
+        )
+        self.button_1.place(
+            x=123,
+            y=442
+        )
         # Audio icon
         self.button_image_7= PhotoImage(file=relative_to_assets("Audio.png"))
         self.button_7=Button(
@@ -623,11 +639,14 @@ class TrackFrame(Frame):
         self.insert_into_table_track()
     def update_time_label(self):
         self.time_label.config(text=self.client.convert_time_to_string())
-        
+    def pause_song(self):
+        if self.client.isPaused():
+            print("Unpause")
+            self.client.Unpause_audio()
+        else:
+            print("Pause")
+            self.client.Pause_audio()   
     def play_song(self):
-        if not self.client.isPlaying():
-            print(self.client.isPlaying())
-            print("Play")
             # Get the selected items
             selected_items = self.track_table.selection()
             # Check if any items are selected
@@ -639,15 +658,8 @@ class TrackFrame(Frame):
                 values = self.track_table.item(item, 'values')
                 self.client.sendNameOfSongAndPlay(values[0])
                 self.update_time_label()
-        elif self.client.isPaused():
-            print("Unpause")
-            self.client.Unpause_audio()
-        
-        else:
-            print("Pause")
-            self.client.Pause_audio()
-
-            
+                self.time_slider.set(0)
+       
     def set_volume(self,val):
         volume = float(val)/100
         self.client.set_volume(volume)
@@ -675,6 +687,7 @@ class TrackFrame(Frame):
         
         self.client.sendNameOfSongAndPlay(values[0])
         self.update_time_label()
+        self.time_slider.set(0)
     def select_next_row(self):
        # Get the selected item
         selected = self.track_table.selection()
@@ -701,6 +714,7 @@ class TrackFrame(Frame):
         values = self.track_table.item(next_item, 'values')
         self.client.sendNameOfSongAndPlay(values[0])
         self.update_time_label()
+        self.time_slider.set(0)
     def insert_into_table_track(self):
         # Delete all rows from the table
         for i in self.track_table.get_children():
