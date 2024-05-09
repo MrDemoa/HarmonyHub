@@ -654,7 +654,7 @@ class TrackFrame(Frame):
                 # Get the values of the selected item
                 values = self.track_table.item(item, 'values')
                 self.client.sendNameOfSongAndPlay(values[0])
-
+                self.update_time_label()
         elif self.client.isPaused():
             print("Unpause")
             self.client.Unpause_audio()
@@ -663,10 +663,7 @@ class TrackFrame(Frame):
             print("Pause")
             self.client.Pause_audio()
 
-            # Get the values of the selected item
-            values = self.track_table.item(item, 'values')
-            self.client.sendNameOfSongAndPlay(values[0])
-            self.update_time_label()
+            
     def set_volume(self,val):
         volume = float(val)/100
         self.client.set_volume(volume)
