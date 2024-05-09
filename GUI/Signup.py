@@ -302,7 +302,7 @@ class Signup:
         password = self.password_input.get()
         email = self.email_input.get() 
         result = ClientListener.Register(self, username,email, password)
-        print(result)
+        
         if result == "Username already exists" :
             messagebox.showerror("Error", "Username already exists")
         elif result == "Register successfully":
