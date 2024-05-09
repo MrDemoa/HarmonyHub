@@ -226,7 +226,16 @@ class Signup:
             fill="#FFFFFF",
             font=("Inter Medium", 16 * -1)
         )
-        
+    def check_passwords_match(self):
+        # Get the password and re-entered password
+        password = self.password_input.get()
+        re_entered_password = self.re_enter_password_input.get()
+
+        # Check if they are the same
+        if password == re_entered_password:
+            return True
+        else:
+            return False 
     def show_dialog_resetpassword(self):
         dialog = Toplevel(self.window,background="#272E41")
         dialog.title("Reset Password")
