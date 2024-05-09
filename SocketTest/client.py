@@ -463,7 +463,7 @@ class ClientListener:
             # gửi yêu cầu connect
             self.client_socket.connect((self.host_ip, self.port)) 
             signal = "REGISTER" 
-            message = signal + "|" + UserID + "|" + UserName + "|" + Email + "|" + PassWord
+            message = signal + "|" + UserName + "|" + Email + "|" + PassWord
             self.client_socket.sendall(message.encode())
 
         except socket.timeout as e:
