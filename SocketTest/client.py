@@ -86,7 +86,6 @@ class ClientListener:
             while mixer.music.get_busy():
                 pygame.time.Clock().tick(10)
 
-
     # Hàm nhận dữ liệu từ server
     def getDataTrackFromServer(self):
             try:
@@ -448,4 +447,4 @@ class ClientListener:
 
 if __name__ == "__main__":
     client = ClientListener() #mở client
-
+    
