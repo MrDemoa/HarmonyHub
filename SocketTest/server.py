@@ -73,7 +73,7 @@ class Server:
             signal, username, new_password = signal.split("|")
             self.resetPassword(client, username, new_password)
         elif ("REGISTER" in signal):
-            signal, userid, username, email, password = signal.split("|")
+            signal, username, email, password = signal.split("|")
             self.Register(client, userid, username, email, password)
         elif (signal == "DATA_PLAYLIST_USERID"):
             self.sendDataPlaylistWithUserID(client)
@@ -333,9 +333,9 @@ class Server:
             client.send(bytes([flag]))
 
 
-    def Register(self, userid, username, email, password):
+    def Register(self, username, email, password):
         new_user = UserDTO()
-        new_user.userID = userid
+        new_user.userID = UserBLL.generateUserID(self)
         new_user.username = username
         new_user.email = email
         new_user.password = password
