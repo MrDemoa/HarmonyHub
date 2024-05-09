@@ -46,10 +46,24 @@ class UserDAL():
             return False
 
     def getUserIDByUsername(self, username):
+        if self.con is None:
+            print("Connection is not established")
+            return None
+
         cursor = self.con.cursor()
+
+        if cursor is None:
+            print("Failed to create cursor")
+            return None
+
         cursor.execute("select userID from user where username = %s", (username,))
         user_id = cursor.fetchone()
-        return user_id[0]
+        cursor.close()
+        if user_id:
+            return user_id[0]
+        else:
+            print("User not found")
+            return None
 
 
     def update(self, user_dto):

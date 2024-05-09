@@ -228,7 +228,7 @@ class Admin:
     def show_dialog_album(self):
         dialog = Toplevel(self.window)
         dialog.title("Input")
-
+        dialog.geometry("220x120")
         labels = [ "Title", "Artist ID", "Genre", "Release Date"]
         entries = []
 
@@ -258,7 +258,7 @@ class Admin:
     def show_dialog_track(self):
         dialog = Toplevel(self.window)
         dialog.title("Input")
-
+        dialog.geometry("220x150")
         labels = ["Title","Artist ID", "Album ID", "Duration","Release Date"]
         entries = []
 
@@ -293,7 +293,7 @@ class Admin:
     def show_dialog_artist(self):
         dialog = Toplevel(self.window)
         dialog.title("Input")
-
+        dialog.geometry("180x90")
         labels = [ "Name", "Genre"]
         entries = []
 
@@ -320,7 +320,9 @@ class Admin:
     def show_dialog_user(self):
         dialog = Toplevel(self.window)
         dialog.title("Input")
-
+        
+        dialog.geometry("200x110")
+        
         labels = [ "Username", "Email", "Password"]
         entries = []
 
@@ -825,8 +827,8 @@ class ArtistFrame(Frame):
             save_button = Button(self.edit_window, text="Save", command=lambda: self.save_changes(entries))
             save_button.grid(row=len(selected_row), column=0, columnspan=2)
         except Exception as e:
-            # messagebox.showinfo("Warning!","Please select a row to edit")
-            messagebox.showerror("Error", str(e))
+            messagebox.showinfo("Warning!","Please select a row to edit")
+            
     def save_changes(self, entries):
         try:
             # Get the new values from the entry fields

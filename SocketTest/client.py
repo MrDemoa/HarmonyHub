@@ -269,6 +269,8 @@ class ClientListener:
         return data
     
     def checkLogin(self, username, password):
+        # Assign a default value to Notification_Server
+        Notification_Server = ""
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # gửi yêu cầu connect
@@ -287,13 +289,14 @@ class ClientListener:
             print("ERROR:", str(e))
             return 
     
-
         Notification_Server = self.client_socket.recv(1024).decode()
-        print("Notification_Server:", Notification_Server)
-        Notification, userID = Notification_Server.split("|")
-
-        return Notification, userID
-    
+        # Check the length of the sequence
+        if "|" in Notification_Server:
+            print("Notification_Server:", Notification_Server)
+            Notification, userID = Notification_Server.split("|")
+            return Notification, userID
+        else:
+            return False, None
     def resetPassword(self, username, new_password):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
