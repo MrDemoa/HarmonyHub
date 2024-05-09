@@ -340,8 +340,7 @@ class Server:
         if UserBLL.hasUsername(self, username):
             msg = "Username already exists"
             client.sendall(msg.encode())
-
-        if UserBLL.insert(self, new_user):
+        elif UserBLL.insert(self, new_user):
             msg = "Register successfully"
             client.sendall(msg.encode())
 
