@@ -297,9 +297,16 @@ class Signup:
         self.window.resizable(False, False)
         self.window.mainloop()
     def finish_sign_up(self):
+        
         username = self.user_input.get()
-        password = self.password_input.get() 
-        if ClientListener.checkLogin(self, username, password):
+        password = self.password_input.get()
+        email = self.email_input.get() 
+        result = ClientListener.Register(self, username,email, password)
+        print(result)
+        if result == "Username already exists" :
+            messagebox.showerror("Error", "Username already exists")
+        elif result == "Register successfully":
+            messagebox.showinfo("Success", "Register successfully")
             subprocess.Popen(["python", "GUI/Login.py"])
             self.window.destroy()
         else:
