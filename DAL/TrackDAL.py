@@ -60,5 +60,5 @@ class TrackDAL():
         self.con.commit()
         cursor.close()
 
-trackdal = TrackDAL()
+# trackdal = TrackDAL()
 #trackdal.generateTrackID()

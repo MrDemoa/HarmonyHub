@@ -95,6 +95,8 @@ class Server:
             self.insertTrackToPlayList(client)
         elif (signal == "DELETE_TRACK_PLAYLIST"):
             self.deleteTrackInPlayList(client)
+        elif (signal == "GET_USERNAME_USERID"):
+            self.sendDataUserNameByUserID(client)
     # def send_music(self, client, address):
     #     # Khởi tạo thread để nhận dữ liệu từ client
     #     self.receive_thread = threading.Thread(target=self.receive, args=(client, address))
@@ -293,7 +295,7 @@ class Server:
         json_string = json.dumps(list(map(tuple_to_dict, data_track_artist)))
  
         client.send(json_string.encode())
- 
+
 
     # Gui du lieu kiem tra dang nhap
     def sendDataUser(self, client, username, password):
@@ -303,7 +305,12 @@ class Server:
         print("USER ID: ", userID)
         message = checkLogin + "|" + userID 
         client.sendall(message.encode())
-        
+    
+    def sendDataUserNameByUserID(self, client):
+        userID = client.recv(1024).decode()
+        username = str(UserBLL.getUserNameByUserId(self, userID))
+        print("USERNAME: ", username)
+        client.sendall(username.encode())    
 
     # Gui du lieu kiem tra dang nhap
     def resetPassword(self, client, username, new_password):
@@ -395,7 +402,6 @@ class Server:
             print("Server stopped")
         except Exception as e:
             print(f"Error stopping server: {e}")
-
 
 
 

@@ -17,7 +17,8 @@ class ClientListener:
     def __init__(self):
         self.host_ip = "localhost"
         self.port = 6767
-
+        # Add a state variable to keep track of whether the audio is muted
+        self.is_muted = False
         # response = self.client_socket.recv(1024).decode()
         # print("Received response from server:", response)
         # make a handshake with the server
@@ -81,11 +82,22 @@ class ClientListener:
     def play_audio(self,data):
             print("ĐANG GỌI HÀM PLAY AUDIO")
             mixer.music.load(data)
-            mixer.music.set_volume(0.1) 
+            mixer.music.set_volume(20) 
             mixer.music.play()
             while mixer.music.get_busy():
                 pygame.time.Clock().tick(10)
-
+    def set_volume(self, volume):
+        mixer.music.set_volume(volume)
+    def mute_volume(self):
+        if self.is_muted:
+            # If the audio is currently muted, unmute it
+            mixer.music.set_volume(self.previous_volume)
+            self.is_muted = False
+        else:
+            # If the audio is currently unmuted, mute it
+            self.previous_volume = mixer.music.get_volume()
+            mixer.music.set_volume(0)
+            self.is_muted = True
     # Hàm nhận dữ liệu từ server
     def getDataTrackFromServer(self):
             try:
@@ -229,7 +241,44 @@ class ClientListener:
             print(record)
             
         return data_artist
+    def getDataPlayListFromServer(self, userID):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "DATA_PLAYLIST_USERID" 
+            self.client_socket.sendall(signal.encode())
 
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+
+        #Gửi albumID cho server
+        self.client_socket.sendall(userID.encode())
+
+        # Nhận dữ liệu từ server
+        print("NHẬN DỮ LIỆU TỪ SEVER!!!")
+        received_data = self.client_socket.recv(4096)
+        playlist_in_user = received_data.decode()
+        if playlist_in_user:
+            # decode dữ liệu
+            data = json.loads(playlist_in_user)
+        else:
+            print("No data received from the server")
+            data = []    
+        
+            
+        # Print the received data
+        print("Received data artist:")
+        for record in data:
+            print(record)
+            
+        return data
     def getDataTrackOfArtist(self, artistID):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -266,8 +315,36 @@ class ClientListener:
             print(record)
             
         return data
+    def getUserNameByUserID(self, userID):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "GET_USERNAME_USERID" 
+            self.client_socket.sendall(signal.encode())
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+        print("userID:", userID)
+        self.client_socket.sendall(userID.encode())
+
+        # Nhận dữ liệu từ server
+        print("NHẬN DỮ LIỆU TỪ SEVER!!!")
+        received_data = self.client_socket.recv(4096)
+
+        # decode dữ liệu
+        username = received_data.decode()
     
+        return username
     def checkLogin(self, username, password):
+        # Assign a default value to Notification_Server
+        Notification_Server = ""
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # gửi yêu cầu connect
@@ -286,13 +363,14 @@ class ClientListener:
             print("ERROR:", str(e))
             return 
     
-
         Notification_Server = self.client_socket.recv(1024).decode()
-        print("Notification_Server:", Notification_Server)
-        Notification, userID = Notification_Server.split("|")
-
-        return Notification, userID
-    
+        # Check the length of the sequence
+        if "|" in Notification_Server:
+            print("Notification_Server:", Notification_Server)
+            Notification, userID = Notification_Server.split("|")
+            return Notification, userID
+        else:
+            return False, None
     def resetPassword(self, username, new_password):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -447,4 +525,3 @@ class ClientListener:
 
 if __name__ == "__main__":
     client = ClientListener() #mở client
-    
