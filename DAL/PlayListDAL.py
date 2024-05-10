@@ -20,8 +20,9 @@ class PlayListDAL:
     
     def getDataPlaylistFromUserID(self, userID):
         cursor = self.con.cursor()
-        cursor.execute("select playlistID, title, creationdate from playlist where userID = %s", (userID))
+        cursor.execute("select playlistID, title, creationdate from playlist where userID = %s", (userID,))
         records = cursor.fetchall()
+        print("DAL:",records)
         cursor.close()
         return records
 
@@ -42,19 +43,20 @@ class PlayListDAL:
         self.con.commit()
         cursor.close()
 
-    def delete(id):
+    def delete(self,id):
         global con 
-        cursor = con.cursor()
+        cursor = self.con.cursor()
         cursor.execute("delete from playlist where playlistID = %s", (id,))
         count = int(cursor.rowcount)
-        con.commit()
+        self.con.commit()
         cursor.close()
 
         if count > 0:
             print("Xoa thanh cong")
+            return True
         else:
-            print("ma khong ton tai")
-
+            print("Ma khong ton tai")
+            return False
     def update(playlist_dto):
         global con
         cursor = con.cursor()

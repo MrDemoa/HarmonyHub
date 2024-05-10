@@ -357,20 +357,21 @@ class Server:
         PlayListBLL.insert(self, pl) 
         
     def deletePlayList(self, client, playlistID):
-        flag = PlayListBLL.delete(self, playlistID) 
+        flag = PlayListBLL.delete(self, playlistID)        
         client.send(bytes([flag]))
 
     # Gui du lieu album
     def sendDataPlaylistWithUserID(self, client):
+        print("DANG GUI DU LIEU PLAYLIST!!!")                              
         userID = client.recv(1024).decode()
 
-        data_playlist = AlbumBLL.getDataPlaylistFromUserID(self, userID) #lấy dữ liệu track từ DB
-
+        data_playlist = PlayListBLL.getDataPlaylistFromUserID(self, userID) #lấy dữ liệu track từ DB
+        print("DATA PLAYLIST: ", data_playlist)
         def tuple_to_dict(tpl):
             return {
                 'playlistID': tpl[0],
-                'title': tpl[2],
-                'creationdate': tpl[3]
+                'title': tpl[1],
+                'creationdate': tpl[2].strftime("%Y-%m-%d")
             }
 
         #Convert to JSON string using map and dumps

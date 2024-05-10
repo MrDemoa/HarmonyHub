@@ -268,8 +268,6 @@ class AlbumFrame(Frame):
         # Insert each row into the table
         if rows is not None:
             for row in rows:
-        #     for value in row.values():
-        #         print(value)
                 values = tuple(row.values())
                 self.album_table.insert('', 'end', values=values)
 
@@ -281,6 +279,8 @@ class PlaylistFrame(Frame):
         self.host_ip = host_ip
         self.port = port
         self.big_frame = big_frame
+        self.current_playlist_id = None
+        
         self.add_playlist_button = Button(
             self,
             background="#4394AE",
@@ -308,7 +308,7 @@ class PlaylistFrame(Frame):
             relief="flat",
             activebackground="#4394AE",
             activeforeground="#FFFFFF",
-            command=lambda: ClientListener.deleteTrackInPlayList(self,userID)
+            command=lambda: self.delete_playlist()
         )
         self.delete_track_button.place(
             x=420.0,
@@ -318,21 +318,17 @@ class PlaylistFrame(Frame):
         )
         #Table
 
-        self.playlist_table = ttk.Treeview(self, columns=("Playlist ID","User ID" ,"Track ID", "Title","Creation Date"), show='headings')
+        self.playlist_table = ttk.Treeview(self, columns=("Playlist ID", "Title","Creation Date"), show='headings')
         self.playlist_table.heading("Playlist ID", text="Playlist ID")
-        self.playlist_table.heading("User ID", text="User ID")
-        self.playlist_table.heading("Track ID", text="Track ID")
         self.playlist_table.heading("Title", text="Title")
         self.playlist_table.heading("Creation Date", text="Creation Date")
     
 
         self.playlist_table.column("Playlist ID", width=35, anchor='center')
-        self.playlist_table.column("User ID", width=35, anchor='center')
-        self.playlist_table.column("Track ID", width=35, anchor='center')
         self.playlist_table.column("Title", width=35, anchor='center')
         self.playlist_table.column("Creation Date", width=35, anchor='center')
 
-
+        self.playlist_table.bind("<<TreeviewSelect>>", self.on_row_click)
         self.playlist_table.place(
             x=0,
             y=48,
@@ -340,15 +336,43 @@ class PlaylistFrame(Frame):
             height=480.0
             )
         self.insert_into_table_playlist()
+    def delete_playlist(self):
+        try:
+            notification = ClientListener.deletePlayList(self,self.current_playlist_id)
+            if notification :
+                messagebox.showinfo("Success", "Playlist deleted successfully")
+                # Delete all rows from the table
+                for i in self.playlist_table.get_children():
+                    self.playlist_table.delete(i)
+                self.insert_into_table_playlist()
+            else:
+                messagebox.showerror("Error", "Playlist not deleted")
+            
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
     def insert_into_table_playlist(self):
-
-        rows = ClientListener.getDataPlayListFromServer(self,userID)
+        userid=userID
+        rows = ClientListener.getDataPlayListFromServer(self,userid)
         # If rows is a dictionary, convert it to a list of one dictionary
         if isinstance(rows, dict):
             rows = [rows]
         # Insert each row into the table
         for row in rows:
-            self.playlist_table.insert('', 'end', values=row)
+            values = tuple(row.values())
+            self.playlist_table.insert('', 'end', values=values)
+            
+    def on_row_click(self, event):
+        # Get the selected items
+        selected_items = self.playlist_table.selection()
+        # Check if any items are selected
+        if selected_items:
+            # Get the first selected item
+            item = selected_items[0]
+
+            # Get the values of the selected item
+            values = self.playlist_table.item(item, 'values')
+   
+            self.current_playlist_id = values[0]
     def show_PlayList_Dialog(self):
         dialog = Toplevel(self)
         dialog.title("Input")
