@@ -620,12 +620,12 @@ class TrackFrame(Frame):
         self.track_table.heading("Release Date", text="Release Date")
     
 
-        self.track_table.column("Track ID", width=35, anchor='center')
-        self.track_table.column("Title", width=35, anchor='center')
-        self.track_table.column("Artist ID", width=35, anchor='center')
-        self.track_table.column("Album ID", width=35, anchor='center')
-        self.track_table.column("Duration", width=35, anchor='center')
-        self.track_table.column("Release Date", width=35, anchor='center')
+        self.track_table.column("Track ID", width=25, anchor='center')
+        self.track_table.column("Title", width=100, anchor='w')
+        self.track_table.column("Artist ID", width=25, anchor='center')
+        self.track_table.column("Album ID", width=25, anchor='center')
+        self.track_table.column("Duration", width=15, anchor='center')
+        self.track_table.column("Release Date", width=30, anchor='center')
 
      
         self.track_table.place(

@@ -344,6 +344,7 @@ class Server:
             UserBLL.insert(self, new_user)
             msg = "Register successfully"
             client.sendall(msg.encode())
+            print(msg)    
 
     def addPlayList(self, playlistID, userID, title, creationdate):
         pl = PlayListDTO()

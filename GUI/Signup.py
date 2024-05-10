@@ -226,7 +226,16 @@ class Signup:
             fill="#FFFFFF",
             font=("Inter Medium", 16 * -1)
         )
-        
+    def check_passwords_match(self):
+        # Get the password and re-entered password
+        password = self.password_input.get()
+        re_entered_password = self.re_enter_password_input.get()
+
+        # Check if they are the same
+        if password == re_entered_password:
+            return True
+        else:
+            return False 
     def show_dialog_resetpassword(self):
         dialog = Toplevel(self.window,background="#272E41")
         dialog.title("Reset Password")
@@ -288,9 +297,16 @@ class Signup:
         self.window.resizable(False, False)
         self.window.mainloop()
     def finish_sign_up(self):
+        
         username = self.user_input.get()
-        password = self.password_input.get() 
-        if ClientListener.checkLogin(self, username, password):
+        password = self.password_input.get()
+        email = self.email_input.get() 
+        result = ClientListener.Register(self, username,email, password)
+        
+        if result == "Username already exists" :
+            messagebox.showerror("Error", "Username already exists")
+        elif result == "Register successfully":
+            messagebox.showinfo("Success", "Register successfully")
             subprocess.Popen(["python", "GUI/Login.py"])
             self.window.destroy()
         else:

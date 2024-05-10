@@ -475,7 +475,7 @@ class ClientListener:
         except Exception as e:
             print("ERROR:", str(e))
             return
-
+        print("msg:", msg)
         return msg
 
     def addTrackToPlayList(self, PlayListID, UserID, trackID):
