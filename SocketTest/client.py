@@ -580,6 +580,30 @@ class ClientListener:
             print("ERROR:", str(e))
             return 
         
+    def deletePlayList(self, playlistID):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "DELETE_PLAYLIST"
+            message = signal  + "|" + playlistID 
+            self.client_socket.sendall(message.encode())
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+        
+        Notification_Server = client.recv(1024)
+
+        Notification = bool(int.from_bytes(Notification_Server, byteorder='big'))
+
+        return Notification
+        
      
 
 if __name__ == "__main__":

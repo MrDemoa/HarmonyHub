@@ -94,7 +94,7 @@ class Server:
             self.addPlayList(userID, title, creationdate)
         elif ("DELETE_PLAYLIST" in signal):
             signal, playlistID = signal.split("|")
-            self.deletePlayList(playlistID)
+            self.deletePlayList(client, playlistID)
         elif ("ADD_TRACK_PLAYLIST" in signal ):
             signal, playlistID, userID, trackID = signal.split("|")
             self.addTrackToPlayList(playlistID, userID, trackID)
@@ -356,8 +356,9 @@ class Server:
 
         PlayListBLL.insert(self, pl) 
         
-    def deletePlayList(self, playlistID):
-        PlayListBLL.insert(self, playlistID) 
+    def deletePlayList(self, client, playlistID):
+        flag = PlayListBLL.delete(self, playlistID) 
+        client.send(bytes([flag]))
 
     # Gui du lieu album
     def sendDataPlaylistWithUserID(self, client):
