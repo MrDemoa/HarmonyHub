@@ -95,8 +95,9 @@ class Server:
         elif ("DELETE_PLAYLIST" in signal):
             signal, playlistID = signal.split("|")
             self.deletePlayList(playlistID)
-        elif (signal == "ADD_TRACK_PLAYLIST"):
-            self.insertTrackToPlayList(client)
+        elif ("ADD_TRACK_PLAYLIST" in signal ):
+            signal, playlistID, userID, trackID = signal.split("|")
+            self.addTrackToPlayList(playlistID, userID, trackID)
         elif (signal == "DELETE_TRACK_PLAYLIST"):
             self.deleteTrackInPlayList(client)
         elif (signal == "GET_USERNAME_USERID"):
@@ -396,12 +397,10 @@ class Server:
  
         client.send(json_string.encode())
 
-    def insertTrackToPlayList(self, client):
+    def addTrackToPlayList(self, playlistID, userID, trackID):
 
-        detail = PLDetailDTO()
-        detail.PlayListID = client.recv(1024).decode()
-        detail.userID = client.recv(1024).decode()
-        detail.TrackID = client.recv(1024).decode()
+        detail = PLDetailDTO(PlaylistID = playlistID, TrackID = trackID, UserID = userID)
+
 
         PLDetailBLL.insertTracktoPlayList(self, detail) #lấy dữ liệu track từ DB
 
