@@ -34,7 +34,7 @@ class PlayListDAL:
             id = int(id[1:]) + 1
         else:
             id = 1
-        return "PL" + str(id)
+        return "PL" + str(id).zfill(4)
 
     def insert(self, playlist_dto):
         cursor = self.con.cursor()

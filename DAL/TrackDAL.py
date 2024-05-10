@@ -27,7 +27,7 @@ class TrackDAL():
             id = int(id[1:]) + 1
         else:
             id = 1
-        return "T" + str(id)
+        return "T" + str(id).zfill(4)
 
 
     def insert(self, track_dto):

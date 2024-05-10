@@ -26,7 +26,7 @@ class UserDAL():
             id = int(user_id[0]) + 1
         else:
             id = str(1)
-        return str(id)
+        return str(id).zfill(4)
 
     def hasUsername(self, username):
         cursor = self.con.cursor()

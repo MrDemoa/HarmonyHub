@@ -311,7 +311,7 @@ class Admin:
                 name=entries[0].get(),
                 genre=entries[1].get()
             )
-            ArtistBLL.insert(artist_dto)
+            ArtistBLL.insert(self,artist_dto)
             messagebox.showinfo("Success", "Artist inserted successfully")
             dialog.destroy()
             
