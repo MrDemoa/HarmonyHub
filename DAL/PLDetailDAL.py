@@ -12,7 +12,7 @@ class PLDetailDAL:
 
     def insertTracktoPlayList(self, pldetail_dto):
         cursor = self.con.cursor()
-        cursor.execute("insert into detail_playlist values(%s, %s, %s)", (pldetail_dto.playlistID, pldetail_dto.userID, pldetail_dto.trackID))
+        cursor.execute("insert into playlist_detail values(%s, %s, %s)", (pldetail_dto.PlaylistID, pldetail_dto.UserID, pldetail_dto.trackID))
         self.con.commit()
         cursor.close()
 

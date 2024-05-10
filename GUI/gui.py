@@ -3,8 +3,10 @@
 # https://github.com/ParthJadhav/Tkinter-Designer
 from datetime import datetime
 import os
+import random
 import sys
 import threading
+from time import time
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -88,37 +90,7 @@ class Presentation:
             )
         
         
-        # Shuffle button
-        self.button_image_2= PhotoImage(file=relative_to_assets("Shuffle.png"))
-        self.button_2=Button(    
-            image= self.button_image_2,
-            borderwidth=0,
-            relief="flat",
-            bg="#FF9900",
-            activebackground="#FF9900",
-            height=30,
-            width=40)
-        self.button_2.place(
-            x=125.0,
-            y=470.0
-        )
         
-        # Repeat button
-        self.button_image_5=PhotoImage(file=relative_to_assets("Repeat.png"))
-        
-        self.button_5=Button(
-            image= self.button_image_5,
-            borderwidth=0,
-            relief="flat",
-            bg="#FF9900",
-            activebackground="#FF9900",
-            height=15,
-            width=40
-            )
-        self.button_5.place(
-            x=75.0,
-            y=477.0
-        )
         
         # Adjust button
         self.button_image_8=PhotoImage(file=relative_to_assets("Adjust.png"))
@@ -235,7 +207,7 @@ class AlbumFrame(Frame):
         self.host_ip = host_ip
         self.port = port
         self.pack(fill='both', expand=True)
- 
+        self.big_frame = big_frame
         #Table
         self.album_table = ttk.Treeview(self, columns=("Album ID","Title", "Artist ID", "Genre", "Release Date"), show='headings')
         self.album_table.heading("Album ID", text="Album ID")
@@ -250,7 +222,9 @@ class AlbumFrame(Frame):
         self.album_table.column("Artist ID", width=50, anchor='center')
         self.album_table.column("Genre", width=50, anchor='center')
         self.album_table.column("Release Date", width=50, anchor='center')
-    
+
+        
+        self.album_table.bind("<Double-1>", self.on_row_double_click)
 
         self.album_table.place(
             x=0,
@@ -270,7 +244,17 @@ class AlbumFrame(Frame):
             for row in rows:
                 values = tuple(row.values())
                 self.album_table.insert('', 'end', values=values)
+    def on_row_double_click(self, event):
+        # Get the selected row
+        item = self.album_table.selection()[0]
 
+        # Get the values of the selected row
+        values = self.album_table.item(item, 'values')
+        
+        self.big_frame.show_frame(TrackFrame)
+        track_frame = self.big_frame.frames[TrackFrame] 
+        
+        track_frame.insert_into_table_track_album(values[0])
             
 class PlaylistFrame(Frame):
     def __init__(self, parent, big_frame, host_ip, port):
@@ -488,7 +472,7 @@ class TrackFrame(Frame):
             relief="flat",
             activebackground="#4394AE",
             activeforeground="#FFFFFF",
-            # command=lambda: ClientListener.addTrackToPlayList(self,PlayListID,userID,self.current_track_id)
+            command=lambda: self.show_Add_PlayList_Dialog()
         )
         self.add_track_button.place(
             x=380.0,
@@ -585,6 +569,21 @@ class TrackFrame(Frame):
             x=60.0,
             y=410.0
         )
+        # Shuffle button
+        self.button_image_2= PhotoImage(file=relative_to_assets("Shuffle.png"))
+        self.button_2=Button(    
+            image= self.button_image_2,
+            borderwidth=0,
+            relief="flat",
+            bg="#FF9900",
+            activebackground="#FF9900",
+            height=30,
+            width=40,
+            command=lambda: self.play_random_song())
+        self.button_2.place(
+            x=125.0,
+            y=470.0
+        )
         # Pause button
         self.button_image_1=PhotoImage(file=relative_to_assets("Pause Button.png"))
 
@@ -658,6 +657,23 @@ class TrackFrame(Frame):
         self.time_label_2.place(
             x=230.0,
             y=445.0)
+        
+        # Repeat button
+        self.button_image_5=PhotoImage(file=relative_to_assets("Repeat.png"))
+        
+        self.button_5=Button(
+            image= self.button_image_5,
+            borderwidth=0,
+            relief="flat",
+            bg="#FF9900",
+            activebackground="#FF9900",
+            height=15,
+            width=40
+            )
+        self.button_5.place(
+            x=75.0,
+            y=477.0
+        )
         #Table
 
         self.track_table = ttk.Treeview(self, columns=("Track ID","Title","Artist ID" ,"Album ID", "Duration","Release Date"), show='headings')
@@ -708,6 +724,7 @@ class TrackFrame(Frame):
                 self.client.sendNameOfSongAndPlay(values[0])
                 self.update_time_label()
                 self.time_slider.set(0)
+              
        
     def set_volume(self,val):
         volume = float(val)/100
@@ -801,7 +818,23 @@ class TrackFrame(Frame):
         self.track_table.focus(previous_item)
         values = self.track_table.item(previous_item, 'values')
         self.client.sendNameOfSongAndPlay(values[0])
-        self.update_time_label()    
+        self.update_time_label() 
+
+    def play_random_song(self):
+        # Get all items
+        all_items = self.track_table.get_children()
+        # Check if there are any items
+        if all_items:
+            # Select a random item
+            item = random.choice(all_items)
+            self.track_table.selection_set(item)
+            self.track_table.focus(item)
+            # Get the values of the selected item
+            values = self.track_table.item(item, 'values')
+            self.client.sendNameOfSongAndPlay(values[0])
+            self.update_time_label()
+            self.time_slider.set(0)  
+ 
     def insert_into_table_track_artist(self,artistID) :
         # Delete all rows from the table
         for i in self.track_table.get_children():
@@ -820,6 +853,52 @@ class TrackFrame(Frame):
             for row in rows:
                 values = tuple(row.values())
                 self.track_table.insert('', 'end', values=values)
+    def insert_into_table_track_album(self,albumID) :
+        # Delete all rows from the table
+        for i in self.track_table.get_children():
+            self.track_table.delete(i)
+        rows = ClientListener.getDataTrackFromServer(self)
+
+        # If rows is a dictionary, convert it to a list of one dictionary
+        if isinstance(rows, dict):
+            rows = [rows]
+
+        # Filter the rows based on the album ID
+        rows = [row for row in rows if row['albumID'] == albumID]
+
+        # Insert each row into the table
+        if rows is not None:
+            for row in rows:
+                values = tuple(row.values())
+                self.track_table.insert('', 'end', values=values)
+    def show_Add_PlayList_Dialog(self):
+        dialog = Toplevel(self)
+        dialog.title("Input")
+        dialog.geometry("200x60")
+        userid=userID
+        entries = []
+        combobox = ttk.Combobox(dialog)
+        # Set the values of the combo box to the keys of the dictionary
+        playlist_data = ClientListener.getPlayListID(self,userid)
+        # Extract the playlist IDs from the data
+        playlist_ids = [data['playlistID'] for data in playlist_data]
+        combobox['values'] = playlist_ids
+        combobox.grid(column=0, row=0)
+        entries.append(combobox)
+
+        Button(dialog, text="Submit", command=lambda: self.process_entries_playlist(entries,dialog)).grid( column=0, row = 1,columnspan=2)
+    def process_entries_playlist(self, entries,dialog):
+        try:
+            userid=userID
+            playlistID=entries[0].get()
+            
+            ClientListener.addTrackToPlayList(self,playlistID,userid,self.current_track_id)
+            
+            messagebox.showinfo("Success", "Add track to playlist successfully")
+            dialog.destroy()
+            
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
 if __name__ == "__main__":
     app = Presentation()
     app.run()

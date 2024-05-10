@@ -102,6 +102,9 @@ class Server:
             self.deleteTrackInPlayList(client)
         elif (signal == "GET_USERNAME_USERID"):
             self.sendDataUserNameByUserID(client)
+        elif ("GET_PLAYLISTID" in signal):
+            signal, userID = signal.split("|")
+            self.sendDataPlayListID(client,userID)
     # def send_music(self, client, address):
     #     # Khởi tạo thread để nhận dữ liệu từ client
     #     self.receive_thread = threading.Thread(target=self.receive, args=(client, address))
@@ -399,10 +402,9 @@ class Server:
  
         client.send(json_string.encode())
 
-    def addTrackToPlayList(self, playlistID, userID, trackID):
+    def addTrackToPlayList(self, PlaylistID, UserID, trackID):
 
-        detail = PLDetailDTO(PlaylistID = playlistID, TrackID = trackID, UserID = userID)
-
+        detail = PLDetailDTO(PlaylistID = PlaylistID, UserID = UserID,trackID = trackID)
 
         PLDetailBLL.insertTracktoPlayList(self, detail) #lấy dữ liệu track từ DB
 
@@ -420,9 +422,21 @@ class Server:
             print("Server stopped")
         except Exception as e:
             print(f"Error stopping server: {e}")
+            
+    def sendDataPlayListID(self, client,userID):
 
+        playlistID = PlayListBLL.getPlaylistIDByUserID(self, userID)
+        
+        print("PLAYLIST ID: ", playlistID)
+        def tuple_to_dict(tpl):
+            return {
+                'playlistID': tpl[0]
+            }
 
-    
+        #Convert to JSON string using map and dumps
+        json_string = json.dumps(list(map(tuple_to_dict, playlistID)))
+ 
+        client.send(json_string.encode())
     
 
 

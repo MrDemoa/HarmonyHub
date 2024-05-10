@@ -234,10 +234,10 @@ class Login:
             text="Sign Up",
             fill="#FFFFFF",
             font=("Inter ExtraBold", 16 * -1, "underline"),
-            tags="forgot_password_text"
+            tags="sign_up_text"
         )
 
-        self.canvas.tag_bind("forgot_password_text", "<Button-1>", lambda x: self.run_sign_up())
+        self.canvas.tag_bind("sign_up_text", "<Button-1>", lambda x: self.run_sign_up())
     def show_dialog_resetpassword(self):
         dialog = Toplevel(self.window,background="#272E41")
         dialog.title("Reset Password")

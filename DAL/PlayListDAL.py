@@ -17,12 +17,16 @@ class PlayListDAL:
         records = cursor.fetchall()
         cursor.close()
         return records
-    
+    def getPlaylistIDByUserID(self,userID):
+        cursor = self.con.cursor()
+        cursor.execute("select playlistID from playlist where userID = %s", (userID,))
+        records = cursor.fetchall()
+        cursor.close()
+        return records
     def getDataPlaylistFromUserID(self, userID):
         cursor = self.con.cursor()
         cursor.execute("select playlistID, title, creationdate from playlist where userID = %s", (userID,))
         records = cursor.fetchall()
-        print("DAL:",records)
         cursor.close()
         return records
 
@@ -63,4 +67,3 @@ class PlayListDAL:
         cursor.execute("update playlist set userID = %s, title = %s, creationdate = %s where playlistID = %s", (playlist_dto.userID, playlist_dto.title, playlist_dto.creationdate, playlist_dto.playlistID))
         con.commit
         cursor.close()
-    

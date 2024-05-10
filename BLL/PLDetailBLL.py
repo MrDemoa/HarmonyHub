@@ -9,7 +9,7 @@ class PLDetailBLL:
 
 
     def insertTracktoPlayList(self, playlist_dto):
-        PLDetailDAL.insert(self, playlist_dto)
+        PLDetailDAL.insertTracktoPlayList(self, playlist_dto)
 
     def udeleteTrackInPlayList(self, trackID):
         PLDetailDAL.update(self, trackID)
