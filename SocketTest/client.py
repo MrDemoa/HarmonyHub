@@ -561,13 +561,13 @@ class ClientListener:
             
         return data
     
-    def addPlayList(self, playlistID, userID, title, creationdate):
+    def addPlayList(self, userID, title, creationdate):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # gửi yêu cầu connect
             self.client_socket.connect((self.host_ip, self.port)) 
             signal = "ADD_PLAYLIST"
-            message = signal + "|" + playlistID + "|" + userID + "|" + title + "|" + creationdate
+            message = signal  + "|" + userID + "|" + title + "|" + creationdate
             self.client_socket.sendall(message.encode())
             #self.client_socket.recv(1024).decode("utf-8")
 
@@ -580,24 +580,6 @@ class ClientListener:
             print("ERROR:", str(e))
             return 
         
-    def addPlayList(self, playlistID):
-        try:
-            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            # gửi yêu cầu connect
-            self.client_socket.connect((self.host_ip, self.port)) 
-            signal = "ADD_PLAYLIST"
-            message = signal + "|" + playlistID 
-            self.client_socket.sendall(message.encode())
-            #self.client_socket.recv(1024).decode("utf-8")
-
-        except socket.timeout as e:
-            print("TIMEOUT ERROR:", str(e))
-        except OSError as e:
-            print("FAILED TO RECEIVE DATA:", str(e))
-            return
-        except Exception as e:
-            print("ERROR:", str(e))
-            return 
      
 
 if __name__ == "__main__":

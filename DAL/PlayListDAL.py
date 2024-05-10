@@ -31,14 +31,14 @@ class PlayListDAL:
         playlist_id = cursor.fetchone()
         if playlist_id:
             id = playlist_id[0]
-            id = int(id[1:]) + 1
+            id = int(id[2:]) + 1
         else:
             id = 1
         return "PL" + str(id).zfill(4)
 
     def insert(self, playlist_dto):
         cursor = self.con.cursor()
-        cursor.execute("insert into playlist values(%s, %s, %s, %s, %s)", (playlist_dto.playlistID, playlist_dto.userID, playlist_dto.title, playlist_dto.creationdate))
+        cursor.execute("insert into playlist values(%s, %s, %s, %s)", (playlist_dto.playlistID, playlist_dto.userID, playlist_dto.title, playlist_dto.creationdate))
         self.con.commit()
         cursor.close()
 

@@ -1,6 +1,6 @@
 class PlayListDTO:
-    def __init__(self, playplistID, userID, title, createiondate):
-        self.playplistID = playplistID
+    def __init__(self, playlistID, userID, title, creationdate):
+        self.playlistID = playlistID
         self.userID = userID
         self.title = title
-        self.createiondate = createiondate 
+        self.creationdate = creationdate 

@@ -90,8 +90,8 @@ class Server:
         elif (signal == "PLAY_SONG_"):
             self.sendAudio(client, address)
         elif ("ADD_PLAYLIST" in signal):
-            signal, playlistID, userID, title, creationdate = signal.split("|")
-            self.addPlayList(playlistID, userID, title, creationdate)
+            signal, userID, title, creationdate = signal.split("|")
+            self.addPlayList(userID, title, creationdate)
         elif ("DELETE_PLAYLIST" in signal):
             signal, playlistID = signal.split("|")
             self.deletePlayList(playlistID)
@@ -347,12 +347,12 @@ class Server:
             client.sendall(msg.encode())
             print(msg)    
 
-    def addPlayList(self, playlistID, userID, title, creationdate):
-        pl = PlayListDTO()
-        pl.playplistID = playlistID
-        pl.userID = userID
-        pl.title = title
-        pl.createiondate = creationdate
+    def addPlayList(self, userID, title, creationdate):
+        pl = PlayListDTO(playlistID = PlayListBLL.generatePlaylistID(self), 
+                         userID = userID, 
+                         title = title, 
+                         creationdate = creationdate
+        )
 
         PlayListBLL.insert(self, pl) 
         
