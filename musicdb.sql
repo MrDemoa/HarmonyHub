@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 08, 2024 at 09:01 AM
+-- Generation Time: May 10, 2024 at 06:20 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -35,6 +35,13 @@ CREATE TABLE `album` (
   `releasedate` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `album`
+--
+
+INSERT INTO `album` (`albumID`, `title`, `artistID`, `genre`, `releasedate`) VALUES
+('AB0001', 'The New', 'AT0003', 'Pop', '2020-01-08');
+
 -- --------------------------------------------------------
 
 --
@@ -52,7 +59,17 @@ CREATE TABLE `artist` (
 --
 
 INSERT INTO `artist` (`artistID`, `name`, `genre`) VALUES
-('A01', 'J97', 'Ballad');
+('AT0001', 'J977', 'Ballad'),
+('AT0002', 'Karik', 'Rap'),
+('AT0003', 'Imagine Dragon', 'Pop'),
+('AT0004', 'Avicii', 'Pop'),
+('AT0005', 'Coldplay', 'Pop'),
+('AT0006', 'Boney M', 'Russian Pop'),
+('AT0007', 'Ed Sheeran', 'Pop'),
+('AT0008', 'One Republic', 'Pop'),
+('AT0009', 'Russian', 'Russian Folk'),
+('AT0010', 'djkmel', 'Pop'),
+('AT0011', 'Jack', 'Pop');
 
 -- --------------------------------------------------------
 
@@ -99,11 +116,21 @@ CREATE TABLE `track` (
 --
 
 INSERT INTO `track` (`trackID`, `title`, `artistID`, `albumID`, `duration`, `realeasedate`) VALUES
-('T01', 'Thiên Lý Ơi', 'A01', NULL, 220, '2024-04-01'),
-('T2', 'HTG', 'A01', NULL, 222, '2023-04-05'),
-('T3', 'th', 'A01', NULL, 234, '2023-04-03'),
-('T4', 'Tt', 'A01', NULL, 223, '2023-05-04'),
-('T5', 'Thằng Điên', 'A01', NULL, 111, '2023-03-02');
+('T0001', 'Thiên Lý Ơi', 'AT0011', NULL, 220, '2024-01-02'),
+('T0002', 'Hai Thế Giới', 'AT0002', NULL, 278, '2012-07-06'),
+('T0003', 'Khu Tao Sống', 'AT0002', NULL, 241, '2012-07-05'),
+('T0004', 'Thương', 'AT0002', NULL, 176, '2017-05-09'),
+('T0005', 'Anh Không Đòi Quà', 'AT0002', NULL, 198, '2019-07-11'),
+('T0006', 'Mặc Cảm', 'AT0002', NULL, 228, '2018-12-23'),
+('T0007', 'The Nights', 'AT0004', NULL, 176, '0201-08-04'),
+('T0008', 'Rasputin', 'AT0006', NULL, 220, '2011-08-22'),
+('T0009', 'Hymn For The Weekend', 'AT0004', NULL, 220, '2016-08-06'),
+('T0010', 'Shape Of You', 'AT0007', NULL, 220, '2014-02-05'),
+('T0011', 'Radioactive', 'AT0003', 'AB0001', 232, '2013-07-05'),
+('T0012', 'Counting Stars', 'AT0008', NULL, 268, '2010-08-09'),
+('T0013', 'The Bogatyr', 'AT0009', NULL, 220, '2012-04-06'),
+('T0014', 'Katyusha', 'AT0009', NULL, 210, '2008-08-06'),
+('T0015', 'Stronger Than You', 'AT0010', NULL, 241, '2018-05-08');
 
 -- --------------------------------------------------------
 
@@ -113,7 +140,7 @@ INSERT INTO `track` (`trackID`, `title`, `artistID`, `albumID`, `duration`, `rea
 
 CREATE TABLE `user` (
   `userID` varchar(10) NOT NULL,
-  `username` varchar(10) NOT NULL,
+  `username` varchar(20) NOT NULL,
   `email` varchar(50) NOT NULL,
   `password` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -123,8 +150,13 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`userID`, `username`, `email`, `password`) VALUES
-('1', '0', '0', '123456'),
-('2', 'vph', 'vph111@gmail.com', 'vph123456');
+('0001', 'admin', '0', 'admin'),
+('0002', 'acquy369258147', 'acquy3695741@gmail.com', 'Dotuan952003'),
+('0003', 'duyphan', 'duy1425@gmail.com', '111222'),
+('0004', 'hieuvan', 'hieu8845@gmail.com', '1247aa'),
+('0005', 'danhpham', 'danh2547@gmail.com', '349ax'),
+('0006', 'debugger', 'bug@gmail.com', 'bugggg'),
+('0007', 'aaa', 'aaaa', '123');
 
 --
 -- Indexes for dumped tables
