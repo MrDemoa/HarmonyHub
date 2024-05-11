@@ -310,8 +310,9 @@ class ClientListener:
                 # gửi yêu cầu connect
                 self.client_socket.connect((self.host_ip, self.port)) 
                 signal = "DATA_PLAYLIST_USERID" 
-                self.client_socket.sendall(signal.encode())
-
+                message = signal + "|" + userID
+                self.client_socket.sendall(message.encode())
+               
             except socket.timeout as e:
                 print("A timeout error occurred while trying to connect to the server:", str(e))
             except OSError as e:
@@ -321,9 +322,6 @@ class ClientListener:
                 print("An error occurred while trying to connect to the server:", str(e))
                 return 
             
-            #Gửi userID cho server
-            print("sending userID to server",userID)
-            self.client_socket.sendall(userID.encode())
 
             # Nhận dữ liệu từ server
             print("NHẬN DỮ LIỆU TỪ SEVER!!!")
@@ -638,8 +636,7 @@ class ClientListener:
         # chuyển đổi dữ liệu từ dạng JSON thành danh sách từ điển
         data = json.loads(playlist_ID)
             
-        # Print the received data
-        print("Received playlist id:")
+        
         for record in data:
             print(record)
             

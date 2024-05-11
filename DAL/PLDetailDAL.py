@@ -18,7 +18,7 @@ class PLDetailDAL:
 
     def getTrackinPlayListofUserID(self, playlistID, userID):
         cursor = self.con.cursor()
-        cursor.execute("SELECT track.trackID, track.title, track.artistID, track.albumID, track.duration, track.realeasedate FROM playlist_detail INNER JOIN `track` ON playlist_detail.trackID = track.trackID WHERE userID = %s  and playlistID = %s", (playlistID, userID))
+        cursor.execute("SELECT track.trackID, track.title, track.artistID, track.albumID, track.duration, track.realeasedate FROM playlist_detail INNER JOIN `track` ON playlist_detail.trackID = track.trackID WHERE userID = %s  and playlistID = %s", (userID,playlistID))
         records = cursor.fetchall()
         self.con.commit()
         cursor.close()
@@ -35,3 +35,5 @@ class PLDetailDAL:
             return True
         return False
 
+pl = PLDetailDAL()
+print(pl.getTrackinPlayListofUserID("PL0001", "0007"))

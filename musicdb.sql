@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 10, 2024 at 06:20 AM
+-- Generation Time: May 11, 2024 at 07:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -84,6 +84,14 @@ CREATE TABLE `playlist` (
   `creationdate` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `playlist`
+--
+
+INSERT INTO `playlist` (`playlistID`, `userID`, `title`, `creationdate`) VALUES
+('PL0001', '0007', 'Pop', '2024-05-10'),
+('PL0002', '0007', 'Bug', '2024-05-10');
+
 -- --------------------------------------------------------
 
 --
@@ -95,6 +103,15 @@ CREATE TABLE `playlist_detail` (
   `userID` varchar(20) NOT NULL,
   `trackID` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `playlist_detail`
+--
+
+INSERT INTO `playlist_detail` (`playlistID`, `userID`, `trackID`) VALUES
+('PL0001', '0007', 'T0004'),
+('PL0001', '0007', 'T0009'),
+('PL0002', '0007', 'T0010');
 
 -- --------------------------------------------------------
 
@@ -186,7 +203,7 @@ ALTER TABLE `playlist`
 -- Indexes for table `playlist_detail`
 --
 ALTER TABLE `playlist_detail`
-  ADD PRIMARY KEY (`playlistID`,`userID`),
+  ADD PRIMARY KEY (`playlistID`,`trackID`) USING BTREE,
   ADD KEY `pldetail_useridfk_1` (`userID`),
   ADD KEY `pldetail_trackidfk_1` (`trackID`);
 

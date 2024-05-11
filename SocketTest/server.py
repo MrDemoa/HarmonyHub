@@ -76,8 +76,9 @@ class Server:
         elif ("REGISTER" in signal):
             signal, username, email, password = signal.split("|")
             self.Register(client, username, email, password)
-        elif (signal == "DATA_PLAYLIST_USERID"):
-            self.sendDataPlaylistWithUserID(client)
+        elif ("DATA_PLAYLIST_USERID" in signal):
+            signal, userID = signal.split("|")
+            self.sendDataPlaylistWithUserID(client,userID)
         elif (signal == "DATA_TRACK"):
             self.sendDataTrack(client)
         elif (signal == "DATA_ALBUM"):
@@ -108,7 +109,7 @@ class Server:
             self.sendDataPlayListID(client,userID)
         elif ("GET_TRACK_PL_USERID" in signal):
             signal, playlistIDs, userID = signal.split("|")
-            self.sendDatainPlaylistofTrack(client, playlistID, userID)
+            self.sendDatainPlaylistofTrack(client, playlistIDs, userID)
     # def send_music(self, client, address):
     #     # Khởi tạo thread để nhận dữ liệu từ client
     #     self.receive_thread = threading.Thread(target=self.receive, args=(client, address))
@@ -368,9 +369,7 @@ class Server:
         client.send(bytes([flag]))
 
     # Gui du lieu album
-    def sendDataPlaylistWithUserID(self, client):
-        print("DANG GUI DU LIEU PLAYLIST!!!")                              
-        userID = client.recv(1024).decode()
+    def sendDataPlaylistWithUserID(self, client,userID):
 
         data_playlist = PlayListBLL.getDataPlaylistFromUserID(self, userID) #lấy dữ liệu track từ DB
         print("DATA PLAYLIST: ", data_playlist)
@@ -443,7 +442,8 @@ class Server:
         client.send(json_string.encode())
 
     def sendDatainPlaylistofTrack(self, client, playlistID, userID):
-        data_track = PLDetailBLL.getTrackInPlaylist(self, playlistID, userID)
+        data_track = PLDetailBLL.getTrackinPlayListofUserID(self, playlistID, userID)
+        print("DATA TRACK: ", data_track)
         def tuple_to_dict(tpl):
             return {
                 'trackID': tpl[0],
