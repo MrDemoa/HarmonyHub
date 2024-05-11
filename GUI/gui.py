@@ -33,8 +33,7 @@ class Presentation:
         self.window.title("HarmonyHub")
         self.window.geometry("700x500")
         self.window.configure(bg="#FFFFFF")
-        self.host_ip = 'localhost'
-'
+        self.host_ip = '127.0.0.1'
         self.port = 6767
         
         self.window.after(1, self.start_client)
