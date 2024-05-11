@@ -23,7 +23,7 @@ class UserDAL():
         cursor.execute("select userID from user order by userID desc limit 1")
         user_id = cursor.fetchone()
         if user_id :
-            id = int(user_id) + 1
+            id = int(user_id[0]) + 1
         else:
             id = str(1)
         return str(id).zfill(4)
