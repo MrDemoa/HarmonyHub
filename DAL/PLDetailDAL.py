@@ -12,8 +12,13 @@ class PLDetailDAL:
 
     def insertTracktoPlayList(self, pldetail_dto):
         cursor = self.con.cursor()
-        cursor.execute("insert into playlist_detail values(%s, %s, %s)", (pldetail_dto.PlaylistID, pldetail_dto.UserID, pldetail_dto.trackID))
-        self.con.commit()
+        cursor.execute("SELECT * FROM playlist_detail WHERE PlaylistID = %s AND trackID = %s", (pldetail_dto.PlaylistID, pldetail_dto.trackID))
+        record = cursor.fetchone()
+        if record:
+            print("Record already exists")
+        else:
+            cursor.execute("insert into playlist_detail values(%s, %s, %s)", (pldetail_dto.PlaylistID, pldetail_dto.UserID, pldetail_dto.trackID))
+            self.con.commit()
         cursor.close()
 
     def getTrackinPlayListofUserID(self, playlistID, userID):

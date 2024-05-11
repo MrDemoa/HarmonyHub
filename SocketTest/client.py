@@ -340,42 +340,7 @@ class ClientListener:
                 print(record)
             
             return data_track
-    def getDataTrackOfArtist(self, artistID):
-        try:
-            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            # gửi yêu cầu connect
-            self.client_socket.connect((self.host_ip, self.port)) 
-            signal = "RESET_PASSWORD" 
-            self.client_socket.sendall(signal.encode())
-
-        except socket.timeout as e:
-            print("TIMEOUT ERROR:", str(e))
-        except OSError as e:
-            print("FAILED TO RECEIVE DATA:", str(e))
-            return
-        except Exception as e:
-            print("ERROR:", str(e))
-            return 
-
-        #Gửi albumID cho server
-        self.client_socket.sendall(artistID.encode())
-
-        # Nhận dữ liệu từ server
-        print("NHẬN DỮ LIỆU TỪ SEVER!!!")
-        received_data = self.client_socket.recv(4096)
-
-        # decode dữ liệu
-        track_in_artist = received_data.decode()
-            
-        # chuyển đổi dữ liệu từ dạng JSON thành danh sách từ điển
-        data = json.loads(track_in_artist)
-            
-        # Print the received data
-        print("Received data artist:")
-        for record in data:
-            print(record)
-            
-        return data
+    
     def getUserNameByUserID(self, userID):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -570,7 +535,41 @@ class ClientListener:
         Notification = bool(int.from_bytes(Notification_Server, byteorder='big'))
 
         return Notification
-    
+    def getUserInfoFromServer(self, userID):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "USER_INFO"
+            message = signal  + "|" + userID
+            self.client_socket.sendall(message.encode())
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+        
+         # Nhận dữ liệu từ server
+        print("NHẬN DỮ LIỆU TỪ SEVER!!!")
+        received_data = self.client_socket.recv(4096)
+        # decode dữ liệu
+        json_data_track = received_data.decode()
+        print(f"Received data: {json_data_track}")
+            
+
+        # chuyển đổi dữ liệu từ dạng JSON thành danh sách từ điển
+        data_track = json.loads(json_data_track)
+            
+        # Print the received data
+        print("Received data track:")
+        for record in data_track:
+            print(record)
+            
+        return data_track
     def getPlayListID(self, userID):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -641,7 +640,24 @@ class ClientListener:
             print(record)
             
         return data  
-     
+    def updateUserInfo(self,userID):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port))
+            signal = "UPDATE_USERINFO"
+            message = signal + "|" + userID
+            self.client_socket.sendall(message.encode())
+            #self.client_socket.recv(1024).decode("utf-8")
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return
 
 if __name__ == "__main__":
     client = ClientListener() #mở client

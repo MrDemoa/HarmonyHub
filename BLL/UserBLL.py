@@ -38,8 +38,10 @@ class UserBLL:
             return None
         else:
             return username
-    def update(self, user_dto):
-        UserDAL.update(self,user_dto)
+    def getUserInfoByUserID(self, userID):
+        return UserDAL.getUserInfoByUserID(self, userID)
+    def updateUserInfo(self, user_dto):
+        UserDAL.updateUserInfo(self,user_dto)
 
     def resetPassWord(self, username, password):
         UserDAL.resetPassWord(self, username, password)
