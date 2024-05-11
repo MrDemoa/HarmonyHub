@@ -35,7 +35,7 @@ class DateEncoder(json.JSONEncoder):
 
 class Server:
     #========================================================================================
-    ip = "192.168.227.183"
+    ip = "localhost"
 
     port = 6767
 

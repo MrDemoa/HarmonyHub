@@ -35,5 +35,3 @@ class PLDetailDAL:
             return True
         return False
 
-pl = PLDetailDAL()
-pl.getTrackinPlayListofUserID("0007", "PL0001")

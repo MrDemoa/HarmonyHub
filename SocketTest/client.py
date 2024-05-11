@@ -17,7 +17,7 @@ mixer.init()
 class ClientListener:
     
     def __init__(self):
-        self.host_ip = "192.168.227.183"
+        self.host_ip = "localhost"
         self.port = 6767
         # Add a state variable to keep track of whether the audio is muted
         self.is_muted = False
