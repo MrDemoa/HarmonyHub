@@ -608,6 +608,7 @@ class ClientListener:
         Notification = bool(int.from_bytes(Notification_Server, byteorder='big'))
 
         return Notification
+    
     def getPlayListID(self, userID):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -615,6 +616,42 @@ class ClientListener:
             self.client_socket.connect((self.host_ip, self.port)) 
             signal = "GET_PLAYLISTID"
             message = signal  + "|" + userID
+            self.client_socket.sendall(message.encode())
+            
+
+        except socket.timeout as e:
+            print("TIMEOUT ERROR:", str(e))
+        except OSError as e:
+            print("FAILED TO RECEIVE DATA:", str(e))
+            return
+        except Exception as e:
+            print("ERROR:", str(e))
+            return 
+
+        # Nhận dữ liệu từ server
+        print("NHẬN DỮ LIỆU TỪ SEVER!!!")
+        received_data = self.client_socket.recv(4096)
+
+        # decode dữ liệu
+        playlist_ID = received_data.decode()
+            
+        # chuyển đổi dữ liệu từ dạng JSON thành danh sách từ điển
+        data = json.loads(playlist_ID)
+            
+        # Print the received data
+        print("Received playlist id:")
+        for record in data:
+            print(record)
+            
+        return data  
+    
+    def getTrackinPlaylistofUserID(self, PlaylistID, userID):
+        try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # gửi yêu cầu connect
+            self.client_socket.connect((self.host_ip, self.port)) 
+            signal = "GET_TRACK_PL_USERID"
+            message = signal  + "|" +  PlaylistID + "|" + userID
             self.client_socket.sendall(message.encode())
             
 

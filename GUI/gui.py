@@ -34,7 +34,7 @@ class Presentation:
         self.window.geometry("700x500")
         self.window.configure(bg="#FFFFFF")
         self.host_ip = 'localhost'
-'
+
         self.port = 6767
         
         self.window.after(1, self.start_client)

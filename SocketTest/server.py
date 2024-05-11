@@ -106,6 +106,9 @@ class Server:
         elif ("GET_PLAYLISTID" in signal):
             signal, userID = signal.split("|")
             self.sendDataPlayListID(client,userID)
+        elif ("GET_TRACK_PL_USERID" in signal):
+            signal, playlistIDs, userID = signal.split("|")
+            self.sendDatainPlaylistofTrack(client, playlistID, userID)
     # def send_music(self, client, address):
     #     # Khởi tạo thread để nhận dữ liệu từ client
     #     self.receive_thread = threading.Thread(target=self.receive, args=(client, address))
@@ -438,7 +441,22 @@ class Server:
         json_string = json.dumps(list(map(tuple_to_dict, playlistID)))
  
         client.send(json_string.encode())
-    
+
+    def sendDatainPlaylistofTrack(self, client, playlistID, userID):
+        data_track = PLDetailBLL.getTrackInPlaylist(self, playlistID, userID)
+        def tuple_to_dict(tpl):
+            return {
+                'trackID': tpl[0],
+                'title': tpl[1],
+                'artistID': tpl[2],
+                'albumID': tpl[3],
+                'duration': tpl[4],
+                'releasedate': tpl[5].strftime("%Y-%m-%d")
+            }
+                #Convert to JSON string using map and dumps
+        json_string = json.dumps(list(map(tuple_to_dict, data_track)))
+ 
+        client.send(json_string.encode())
 
 
 
