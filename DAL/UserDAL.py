@@ -23,14 +23,25 @@ class UserDAL():
         cursor.execute("select userID from user order by userID desc limit 1")
         user_id = cursor.fetchone()
         if user_id :
-            id = user_id[0] + 1
+            id = int(user_id) + 1
         else:
-            id = 1
-        return id
+            id = str(1)
+        return str(id).zfill(4)
+
+    def hasUsername(self, username):
+        cursor = self.con.cursor()
+        cursor.execute("select * from user where username = %s", (username,))
+        records = cursor.fetchall()
+        self.con.commit()
+        cursor.close()
+        if records:
+            return True
+        else:
+            return False
 
     def insert(self,user_dto):
         cursor = self.con.cursor()
-        cursor.execute("insert into user values(%s, %s, %s, %s)", (user_dto.userID, user_dto.username, user_dto.email, user_dto.password))
+        cursor.execute("insert into user values(%s, %s, %s, %s)", (str(user_dto.userID), str(user_dto.username), str(user_dto.email), str(user_dto.password)))
         self.con.commit()
         cursor.close()
 
@@ -44,6 +55,33 @@ class UserDAL():
             return True
         else:
             return False
+
+    def getUserIDByUsername(self, username):
+        if self.con is None:
+            print("Connection is not established")
+            return None
+
+        cursor = self.con.cursor()
+
+        if cursor is None:
+            print("Failed to create cursor")
+            return None
+
+        cursor.execute("select userID from user where username = %s", (username,))
+        user_id = cursor.fetchone()
+        cursor.close()
+        if user_id:
+            return user_id[0]
+        else:
+            return None
+        
+    def getUserNameByUserID(self, userID):
+        cursor = self.con.cursor()
+        cursor.execute("select username from user where userID = %s", (userID,))
+        username = cursor.fetchone()
+        cursor.close()
+        return username[0]
+       
 
     def update(self, user_dto):
         cursor = self.con.cursor()
@@ -68,4 +106,5 @@ class UserDAL():
         self.con.commit()
         cursor.close()
 
-#userdal = UserDAL()
+# userdal = UserDAL()
+# print(userdal.getUserNameByUserID(3))

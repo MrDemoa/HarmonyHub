@@ -27,7 +27,7 @@ class AlbumDAL:
             id = int(id[2:]) + 1
         else:
             id = 1
-        return "AT" + str(id)
+        return "AB" + str(id).zfill(4)
 
 
     def insert(self,album_dto):

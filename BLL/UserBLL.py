@@ -9,6 +9,9 @@ class UserBLL:
     def getAllData(self):
         return UserDAL.getAllData(self)
 
+    def hasUsername(self, username):
+        return UserDAL.hasUsername(self, username)
+
     def insert(self,user_dto):
         UserDAL.insert(self,user_dto)
 
@@ -17,8 +20,24 @@ class UserBLL:
 
     def checkUsernameAndPass(self, username, password):
         return UserDAL.checkUsernameAndPass(self, username, password)
+    
     def checkUsername(self, username):
         return UserDAL.checkUsername(self, username)
+    
+    def getUserIDByUsername(self, username):
+        user_id= UserDAL.getUserIDByUsername(self, username)
+        if user_id is None:
+            print("User not found")
+            return None
+        else:
+            return user_id
+    def getUserNameByUserId(self, userID):
+        username= UserDAL.getUserNameByUserID(self, userID)
+        if username is None:
+            print("User not found")
+            return None
+        else:
+            return username
     def update(self, user_dto):
         UserDAL.update(self,user_dto)
 

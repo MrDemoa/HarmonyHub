@@ -3,3 +3,10 @@ playlist - done
 track - (đầy đủ chức năng, albumID  được null)
 album - (xóa thì phải xét albumID trong track về null)
 artist - (ko có xóa)
+
+TODO LIST:
+Queue track 
+Play next song
+Playlist: add track to playlist follow userID
+Play song (pause, play,....)
+Signup

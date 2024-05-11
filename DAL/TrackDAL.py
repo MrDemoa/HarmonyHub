@@ -27,7 +27,7 @@ class TrackDAL():
             id = int(id[1:]) + 1
         else:
             id = 1
-        return "T" + str(id)
+        return "T" + str(id).zfill(4)
 
 
     def insert(self, track_dto):
@@ -41,7 +41,6 @@ class TrackDAL():
         except Exception as e:
             print("DAL TRACK:", str(e))
 
-#Chua xong
     def delete(self,trackID):
         cursor = self.con.cursor()
         cursor.execute("delete from track where trackID = %s", (trackID,))
@@ -56,9 +55,11 @@ class TrackDAL():
 
     def update(self,track_dto):
         cursor = self.con.cursor()
+        if track_dto.albumID == "None":
+                track_dto.albumID = None
         cursor.execute("update track set title = %s, artistID = %s, albumID = %s, duration = %s, realeasedate = %s where trackID = %s", ( track_dto.title, track_dto.artistID, track_dto.albumID, track_dto.duration, track_dto.releasedate, track_dto.trackID))
         self.con.commit()
         cursor.close()
 
-trackdal = TrackDAL()
+# trackdal = TrackDAL()
 #trackdal.generateTrackID()

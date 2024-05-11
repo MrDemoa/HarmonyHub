@@ -17,10 +17,15 @@ class PlayListDAL:
         records = cursor.fetchall()
         cursor.close()
         return records
-    
+    def getPlaylistIDByUserID(self,userID):
+        cursor = self.con.cursor()
+        cursor.execute("select playlistID from playlist where userID = %s", (userID,))
+        records = cursor.fetchall()
+        cursor.close()
+        return records
     def getDataPlaylistFromUserID(self, userID):
         cursor = self.con.cursor()
-        cursor.execute("select playlistID, title, creationdate from playlist where userID = %s", (userID))
+        cursor.execute("select playlistID, title, creationdate from playlist where userID = %s", (userID,))
         records = cursor.fetchall()
         cursor.close()
         return records
@@ -31,34 +36,34 @@ class PlayListDAL:
         playlist_id = cursor.fetchone()
         if playlist_id:
             id = playlist_id[0]
-            id = int(id[1:]) + 1
+            id = int(id[2:]) + 1
         else:
             id = 1
-        return "PL" + str(id)
+        return "PL" + str(id).zfill(4)
 
-    def insert(self,playlist_dto):
+    def insert(self, playlist_dto):
         cursor = self.con.cursor()
-        cursor.execute("insert into playlist values(%s, %s, %s, %s, %s)", (playlist_dto.playlistID, playlist_dto.userID, playlist_dto.trackID, playlist_dto.title, playlist_dto.creationdate))
+        cursor.execute("insert into playlist values(%s, %s, %s, %s)", (playlist_dto.playlistID, playlist_dto.userID, playlist_dto.title, playlist_dto.creationdate))
         self.con.commit()
         cursor.close()
 
-    def delete(id):
+    def delete(self,id):
         global con 
-        cursor = con.cursor()
+        cursor = self.con.cursor()
         cursor.execute("delete from playlist where playlistID = %s", (id,))
         count = int(cursor.rowcount)
-        con.commit()
+        self.con.commit()
         cursor.close()
 
         if count > 0:
             print("Xoa thanh cong")
+            return True
         else:
-            print("ma khong ton tai")
-
+            print("Ma khong ton tai")
+            return False
     def update(playlist_dto):
         global con
         cursor = con.cursor()
         cursor.execute("update playlist set userID = %s, title = %s, creationdate = %s where playlistID = %s", (playlist_dto.userID, playlist_dto.title, playlist_dto.creationdate, playlist_dto.playlistID))
         con.commit
         cursor.close()
-    

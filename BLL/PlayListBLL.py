@@ -19,8 +19,10 @@ class PlayListBLL:
     def insert(self,playlist_dto):
         PlayListDAL.insert(self,playlist_dto)
 
-    def delete(id):
-        PlayListDAL.delete(id)
+    def delete(self,id):
+        return PlayListDAL.delete(self,id)
+    def getPlaylistIDByUserID(self,userID):
+        return PlayListDAL.getPlaylistIDByUserID(self,userID)    
 
     def update(playlist_dto):
         PlayListDAL.update(playlist_dto)

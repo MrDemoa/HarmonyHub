@@ -26,7 +26,7 @@ class ArtistDAL:
             id = int(id[2:]) + 1
         else:
             id = 1
-        return "AT" + str(id)
+        return "AT" + str(id).zfill(4)
 
     def insert(self,artist_dto):
         cursor = self.con.cursor()

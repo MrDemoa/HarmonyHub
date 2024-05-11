@@ -15,8 +15,8 @@ import threading
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUTPUT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ASSETS_PATH = os.path.join(OUTPUT_PATH, "GUI\\assets\\frame1")
-from DAL.ConnectDB import ConnectSQL
-from BLL import UserBLL
+
+
 from SocketTest.client import ClientListener
 
 
@@ -50,7 +50,7 @@ class Login:
         self.window.title("Login")
         self.window.geometry("400x650")
         self.window.configure(bg = "#FFFFFF")
-        self.con = ConnectSQL.connect_mysql()
+        
         self.host_ip = '127.0.0.1'
         self.port = 6767
         
@@ -218,7 +218,26 @@ class Login:
             fill="#FFFFFF",
             font=("Inter Medium", 16 * -1)
         )
-        
+        self.canvas.create_text(
+            85.0,
+            490.0,
+            anchor="nw",
+            text="Don't have an account?",
+            fill="#FFFFFF",
+            font=("Inter Medium", 16 * -1)
+        )
+        # Forgot password text
+        self.forgot_password_text=self.canvas.create_text(
+            250.0,
+            490.0,
+            anchor="nw",
+            text="Sign Up",
+            fill="#FFFFFF",
+            font=("Inter ExtraBold", 16 * -1, "underline"),
+            tags="sign_up_text"
+        )
+
+        self.canvas.tag_bind("sign_up_text", "<Button-1>", lambda x: self.run_sign_up())
     def show_dialog_resetpassword(self):
         dialog = Toplevel(self.window,background="#272E41")
         dialog.title("Reset Password")
@@ -277,12 +296,19 @@ class Login:
         self.window.mainloop()
     def run_gui(self):
         username = self.user_input.get()
-        password = self.password_input.get() 
-        if ClientListener.checkLogin(self, username, password):
-            subprocess.Popen(["python", "GUI/gui.py"])
+        password = self.password_input.get()
+        login_status,user_id = ClientListener.checkLogin(self, username, password)
+        # Split the returned tuple
+        
+        if login_status == "True":
+            subprocess.Popen(["python", "GUI/gui.py",str(user_id)])
             self.window.destroy()
         else:
             messagebox.showerror("Error", "Invalid username or password")
+            
+    def run_sign_up(self):
+        subprocess.Popen(["python", "GUI/Signup.py"])
+        self.window.destroy()
 if __name__ == "__main__":
     login = Login()
     login.run()

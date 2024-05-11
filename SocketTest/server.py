@@ -11,6 +11,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from datetime import date
 from DAL.ConnectDB import ConnectSQL
 from DTO.TrackDTO import TrackDTO
+from DTO.UserDTO import UserDTO
+from DTO.PlayListDTO import PlayListDTO
 from DTO.PLDetailDTO import PLDetailDTO
 from BLL.TrackBLL import TrackBLL
 from BLL.AlbumBLL import AlbumBLL
@@ -70,7 +72,10 @@ class Server:
         elif ("RESET_PASSWORD" in signal):
             signal, username, new_password = signal.split("|")
             self.resetPassword(client, username, new_password)
-        elif (signal == "DATA_PLAYLIST"):
+        elif ("REGISTER" in signal):
+            signal, username, email, password = signal.split("|")
+            self.Register(client, username, email, password)
+        elif (signal == "DATA_PLAYLIST_USERID"):
             self.sendDataPlaylistWithUserID(client)
         elif (signal == "DATA_TRACK"):
             self.sendDataTrack(client)
@@ -84,7 +89,22 @@ class Server:
             self.senDataTrackOfArtist(client)
         elif (signal == "PLAY_SONG_"):
             self.sendAudio(client, address)
-
+        elif ("ADD_PLAYLIST" in signal):
+            signal, userID, title, creationdate = signal.split("|")
+            self.addPlayList(userID, title, creationdate)
+        elif ("DELETE_PLAYLIST" in signal):
+            signal, playlistID = signal.split("|")
+            self.deletePlayList(client, playlistID)
+        elif ("ADD_TRACK_PLAYLIST" in signal ):
+            signal, playlistID, userID, trackID = signal.split("|")
+            self.addTrackToPlayList(playlistID, userID, trackID)
+        elif (signal == "DELETE_TRACK_PLAYLIST"):
+            self.deleteTrackInPlayList(client)
+        elif (signal == "GET_USERNAME_USERID"):
+            self.sendDataUserNameByUserID(client)
+        elif ("GET_PLAYLISTID" in signal):
+            signal, userID = signal.split("|")
+            self.sendDataPlayListID(client,userID)
     # def send_music(self, client, address):
     #     # Khởi tạo thread để nhận dữ liệu từ client
     #     self.receive_thread = threading.Thread(target=self.receive, args=(client, address))
@@ -283,20 +303,22 @@ class Server:
         json_string = json.dumps(list(map(tuple_to_dict, data_track_artist)))
  
         client.send(json_string.encode())
- 
+
 
     # Gui du lieu kiem tra dang nhap
     def sendDataUser(self, client, username, password):
-
-        # client.send("ĐÃ NHẬN TÍN HIỆU".encode())
-        # username = client.recv(1024).decode()
-        # client.send("ĐÃ NHẬN USERNAME".encode())
-        # password = client.recv(1024).decode()
-        # client.send("ĐÃ NHẬN PASSWORD".encode())
-        data_user = UserBLL.checkUsernameAndPass(self, username, password) #lấy dữ liệu track từ DB
-        print("Data user: ", data_user)
-        client.sendall(bytes([data_user]))
-        print("Đã gửi dữ liệu cuối thành công")
+        checkLogin = str(UserBLL.checkUsernameAndPass(self, username, password)) #lấy dữ liệu track từ DB
+        userID = str(UserBLL.getUserIDByUsername(self, username))
+        print("CHECK LOGIN: ", checkLogin)
+        print("USER ID: ", userID)
+        message = checkLogin + "|" + userID 
+        client.sendall(message.encode())
+    
+    def sendDataUserNameByUserID(self, client):
+        userID = client.recv(1024).decode()
+        username = str(UserBLL.getUserNameByUserId(self, userID))
+        print("USERNAME: ", username)
+        client.sendall(username.encode())    
 
     # Gui du lieu kiem tra dang nhap
     def resetPassword(self, client, username, new_password):
@@ -313,19 +335,46 @@ class Server:
             client.sendall("Username is Wrong!!!".encode())
             flag = False
             client.send(bytes([flag]))
-            
+
+
+    def Register(self, client, username, email, password):
+        userID = UserBLL.generateUserID(self)
+        new_user = UserDTO(userID=userID, username=username, email=email, password=password)
+
+        if UserBLL.hasUsername(self, username):
+            msg = "Username already exists"
+            client.sendall(msg.encode())
+        else:
+            UserBLL.insert(self, new_user)
+            msg = "Register successfully"
+            client.sendall(msg.encode())
+            print(msg)    
+
+    def addPlayList(self, userID, title, creationdate):
+        pl = PlayListDTO(playlistID = PlayListBLL.generatePlaylistID(self), 
+                         userID = userID, 
+                         title = title, 
+                         creationdate = creationdate
+        )
+
+        PlayListBLL.insert(self, pl) 
+        
+    def deletePlayList(self, client, playlistID):
+        flag = PlayListBLL.delete(self, playlistID)        
+        client.send(bytes([flag]))
 
     # Gui du lieu album
     def sendDataPlaylistWithUserID(self, client):
+        print("DANG GUI DU LIEU PLAYLIST!!!")                              
         userID = client.recv(1024).decode()
 
-        data_playlist = AlbumBLL.getDataPlaylistFromUserID(self, userID) #lấy dữ liệu track từ DB
-
+        data_playlist = PlayListBLL.getDataPlaylistFromUserID(self, userID) #lấy dữ liệu track từ DB
+        print("DATA PLAYLIST: ", data_playlist)
         def tuple_to_dict(tpl):
             return {
                 'playlistID': tpl[0],
-                'title': tpl[2],
-                'creationdate': tpl[3]
+                'title': tpl[1],
+                'creationdate': tpl[2].strftime("%Y-%m-%d")
             }
 
         #Convert to JSON string using map and dumps
@@ -353,12 +402,9 @@ class Server:
  
         client.send(json_string.encode())
 
-    def insertTrackToPlayList(self, client):
+    def addTrackToPlayList(self, PlaylistID, UserID, trackID):
 
-        detail = PLDetailDTO()
-        detail.PlayListID = client.recv(1024).decode()
-        detail.userID = client.recv(1024).decode()
-        detail.TrackID = client.recv(1024).decode()
+        detail = PLDetailDTO(PlaylistID = PlaylistID, UserID = UserID,trackID = trackID)
 
         PLDetailBLL.insertTracktoPlayList(self, detail) #lấy dữ liệu track từ DB
 
@@ -376,12 +422,21 @@ class Server:
             print("Server stopped")
         except Exception as e:
             print(f"Error stopping server: {e}")
+            
+    def sendDataPlayListID(self, client,userID):
 
-# server = Server()
+        playlistID = PlayListBLL.getPlaylistIDByUserID(self, userID)
+        
+        print("PLAYLIST ID: ", playlistID)
+        def tuple_to_dict(tpl):
+            return {
+                'playlistID': tpl[0]
+            }
 
-
-
-    
+        #Convert to JSON string using map and dumps
+        json_string = json.dumps(list(map(tuple_to_dict, playlistID)))
+ 
+        client.send(json_string.encode())
     
 
 
