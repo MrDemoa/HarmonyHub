@@ -27,11 +27,11 @@ from pygame import mixer
 
 mixer.init()
 
-class DateEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, date):
-            return obj.isoformat()
-        return json.JSONEncoder.default(self, obj)
+# class DateEncoder(json.JSONEncoder):
+#     def default(self, obj):
+#         if isinstance(obj, date):
+#             return obj.isoformat()
+#         return json.JSONEncoder.default(self, obj)
 
 class Server:
     #========================================================================================
