@@ -48,7 +48,8 @@ class Signup:
         self.window.title("Sign up")
         self.window.geometry("400x650")
         self.window.configure(bg = "#FFFFFF")
-        self.host_ip = '127.0.0.1'
+        self.host_ip = 'localhost'
+
         self.port = 6767
         
         self.canvas = Canvas(

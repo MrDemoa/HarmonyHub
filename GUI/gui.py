@@ -154,8 +154,7 @@ class Presentation:
             422.0,
             image=self.image_image_2
             )
-        Search_field = Entry(self.window,bd=0, bg="#E8E8E8", font=("Helvetica", 12))
-        Search_field.place(x=244, y=413, width=200, height=18)
+        
 
         #Playlist frame
         self.big_frame = Frame(self.window,bg="#313131",relief="flat")
@@ -313,6 +312,7 @@ class PlaylistFrame(Frame):
         self.playlist_table.column("Creation Date", width=35, anchor='center')
 
         self.playlist_table.bind("<<TreeviewSelect>>", self.on_row_click)
+        self.playlist_table.bind("<Double-1>", self.on_row_double_click)
         self.playlist_table.place(
             x=0,
             y=48,
@@ -357,6 +357,18 @@ class PlaylistFrame(Frame):
             values = self.playlist_table.item(item, 'values')
    
             self.current_playlist_id = values[0]
+            
+    def on_row_double_click(self, event):
+        # Get the selected row
+        item = self.playlist_table.selection()[0]
+
+        # Get the values of the selected row
+        values = self.playlist_table.item(item, 'values')
+        
+        self.big_frame.show_frame(TrackFrame)
+        track_frame = self.big_frame.frames[TrackFrame] 
+        
+        track_frame.insert_into_table_track_playlist(values[0])
     def show_PlayList_Dialog(self):
         dialog = Toplevel(self)
         dialog.title("Input")
@@ -493,6 +505,9 @@ class TrackFrame(Frame):
             activeforeground="#FFFFFF",
             command=lambda: self.insert_into_table_track()
         )
+        
+        
+        
         self.refresh_button.place(
             x=340.0,
             y=13.0,
@@ -674,6 +689,8 @@ class TrackFrame(Frame):
             x=75.0,
             y=477.0
         )
+        self.Search_field = Entry(bd=0, bg="#E8E8E8", font=("Helvetica", 12))
+        self.Search_field.place(x=244, y=413, width=200, height=18)
         #Table
 
         self.track_table = ttk.Treeview(self, columns=("Track ID","Title","Artist ID" ,"Album ID", "Duration","Release Date"), show='headings')
@@ -699,9 +716,29 @@ class TrackFrame(Frame):
             width=493.0,
             height=480.0
             )
+        self.Search_field.bind('<Return>',self.search)
         self.track_table.bind("<<TreeviewSelect>>", self.on_row_click)
         self.track_table.bind("<Double-1>", self.on_row_double_click)
         self.insert_into_table_track()
+    def search(self, event=None):
+        # Remove all existing items from the table
+        for i in self.track_table.get_children():
+            self.track_table.delete(i)
+
+        # Get the search text from the Entry
+        search_text = self.Search_field.get()
+
+        # Get the data from the server or database
+        data = ClientListener.getDataTrackFromServer(self)
+   
+        # Filter the data based on the search text
+        filtered_data = [item for item in data if search_text.lower() in item['title'].lower()]
+
+        # Add the filtered data to the table
+        for item in filtered_data:
+            self.track_table.insert('', 'end', values=(item['trackID'], item['title'], item['artistID'], item['albumID'], item['duration'], item['releasedate']))
+        # Clear the search entry
+        self.Search_field.delete(0, 'end')
     def update_time_label(self):
         self.time_label.config(text=self.client.convert_time_to_string())
     def pause_song(self):
@@ -871,10 +908,29 @@ class TrackFrame(Frame):
             for row in rows:
                 values = tuple(row.values())
                 self.track_table.insert('', 'end', values=values)
+    def insert_into_table_track_playlist(self,playlistID) :
+        userid=userID
+        # Delete all rows from the table
+        for i in self.track_table.get_children():
+            self.track_table.delete(i)
+        rows = ClientListener.getTrackinPlaylistofUserID(self,playlistID,userid)
+
+        # If rows is a dictionary, convert it to a list of one dictionary
+        if isinstance(rows, dict):
+            rows = [rows]
+
+        # Insert each row into the table
+        if rows is not None:
+            for row in rows:
+                values = tuple(row.values())
+                self.track_table.insert('', 'end', values=values)
     def show_Add_PlayList_Dialog(self):
         dialog = Toplevel(self)
         dialog.title("Input")
-        dialog.geometry("200x60")
+        dialog.geometry("250x60")
+        
+        Label(dialog, text="Add to Playlist").grid(row=0, column=0)
+        
         userid=userID
         entries = []
         combobox = ttk.Combobox(dialog)
@@ -883,7 +939,7 @@ class TrackFrame(Frame):
         # Extract the playlist IDs from the data
         playlist_ids = [data['playlistID'] for data in playlist_data]
         combobox['values'] = playlist_ids
-        combobox.grid(column=0, row=0)
+        combobox.grid(column=1, row=0)
         entries.append(combobox)
 
         Button(dialog, text="Submit", command=lambda: self.process_entries_playlist(entries,dialog)).grid( column=0, row = 1,columnspan=2)

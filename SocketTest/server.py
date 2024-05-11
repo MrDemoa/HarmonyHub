@@ -27,15 +27,16 @@ from pygame import mixer
 
 mixer.init()
 
-class DateEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, date):
-            return obj.isoformat()
-        return json.JSONEncoder.default(self, obj)
+# class DateEncoder(json.JSONEncoder):
+#     def default(self, obj):
+#         if isinstance(obj, date):
+#             return obj.isoformat()
+#         return json.JSONEncoder.default(self, obj)
 
 class Server:
     #========================================================================================
     ip = "localhost"
+
     port = 6767
 
     def __init__(self):
@@ -75,8 +76,9 @@ class Server:
         elif ("REGISTER" in signal):
             signal, username, email, password = signal.split("|")
             self.Register(client, username, email, password)
-        elif (signal == "DATA_PLAYLIST_USERID"):
-            self.sendDataPlaylistWithUserID(client)
+        elif ("DATA_PLAYLIST_USERID" in signal):
+            signal, userID = signal.split("|")
+            self.sendDataPlaylistWithUserID(client,userID)
         elif (signal == "DATA_TRACK"):
             self.sendDataTrack(client)
         elif (signal == "DATA_ALBUM"):
@@ -105,6 +107,9 @@ class Server:
         elif ("GET_PLAYLISTID" in signal):
             signal, userID = signal.split("|")
             self.sendDataPlayListID(client,userID)
+        elif ("GET_TRACK_PL_USERID" in signal):
+            signal, playlistIDs, userID = signal.split("|")
+            self.sendDatainPlaylistofTrack(client, playlistIDs, userID)
     # def send_music(self, client, address):
     #     # Khởi tạo thread để nhận dữ liệu từ client
     #     self.receive_thread = threading.Thread(target=self.receive, args=(client, address))
@@ -364,9 +369,7 @@ class Server:
         client.send(bytes([flag]))
 
     # Gui du lieu album
-    def sendDataPlaylistWithUserID(self, client):
-        print("DANG GUI DU LIEU PLAYLIST!!!")                              
-        userID = client.recv(1024).decode()
+    def sendDataPlaylistWithUserID(self, client,userID):
 
         data_playlist = PlayListBLL.getDataPlaylistFromUserID(self, userID) #lấy dữ liệu track từ DB
         print("DATA PLAYLIST: ", data_playlist)
@@ -437,7 +440,23 @@ class Server:
         json_string = json.dumps(list(map(tuple_to_dict, playlistID)))
  
         client.send(json_string.encode())
-    
+
+    def sendDatainPlaylistofTrack(self, client, playlistID, userID):
+        data_track = PLDetailBLL.getTrackinPlayListofUserID(self, playlistID, userID)
+        print("DATA TRACK: ", data_track)
+        def tuple_to_dict(tpl):
+            return {
+                'trackID': tpl[0],
+                'title': tpl[1],
+                'artistID': tpl[2],
+                'albumID': tpl[3],
+                'duration': tpl[4],
+                'releasedate': tpl[5].strftime("%Y-%m-%d")
+            }
+                #Convert to JSON string using map and dumps
+        json_string = json.dumps(list(map(tuple_to_dict, data_track)))
+ 
+        client.send(json_string.encode())
 
 
 
