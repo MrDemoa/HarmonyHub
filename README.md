@@ -29,7 +29,7 @@ Installing the required library :
 
 - Sign up
   
-![Alt text](Screenshots/Sign up.png)
+![Alt text](Screenshots/Sign_up.png)
 
 - Main GUI
 
