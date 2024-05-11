@@ -22,5 +22,21 @@ Installing the required library :
 - For `Client Usage` : Run file `Login.py` in `GUI` folder
 - For `Admin Usage` : Run file `Admin.py` in `GUI` folder
 > Warning : You need to run the server first in the `Admin Panel` before any client usage
+# Screenshots
+- Login
+  
+![Alt text](Screenshots/Login.png)
+
+- Sign up
+  
+![Alt text](Screenshots/Sign up.png)
+
+- Main GUI
+
+![Alt text](Screenshots/Track.png)
+
+- Admin Panel
+
+![Alt text](Screenshots/Album(Online).png)
 # License
 MIT
