@@ -35,7 +35,8 @@ class DateEncoder(json.JSONEncoder):
 
 class Server:
     #========================================================================================
-    ip = "localhost"
+    ip = "192.168.227.183"
+
     port = 6767
 
     def __init__(self):

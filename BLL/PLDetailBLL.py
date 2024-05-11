@@ -11,6 +11,9 @@ class PLDetailBLL:
     def insertTracktoPlayList(self, playlist_dto):
         PLDetailDAL.insertTracktoPlayList(self, playlist_dto)
 
+    def getTrackinPlayListofUserID(self, playlistID, userID):
+        return PLDetailDAL.getTrackinPlayListofUserID(self, playlistID, userID)
+
     def udeleteTrackInPlayList(self, trackID):
         PLDetailDAL.update(self, trackID)
 
