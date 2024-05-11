@@ -7,6 +7,17 @@ HarmonyHub required [python](https://www.python.org) 3.8+ to run
 
 Installing the required library :
 
-Pillow
-##
+## Pillow
         pip install pillow
+## tKinter
+        pip install tk
+## mutagen
+        pip install mutagen
+## Pygame
+        pip install pygame
+## MySQL Connector
+        pip install mysql-connector-python
+# How to run
+- You need to change the host_ip in `Admin.py` , `Login.py` , `Signup.py` , `gui.py` to your network ip
+- For Example the default value is `localhost` or `127.0.0.1` . You need to change to `192.168.0.1`
+  
