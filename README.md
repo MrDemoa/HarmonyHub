@@ -6,5 +6,7 @@ These instructions will give you a copy of the project up and running on your lo
 HarmonyHub required [python](https://www.python.org) 3.8+ to run
 
 Installing the required library :
+
 Pillow
-    pip install pillow
+##
+        pip install pillow
