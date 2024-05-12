@@ -963,13 +963,13 @@ class TrackFrame(Frame):
         userid = userID
         user_info = ClientListener.getUserInfoFromServer(self, userid)  # Assuming this function returns a dictionary of user info
         print("User info:", user_info)
-        dialog = Toplevel(self)
+        dialog = Toplevel(self,background="#313131")
         dialog.title("User Info")
-        dialog.geometry("200x130")
+        dialog.geometry("240x120")
 
         entries = []
         for i, (key, value) in enumerate(user_info.items()):
-            Label(dialog, text=key).grid(row=i, column=0)
+            Label(dialog, text=key,background="#313131",foreground="#FFFFFF").grid(row=i, column=0)
             entry = Entry(dialog)
             entry.insert(0, value)  # Pre-fill the entry with the current value
             if i in [0]:
@@ -977,7 +977,7 @@ class TrackFrame(Frame):
             entry.grid(row=i, column=1)
             entries.append(entry)
 
-        Button(dialog, text="Update", command=lambda: self.process_entries_user_info(entries, dialog,user_info)).grid(column=0, row=i+1, columnspan=2)
+        Button(dialog, text="Update",background="#4394AE",foreground="#FFFFFF",activebackground="#313131", command=lambda: self.process_entries_user_info(entries, dialog,user_info)).grid(column=0, row=i+1, columnspan=2)
 
     def process_entries_user_info(self, entries, dialog, user_info):
         try:
