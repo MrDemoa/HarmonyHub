@@ -113,6 +113,9 @@ class Server:
         elif ("USER_INFO" in signal):
             signal, userID = signal.split("|")
             self.sendDataUserInfo(client,userID)
+        elif ("UPDATE_USERINFO" in signal):
+            signal, userID, username,email,password = signal.split("|")
+            self.updateUserInfo(client, userID, username,email,password)
     # def send_music(self, client, address):
     #     # Khởi tạo thread để nhận dữ liệu từ client
     #     self.receive_thread = threading.Thread(target=self.receive, args=(client, address))
@@ -390,18 +393,25 @@ class Server:
 
     def sendDataUserInfo(self, client, userID):
         data_user = UserBLL.getUserInfoByUserID(self, userID)
-        
-        def tuple_to_dict(tpl):
-            return {
-                'userID': tpl[0],
-                'username': tpl[1],
-                'email': tpl[2],
-                'password': tpl[3]
-            }
-        #Convert to JSON string using map and dumps
-        json_string = json.dumps(list(map(tuple_to_dict, data_user)))
- 
+        print("SEND DATA USER INFO: ", data_user)
+        # Convert the tuple to a dictionary
+        user_info = {
+            'userID': data_user[0],
+            'username': data_user[1],
+            'email': data_user[2],
+            'password': data_user[3]
+        }
+
+        # Convert to JSON string using dumps
+        json_string = json.dumps(user_info)
+
         client.send(json_string.encode())
+    def updateUserInfo(self, client, userID, username,email,password):
+        new_user_info = UserDTO(userID=userID, username=username, email=email, password=password)
+        # Update the user info in the database
+        UserBLL.updateUserInfo(self,new_user_info)
+
+
     def addTrackToPlayList(self, PlaylistID, UserID, trackID):
 
         detail = PLDetailDTO(PlaylistID = PlaylistID, UserID = UserID,trackID = trackID)

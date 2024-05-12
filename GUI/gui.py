@@ -672,7 +672,7 @@ class TrackFrame(Frame):
         self.time_label_2.place(
             x=230.0,
             y=445.0)
-        # self.label_2.bind("<Button-1>", lambda x: self.big_frame.show_frame(PlaylistFrame))
+        self.label_2.bind("<Button-1>", lambda x: self.show_User_Info_Dialog())
         
         # Repeat button
         self.button_image_5=PhotoImage(file=relative_to_assets("Repeat.png"))
@@ -962,30 +962,34 @@ class TrackFrame(Frame):
     def show_User_Info_Dialog(self):
         userid = userID
         user_info = ClientListener.getUserInfoFromServer(self, userid)  # Assuming this function returns a dictionary of user info
-
+        print("User info:", user_info)
         dialog = Toplevel(self)
         dialog.title("User Info")
-        dialog.geometry("250x200")
+        dialog.geometry("200x130")
 
         entries = []
         for i, (key, value) in enumerate(user_info.items()):
             Label(dialog, text=key).grid(row=i, column=0)
             entry = Entry(dialog)
             entry.insert(0, value)  # Pre-fill the entry with the current value
-            if i in [0,3]:
+            if i in [0]:
                 entry.config(state='readonly')
             entry.grid(row=i, column=1)
             entries.append(entry)
 
-        Button(dialog, text="Update", command=lambda: self.process_entries_user_info(entries, dialog)).grid(column=0, row=i+1, columnspan=2)
+        Button(dialog, text="Update", command=lambda: self.process_entries_user_info(entries, dialog,user_info)).grid(column=0, row=i+1, columnspan=2)
 
-    def process_entries_user_info(self, entries, dialog):
+    def process_entries_user_info(self, entries, dialog, user_info):
         try:
-            user_info = {key: entry.get() for key, entry in zip(user_info.keys(), entries)}  # Get the updated user info from the entries
-
-            ClientListener.updateUserInfo(self, userID, user_info)  # Assuming this function updates the user info
-
+            new_user_info = {key: entry.get() for key, entry in zip(user_info.keys(), entries)}  # Get the updated user info from the entries
+            # Access the values in new_user_info
+            username = new_user_info.get('username')
+            email = new_user_info.get('email')
+            password = new_user_info.get('password')
+            ClientListener.updateUserInfo(self, userID, username,email,password)  # Assuming this function updates the user info
+     
             messagebox.showinfo("Success", "User info updated successfully")
+            
             dialog.destroy()
 
         except Exception as e:

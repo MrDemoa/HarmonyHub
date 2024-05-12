@@ -640,15 +640,15 @@ class ClientListener:
             print(record)
             
         return data  
-    def updateUserInfo(self,userID):
+    def updateUserInfo(self,userID, username,email,password):
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # gửi yêu cầu connect
             self.client_socket.connect((self.host_ip, self.port))
             signal = "UPDATE_USERINFO"
-            message = signal + "|" + userID
+            message = signal + "|" + userID + "|" +  username + "|" + email + "|" +password
             self.client_socket.sendall(message.encode())
-            #self.client_socket.recv(1024).decode("utf-8")
+    
 
         except socket.timeout as e:
             print("TIMEOUT ERROR:", str(e))
@@ -658,6 +658,6 @@ class ClientListener:
         except Exception as e:
             print("ERROR:", str(e))
             return
-
+        
 if __name__ == "__main__":
     client = ClientListener() #mở client
