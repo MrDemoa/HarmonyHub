@@ -990,7 +990,7 @@ class UserFrame(Frame):
             # Create a new UserDTO object with the new values
             user_dto = UserDTO(new_values[0], new_values[1], new_values[2], new_values[3])
             # Update the selected row in the database
-            UserBLL.update(self, user_dto)
+            UserBLL.updateUserInfo(self, user_dto)
 
             # Update the selected row in the table
             self.refresh_table()

@@ -51,7 +51,7 @@ class AlbumDAL:
 
     def update(self,album_dto):
         cursor = self.con.cursor()
-        cursor.execute("update album set title = %s, artistID = %s, genre = %s, realeasedate = %s where albumID = %s", (album_dto.title, album_dto.artistID, album_dto.genre, album_dto.releasedate,album_dto.albumID))
+        cursor.execute("update album set title = %s, artistID = %s, genre = %s, releasedate = %s where albumID = %s", (album_dto.title, album_dto.artistID, album_dto.genre, album_dto.releasedate,album_dto.albumID))
         self.con.commit()
         cursor.close()
 

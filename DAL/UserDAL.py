@@ -23,7 +23,7 @@ class UserDAL():
         cursor.execute("select userID from user order by userID desc limit 1")
         user_id = cursor.fetchone()
         if user_id :
-            id = int(user_id) + 1
+            id = int(user_id[0]) + 1
         else:
             id = str(1)
         return str(id).zfill(4)
@@ -81,9 +81,14 @@ class UserDAL():
         username = cursor.fetchone()
         cursor.close()
         return username[0]
-       
+    def getUserInfoByUserID(self, userID):
+        cursor = self.con.cursor()
+        cursor.execute("select * from user where userID = %s", (userID,))
+        user = cursor.fetchone()
+        cursor.close()
+        return user   
 
-    def update(self, user_dto):
+    def updateUserInfo(self, user_dto):
         cursor = self.con.cursor()
         cursor.execute("update user set username = %s, email = %s, password = %s where userID = %s", (user_dto.username, user_dto.email, user_dto.password, user_dto.userID))
         self.con.commit()

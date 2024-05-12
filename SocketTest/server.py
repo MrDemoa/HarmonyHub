@@ -110,6 +110,12 @@ class Server:
         elif ("GET_TRACK_PL_USERID" in signal):
             signal, playlistIDs, userID = signal.split("|")
             self.sendDatainPlaylistofTrack(client, playlistIDs, userID)
+        elif ("USER_INFO" in signal):
+            signal, userID = signal.split("|")
+            self.sendDataUserInfo(client,userID)
+        elif ("UPDATE_USERINFO" in signal):
+            signal, userID, username,email,password = signal.split("|")
+            self.updateUserInfo(client, userID, username,email,password)
     # def send_music(self, client, address):
     #     # Khởi tạo thread để nhận dữ liệu từ client
     #     self.receive_thread = threading.Thread(target=self.receive, args=(client, address))
@@ -385,25 +391,26 @@ class Server:
  
         client.send(json_string.encode())
 
-    def sendDataTrackInPlaylist(self, client):
-        playlistID = client.recv(1024).decode()
+    def sendDataUserInfo(self, client, userID):
+        data_user = UserBLL.getUserInfoByUserID(self, userID)
+        print("SEND DATA USER INFO: ", data_user)
+        # Convert the tuple to a dictionary
+        user_info = {
+            'userID': data_user[0],
+            'username': data_user[1],
+            'email': data_user[2],
+            'password': data_user[3]
+        }
 
-        data_track_playlist = ArtistBLL.getTracksFromPlaylistID(self, playlistID) #lấy dữ liệu track từ DB
+        # Convert to JSON string using dumps
+        json_string = json.dumps(user_info)
 
-        def tuple_to_dict(tpl):
-            return {
-                'trackID': tpl[0],
-                'title': tpl[1],
-                'artistID': tpl[2],
-                'albumID': tpl[3],
-                'duration': tpl[4],
-                'releasedate': tpl[5].strftime("%Y-%m-%d")
-            }
-
-        #Convert to JSON string using map and dumps
-        json_string = json.dumps(list(map(tuple_to_dict, data_track_playlist)))
- 
         client.send(json_string.encode())
+    def updateUserInfo(self, client, userID, username,email,password):
+        new_user_info = UserDTO(userID=userID, username=username, email=email, password=password)
+        # Update the user info in the database
+        UserBLL.updateUserInfo(self,new_user_info)
+
 
     def addTrackToPlayList(self, PlaylistID, UserID, trackID):
 
