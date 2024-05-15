@@ -4,6 +4,11 @@
 </p>
 Introducing HarmonyHub , your gateway to a harmonious world of music streaming. Designed to elevate your auditory experience, HarmonyHub seamlessly integrates your favorite streaming platforms into one intuitive app, offering a unified interface for all your musical desires. HarmonyHub empowers you to discover, create, and indulge in the perfect soundtrack for every moment.
 
+
+[Document](Report-Nhóm20.pdf)
+
+[Presentation](GroupProject.pptx)
+
 # Getting Started
 These instructions will give you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on deploying the project on a live system.
 
